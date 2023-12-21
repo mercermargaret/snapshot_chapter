@@ -13,7 +13,7 @@ dep_2020 <- read.csv("SNAPSHOT_USA_2020_deployments.csv")
 # not all have deployment IDs, so had to merge by site name!
 
 left_joined_20 <- merge(obs_2020, dep_2020, by = "Site_Name", all.x = TRUE)
-all_2020 <- left_joined_20[, c("Deployment_ID.x", "Site_Name", "Survey_Days", "Latitude", "Longitude", "Begin.Time", "Species_Name", "Count")]
+all_2020 <- left_joined_20[, c("Deployment_ID.x", "Site_Name", "Survey_Days", "Latitude", "Longitude", "Begin.Time", "Species_Name", "Common_Name", "Count")]
 
 colnames(all_2020)[4] <- "lat"
 colnames(all_2020)[5] <- "lon"
@@ -55,7 +55,7 @@ sf_points <- st_as_sf(all_2020, coords = c("Longitude", "Latitude"), crs = 4326)
 values_at_points <- extract(raster, sf_points)
 rastered <- cbind(all_2020, Raster_Values = values_at_points)
 new_20 <- dplyr::select(rastered, -Raster_Values.ID)
-colnames(new_20)[11] <- "Disturbance"
+colnames(new_20)[12] <- "Disturbance"
 
 # Cool. new_20 now has the deployment, observation, day/night binary, and human disturbance data for 2020!
 # You can do this for any year of SnapShotUSA data; simply replace the year number in each of the objects and check lat/long to make sure it still all falls within the range
