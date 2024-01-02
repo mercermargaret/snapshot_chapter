@@ -43,9 +43,6 @@ prey <- subset(new_19, Species_Name == "Alces alces")
 pred <- subset(new_19, Species_Name == "Canis lupus")
 
 # for which deployments of prey was there also a predator present at some point?
-prey$Site_Name # here's all the deployments where there were prey
-pred$Site_Name # and here's all the deployments where there were predators
-# which values of prey are also present in pred?
 prey$Pred_Present <- as.numeric(prey$Site_Name %in% pred$Site_Name)
 # now I've added a column to the "prey" dataframe with binary coding of predator presence/absence
 
@@ -80,7 +77,7 @@ library(lavaan)
 
 myModel <- ' 
  # regressions
-   IsNight ~ Disturbance + Pred_Present 
+   IsNight ~ Disturbance + Pred_Present
 '
 
 fit <- sem(model = myModel, 
@@ -88,3 +85,48 @@ fit <- sem(model = myModel,
 summary(fit)
 
 # so it looks like there's not an effect? Of either disturbance or predator presence?
+
+# I'm gonna subset a different pair and see if there's more overlap
+
+prey <- subset(new_19, Common_Name == "Red Fox")
+pred <- subset(new_19, Common_Name == "Coyote")
+
+# ran above wrangling. There's more overlap so might be better to subset them
+
+withpred <- subset(prey, Pred_Present == 1)
+wopred <- subset(prey, Pred_Present == 0)
+
+summary(glm(pred$IsNight ~ pred$Disturbance)) # predator response to human presence
+summary(glm(withpred$IsNight ~ withpred$Disturbance)) # prey response to human presence with predators around
+summary(glm(wopred$IsNight ~ wopred$Disturbance)) # prey response to human presence without predators around
+
+# with coyotes and red fox, no effect of disturbance on coyote activity, strong response to human disturbance of 
+# red fox when coyotes present, and no response to human disturbance of red fox when coyotes not present
+
+# here's the idea Javan gave me: Prey Nocturnality (probability) ~ -1 + Predator_Absence*beta_A + Predator_Presence * beta_P + Predator_Prop:Predator_Presence * beta_P_prop + Disturbance * beta_D + Disturbance:Predator_Presence * beta_D_P + Disturbance:Predator_Prop:Predator_Presence * beta_D_P_prop 
+
+prey_with_props$Pred_Absent <- ifelse(prey_with_props$Pred_Present == 0, 1, 0)
+
+summary(glm(data = prey_with_props, IsNight ~ -1 + Pred_Absent + Pred_Present + Pred_Noct_By_Site:Pred_Present + Disturbance + Disturbance:Pred_Present + Disturbance:Pred_Noct_By_Site:Pred_Present))
+
+
+# what about another subset
+prey <- subset(new_19, Common_Name == "White-tailed Deer")
+pred <- subset(new_19, Common_Name == "Puma")
+
+prey$Pred_Present <- as.numeric(prey$Site_Name %in% pred$Site_Name)
+pred_with_props <- merge(pred, proportion_by_site, by = "Site_Name", all.x = TRUE)
+prey_with_props <- merge(prey, proportion_by_site, by = "Site_Name", all.x = TRUE)
+withpred <- subset(prey, Pred_Present == 1)
+wopred <- subset(prey, Pred_Present == 0)
+
+summary(glm(pred$IsNight ~ pred$Disturbance)) # predator response to human presence
+summary(glm(withpred$IsNight ~ withpred$Disturbance)) # prey response to human presence with predators around
+summary(glm(wopred$IsNight ~ wopred$Disturbance)) # prey response to human presence without predators around
+
+# Hm no strong effect for gray foxes or gray squirrels....
+# Or for puma. But strong negative effect of disturbance on deer with predators present, and positive effect of 
+# disturbance on deer with predators absent
+
+
+
