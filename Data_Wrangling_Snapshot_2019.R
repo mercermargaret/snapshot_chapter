@@ -10,7 +10,7 @@ dep_2019 <- read.csv("SNAPSHOT_USA_2019_deployments.csv")
 library(dplyr)
 
 left_joined_19 <- merge(obs_2019, dep_2019, by = "Deployment_ID", all.x = TRUE)
-all_2019 <- left_joined_19[, c("Deployment_ID", "Site_Name.x", "Survey_Days", "Latitude.x", "Longitude.x", "Begin_Time", "Species_Name", "Common_Name", "Count")]
+all_2019 <- left_joined_19[, c("Camera_Trap_Array.x", "Site_Name.x", "Survey_Days", "Latitude.x", "Longitude.x", "Begin_Time", "Species_Name", "Common_Name", "Count")]
 # Ok now we've included only the columns we want.
 
 # Code a binary for day/night observation
@@ -35,6 +35,7 @@ sun_position <- getSunlightPosition(
 all_2019['Altitude'] = sun_position$altitude
 
 # let's rename some columns so they look nice
+colnames(all_2019)[1] <- "Array"
 colnames(all_2019)[2] <- "Site_Name"
 colnames(all_2019)[4] <- "Latitude"
 colnames(all_2019)[5] <- "Longitude"
@@ -133,3 +134,4 @@ colnames(new_19)[12] <- "Disturbance"
 
 # all done! new_19 now has the deployment, observation, day/night binary, and human disturbance data for 2019!
 
+write.csv(new_19, "new_19.csv", row.names=FALSE)

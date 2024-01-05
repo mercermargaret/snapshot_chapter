@@ -1,10 +1,14 @@
 # Preliminary Analyses with Subsets
+# (depends on Data_Wrangling_Snapshot_2019)
 # Margaret Mercer
 # Dec 14, 2023
 
+# Each of the following is an alternate analysis option. Each can be run independently using "new_19" data.
+
+new_19 <- read.csv("new_19.csv")
 options(digits = 3)
 
-## general glms
+# Exploratory GLMs ####
 
 #try a basic glm first to see if theres an effect for animals in general
 # (side note, Jesse said this probably won't show an effect since the species that are more tolerant of humans will "fill in" the place of the species less tolerant)
@@ -30,71 +34,74 @@ species_counts <- table(obs_2019$Common_Name)
 
 
 
-## creating
+# Prey IsNight? ~ Pred Presence and Human Disturbance (GLM and SEM) ####
 
-# subset moose and wolf into "prey" and "pred" dataframes.
+# subset species into "prey" and "pred" dataframes.
 prey <- subset(new_19, Species_Name == "Alces alces")
 pred <- subset(new_19, Species_Name == "Canis lupus")
 
-# for which deployments of prey was there also a predator present at some point?
-prey$Pred_Present <- as.numeric(prey$Site_Name %in% pred$Site_Name)
-# now I've added a column to the "prey" dataframe with binary coding of predator presence/absence
+# for which arrays of prey was there also a predator present at some point?
+prey$Pred_Present <- as.numeric(prey$Array %in% pred$Array) # now I've added a column to the "prey" dataframe with binary coding of predator presence/absence
 
-# now I need to figure out the night/day ratio for each deployment ID of wolves
-summary(glm(m$IsNight ~ prey$Pred_Present + prey$Disturbance, family = binomial))
+summary(glm(prey$IsNight ~ prey$Pred_Present + prey$Disturbance, family = binomial))
 # ugh so no effect of predator presence or human disturbance on prey nocturnality...great
 
-# so we have "pred"
-str(pred)
-# and we have nocturnality
-pred$IsNight
-# so for each site name, we need the proportion of pred night/day
+# install.packages(lavaan)
+library(lavaan)
+myModel <- ' 
+ # regressions
+   IsNight ~ Disturbance + Pred_Present
+'
+fit <- sem(model = myModel, 
+           data = prey) 
+summary(fit)
+# so it looks like there's not an effect? Of either disturbance or predator presence?
 
+
+# Add Column to Prey Dataframe with Pred Noct Proportion ####
+prey <- subset(new_19, Species_Name == "Alces alces")
+pred <- subset(new_19, Species_Name == "Canis lupus") # subset
+
+# get proportion of predator nocturnality for each site name
 pred_noct_by_site <- pred %>%
   group_by(Site_Name) %>%
   summarize(
     Pred_Noct_By_Site = mean(IsNight == 1)
   )
 
-# Merge proportions back to the original dataframe, keeping all rows from the original dataframe
-pred_with_noct <- merge(pred, pred_noct_by_site, by = "Site_Name", all.x = TRUE)
+pred <- merge(pred, pred_noct_by_site, by = "Site_Name", all.x = TRUE) # Merge proportions back to the original dataframe, keeping all rows from the original dataframe
 
-# Now I add a column to the "prey" dataframe with the proportion of predator nocturnality
-prey_with_pred_noct <- merge(prey, pred_noct_by_site, by = "Site_Name", all.x = TRUE)
+prey <- merge(prey, pred_noct_by_site, by = "Site_Name", all.x = TRUE) # Now I add a column to the "prey" dataframe with the proportion of predator nocturnality
 
 
+# Javaan's model (takes into account pred presence AND pred nocturnality) ####
+# Prey Nocturnality (probability) ~ -1 + Predator_Absence*beta_A + Predator_Presence * beta_P + Predator_Prop:Predator_Presence * beta_P_prop + Disturbance * beta_D + Disturbance:Predator_Presence * beta_D_P + Disturbance:Predator_Prop:Predator_Presence * beta_D_P_prop 
 
+# add column to prey dataframe with pred noct by site
+prey <- subset(new_19, Species_Name == "Alces alces")
+pred <- subset(new_19, Species_Name == "Canis lupus") # subset
+pred_noct_by_site <- pred %>%
+  group_by(Site_Name) %>%
+  summarize(
+    Pred_Noct_By_Site = mean(IsNight == 1)
+  ) # get proportion of predator nocturnality for each site name
+pred <- merge(pred, pred_noct_by_site, by = "Site_Name", all.x = TRUE) # Merge proportions back to the original dataframe, keeping all rows from the original dataframe
+prey <- merge(prey, pred_noct_by_site, by = "Site_Name", all.x = TRUE) # Now I add a column to the "prey" dataframe with the proportion of predator nocturnality
 
-## SEM using lavaan
+# add pred present and pred absent columns to prey dataframe
+prey$Pred_Present <- as.numeric(prey$Array %in% pred$Array)
+prey$Pred_Absent <- ifelse(prey$Pred_Present == 0, 1, 0)
 
-# install.packages(lavaan)
-library(lavaan)
-
-myModel <- ' 
- # regressions
-   IsNight ~ Disturbance + Pred_Present
-'
-
-fit <- sem(model = myModel, 
-           data = prey_with_pred_noct) 
-summary(fit)
-
-# so it looks like there's not an effect? Of either disturbance or predator presence?
-
-
-
-## here's the idea Javan gave me: Prey Nocturnality (probability) ~ -1 + Predator_Absence*beta_A + Predator_Presence * beta_P + Predator_Prop:Predator_Presence * beta_P_prop + Disturbance * beta_D + Disturbance:Predator_Presence * beta_D_P + Disturbance:Predator_Prop:Predator_Presence * beta_D_P_prop 
-
-prey_with_pred_noct$Pred_Absent <- ifelse(prey_with_pred_noct$Pred_Present == 0, 1, 0)
-
-summary(glm(data = prey_with_pred_noct, IsNight ~ -1 + Pred_Absent + Pred_Present + Pred_Noct_By_Site:Pred_Present + Disturbance + Disturbance:Pred_Present + Disturbance:Pred_Noct_By_Site:Pred_Present))
+summary(glm(data = prey, IsNight ~ -1 + Pred_Absent + Pred_Present + Pred_Noct_By_Site:Pred_Present + Disturbance + Disturbance:Pred_Present + Disturbance:Pred_Noct_By_Site:Pred_Present))
 
 
 
-## Prey noct as a function of human presence when predator present vs absent
+# Prey Noct ~ Human Disturbance with a. Predator Present and b. Predator Absent ####
 # create predator and prey datasets
 prey <- subset(new_19, Common_Name == "White-tailed Deer")
 pred <- subset(new_19, Common_Name == "Puma")
+
+prey$Pred_Present <- as.numeric(prey$Array %in% pred$Array) # add column to prey dataframe that has predator present as a 0 or 1
 
 # subset prey into "with pred" and "without pred"
 withpred <- subset(prey, Pred_Present == 1)
@@ -105,54 +112,91 @@ summary(glm(pred$IsNight ~ pred$Disturbance)) # predator response to human prese
 summary(glm(withpred$IsNight ~ withpred$Disturbance)) # prey response to human presence with predators around
 summary(glm(wopred$IsNight ~ wopred$Disturbance)) # prey response to human presence without predators around
 
-# with coyotes and red fox, no effect of disturbance on coyote activity, strong response to human disturbance of 
-# red fox when coyotes present, and no response to human disturbance of red fox when coyotes not present
+# No effect for puma. Or for deer when puma present.
+# BUT when puma were absent, white tailed deer became more nocturnal with increased human presence!!
 
-# Hm no strong effect for gray foxes or gray squirrels....
+# Coyotes and red fox: no effect for coyotes, increased nocturnality of red fox with human presence when coyotes present,
+# and no appreciable effect of human presence on red fox nocturnality when coyotes absent
 
-# Or for puma. But strong negative effect of disturbance on deer with predators present, and positive effect of 
-# disturbance on deer with predators absent
+# Hm no strong effect for gray foxes or gray squirrels... or for gray wolves and moose.
 
 
 
-## Now let's create data of proportions rather than binomial. Do this with a subset of ONE species! (if it's predator, replace "prey" with "pred")
+# Binomial Counts and Proportions: Wrangling and GLMs ####
 
-# Calculate binomial proportions for each site
+prey <- subset(new_19, Common_Name == "White-tailed Deer")
 binomial <- prey %>%
   group_by(Site_Name) %>%
-  summarize(Prop_Noct = mean(IsNight))
-
-# Create columns for #nightobservations/site and total#observations/site.
+  summarize(Prop_Noct = mean(IsNight)) # Calculate binomial proportions for each site
 counts <- prey %>%
   group_by(Site_Name) %>%
   summarize(Night_Obs = sum(IsNight == 1),
-            Total_Obs = n())
+            Total_Obs = n()) # Create columns for #nightobservations/site and total#observations/site.
+counts_props <- merge(counts, binomial, by = "Site_Name") # merge together. now we have a dataframe with each site, the total night observations, total observations, and the proportion of the two.
+prey <- merge(prey, counts_props, by = "Site_Name") # cool. now we'll merge that back into the dataframe with all prey observations
 
+# This is all commented out because it was a different way of creating the reduced dataframe but it didn't preserve all the original columns
+# dist <- prey %>%
+#   group_by(Site_Name) %>%
+#   summarize(Disturbance = mean(Disturbance)) # first I'm creating a "dist" dataframe where each site name gets a line and its disturbance value.
+# prey <- merge(counts_props, dist, by = "Site_Name") # now merge that dataframe with the per site dataframe so for our chosen species, we have a dataframe with one row per site and the proportions of nocturnality and the human disturbance for that site
 
-# merge together. now we have a dataframe with each site, the total night observations, total observations, and the proportion of the two.
-counts_props <- merge(counts, binomial, by = "Site_Name")
+plot(Prop_Noct ~ Disturbance, data = prey) # no clear visual patterns in white tailed deer nocturnality as a response to disturbance
+glm(Prop_Noct ~ Disturbance, data = prey)
 
-# cool. now we'll merge that back into the dataframe with all prey observations:
-prey_with_props <- merge(prey, counts_props, by = "Site_Name")
+prey <- dplyr::select(prey, -Date_Time, -IsNight, -Count, -Altitude) # get rid of columns that distinguish individual observations
+prey <- unique(prey) # Remove duplicated rows so there's only one row per camera
 
-# now pre_with_probs is all observations of a single species, with binomial proportions as counts and proportion
-
-
-## analysis of binomial counts/proportions
-# let's visualize...starting with the reduced (per site) dataframe bc is there even a reason to have each individual observation right now??
-# we'll need to add the human disturbance column to the counts_probs dataframe first
-
-# first I'm creating a "dist" dataframe where each site name gets a line and its disturbance value.
-dist <- prey %>%
+# creating binomial counts and proportions for predator now
+pred <- subset(new_19, Common_Name == "Puma")
+binomial <- pred %>%
   group_by(Site_Name) %>%
-  summarize(Disturbance = mean(Disturbance))
+  summarize(Prop_Noct = mean(IsNight))
+counts <- pred %>%
+  group_by(Site_Name) %>%
+  summarize(Night_Obs = sum(IsNight == 1),
+            Total_Obs = n())
+counts_props <- merge(counts, binomial, by = "Site_Name")
+pred <- merge(pred, counts_props, by = "Site_Name")
 
-# now merge that dataframe with the per site dataframe so for our chosen species, we have a dataframe with one row per site
-# and the proportions of nocturnality and the human disturbance for that site
-props_by_site <- merge(counts_props, dist, by = "Site_Name")
+# This is all commented out because it was a different way of creating the reduced dataframe but it didn't preserve all the original columns
+# dist <- pred %>%
+#   group_by(Site_Name) %>%
+#   summarize(Disturbance = mean(Disturbance))
+# pred <- merge(counts_props, dist, by = "Site_Name")
 
-plot(Prop_Noct ~ Disturbance, data = props_by_site)
+pred <- dplyr::select(pred, -Date_Time, -IsNight, -Count, -Altitude) # get rid of columns that distinguish individual observations
+pred <- unique(pred) # Remove duplicated rows so now there's only one row per camera
 
+# now prepare predator and prey dataframes and run glms on them, just like above, but now we're using binomial proportions rather than just binary data
+
+prey$Pred_Present <- as.numeric(prey$Array %in% pred$Array) # add column to prey dataframe that has predator present as a 0 or 1
+
+# subset prey into "with pred" and "without pred"
+withpred <- subset(prey, Pred_Present == 1)
+wopred <- subset(prey, Pred_Present == 0)
+
+# glms
+summary(glm(pred$Prop_Noct ~ pred$Disturbance)) # predator response to human presence
+summary(glm(withpred$Prop_Noct ~ withpred$Disturbance)) # prey response to human presence with predators around
+summary(glm(wopred$Prop_Noct ~ wopred$Disturbance)) # prey response to human presence without predators around
+
+# hm so the problem with doing it like this is that now the number of observations is way down to the number of sites, not just the number of individuals. Ugh.
+
+
+
+
+
+# Different Metrics for Human Activity ####
+## Humans/trapping day/camera
+
+
+
+## Human there in last 24 hours? yes/no
+
+
+
+## Time since last human
 
 
 
