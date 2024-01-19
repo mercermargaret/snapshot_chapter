@@ -1,29 +1,29 @@
 # Preliminary Analyses with Subsets
-# (depends on Data_Wrangling_Snapshot_2019)
 # Margaret Mercer
 # Dec 14, 2023
 
-# Each of the following is an alternate analysis option. Each can be run independently using "new_19" data.
+# Each of the following is an alternate analysis option. Each can be run independently using "2019" data.
 
-new_19 <- read.csv("new_19.csv")
+raw2019 <- read.csv("2019.csv")
 options(digits = 3)
+library(dplyr)
 
 # Exploratory GLMs ####
 
 #try a basic glm first to see if theres an effect for animals in general
 # (side note, Jesse said this probably won't show an effect since the species that are more tolerant of humans will "fill in" the place of the species less tolerant)
 # so lets delete vehicle, no animal, human non-staff, domestic cow, domestic horse, domestic sheep, camera trapper, bicycle
-onlyanimals_19 <- new_19[new_19$Common_Name != "Vehicle" 
-                         & new_19$Common_Name != "No Animal" 
-                         & new_19$Common_Name != "Human non-staff" 
-                         & new_19$Common_Name != "Domestic Cow"
-                         & new_19$Common_Name != "Domestic Horse"
-                         & new_19$Common_Name != "Domestic Sheep" 
-                         & new_19$Common_Name != "Camera Trapper" 
-                         & new_19$Common_Name != "Bicycle", ]
+onlyanimals_19 <- raw2019[raw2019$Common_Name != "Vehicle" 
+                         & raw2019$Common_Name != "No Animal" 
+                         & raw2019$Common_Name != "Human non-staff" 
+                         & raw2019$Common_Name != "Domestic Cow"
+                         & raw2019$Common_Name != "Domestic Horse"
+                         & raw2019$Common_Name != "Domestic Sheep" 
+                         & raw2019$Common_Name != "Camera Trapper" 
+                         & raw2019$Common_Name != "Bicycle", ]
 
 # now a basic glm of deer nocturnality as a function of human disturbance
-deer <- subset(new_19, Common_Name == "White-tailed Deer")
+deer <- subset(raw2019, Common_Name == "White-tailed Deer")
 deerglm <- glm(deer$IsNight ~ deer$Disturbance, family = binomial)
 summary(deerglm) # just right off the bat it looks like as disturbance increases, odds of night occurrence also increases...by 0.14 (logit scale)
 deerglm$deviance/deerglm$df.residual # so dispersion looks good...
@@ -37,8 +37,8 @@ species_counts <- table(obs_2019$Common_Name)
 # Prey IsNight? ~ Pred Presence and Human Disturbance (GLM and SEM) ####
 
 # subset species into "prey" and "pred" dataframes.
-prey <- subset(new_19, Species_Name == "Alces alces")
-pred <- subset(new_19, Species_Name == "Canis lupus")
+prey <- subset(raw2019, Species_Name == "Alces alces")
+pred <- subset(raw2019, Species_Name == "Canis lupus")
 
 # for which arrays of prey was there also a predator present at some point?
 prey$Pred_Present <- as.numeric(prey$Array %in% pred$Array) # now I've added a column to the "prey" dataframe with binary coding of predator presence/absence
@@ -59,8 +59,8 @@ summary(fit)
 
 
 # Add Column to Prey Dataframe with Pred Noct Proportion ####
-prey <- subset(new_19, Species_Name == "Alces alces")
-pred <- subset(new_19, Species_Name == "Canis lupus") # subset
+prey <- subset(raw2019, Species_Name == "Alces alces")
+pred <- subset(raw2019, Species_Name == "Canis lupus") # subset
 
 # get proportion of predator nocturnality for each site name
 pred_noct_by_site <- pred %>%
@@ -78,8 +78,8 @@ prey <- merge(prey, pred_noct_by_site, by = "Site_Name", all.x = TRUE) # Now I a
 # Prey Nocturnality (probability) ~ -1 + Predator_Absence*beta_A + Predator_Presence * beta_P + Predator_Prop:Predator_Presence * beta_P_prop + Disturbance * beta_D + Disturbance:Predator_Presence * beta_D_P + Disturbance:Predator_Prop:Predator_Presence * beta_D_P_prop 
 
 # add column to prey dataframe with pred noct by site
-prey <- subset(new_19, Species_Name == "Alces alces")
-pred <- subset(new_19, Species_Name == "Canis lupus") # subset
+prey <- subset(raw2019, Species_Name == "Alces alces")
+pred <- subset(raw2019, Species_Name == "Canis lupus") # subset
 pred_noct_by_site <- pred %>%
   group_by(Site_Name) %>%
   summarize(
@@ -98,8 +98,8 @@ summary(glm(data = prey, IsNight ~ -1 + Pred_Absent + Pred_Present + Pred_Noct_B
 
 # Prey Noct ~ Human Disturbance with a. Predator Present and b. Predator Absent ####
 # create predator and prey datasets
-prey <- subset(new_19, Common_Name == "White-tailed Deer")
-pred <- subset(new_19, Common_Name == "Puma")
+prey <- subset(raw2019, Common_Name == "White-tailed Deer")
+pred <- subset(raw2019, Common_Name == "Puma")
 
 prey$Pred_Present <- as.numeric(prey$Array %in% pred$Array) # add column to prey dataframe that has predator present as a 0 or 1
 
@@ -124,7 +124,7 @@ summary(glm(wopred$IsNight ~ wopred$Disturbance)) # prey response to human prese
 
 # Binomial Counts and Proportions: Wrangling and GLMs ####
 
-prey <- subset(new_19, Common_Name == "White-tailed Deer")
+prey <- subset(raw2019, Common_Name == "White-tailed Deer")
 binomial <- prey %>%
   group_by(Site_Name) %>%
   summarize(Prop_Noct = mean(IsNight)) # Calculate binomial proportions for each site
@@ -148,7 +148,7 @@ prey <- dplyr::select(prey, -Date_Time, -IsNight, -Count, -Altitude) # get rid o
 prey <- unique(prey) # Remove duplicated rows so there's only one row per camera
 
 # creating binomial counts and proportions for predator now
-pred <- subset(new_19, Common_Name == "Puma")
+pred <- subset(raw2019, Common_Name == "Puma")
 binomial <- pred %>%
   group_by(Site_Name) %>%
   summarize(Prop_Noct = mean(IsNight))
@@ -189,15 +189,18 @@ summary(glm(wopred$Prop_Noct ~ wopred$Disturbance)) # prey response to human pre
 
 # Different Metrics for Human Activity ####
 ## Humans/trapping day/camera
-
-
+# group by site, filter for humans, summarize number of humans per site, for each site divide by number of survey days
 
 ## Human there in last 24 hours? yes/no
 
 
-
 ## Time since last human
 
+
+## Distance to closest road
+
+
+## Human density, county population
 
 
 
