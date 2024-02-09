@@ -114,6 +114,8 @@ library(sf)
 
 # let's do this again with the correct data
 library(raster)
+library(sp)
+library(terra)
 
 full_raster <- rast("/Users/mmercer3/Downloads/ml-hfi_v1_2019.tif.crdownload")
 max(full_raster)
@@ -135,3 +137,7 @@ colnames(new_19)[12] <- "Disturbance"
 # all done! new_19 now has the deployment, observation, day/night binary, and human disturbance data for 2019!
 
 write.csv(new_19, "2019.csv", row.names=FALSE)
+
+# POTENTIAL PROBLEM: why are the observations and merged dataframes the same up until this point:
+obs_2019[11636, ]
+all_2019[11636, ]
