@@ -18,11 +18,11 @@ withpred <- subset(prey, Pred_Present == 1)
 wopred <- subset(prey, Pred_Present == 0)
 
 # glms
-summary(glm(IsNight ~ Disturbance + (1|Year), data = pred)) # predator response to human presence
-summary(glm(IsNight ~ Disturbance + (1|Year), data = withpred)) # prey response to human presence with predators around
-summary(glm(IsNight ~ Disturbance + (1|Year), data = wopred)) # prey response to human presence without predators around
+summary(glm(IsNight ~ Disturbance + (1 | Year), data = pred)) # predator response to human presence
+summary(glm(IsNight ~ Disturbance + (1 | Year), data = withpred)) # prey response to human presence with predators around
+summary(glm(IsNight ~ Disturbance + (1 | Year), data = wopred)) # prey response to human presence without predators around
 
-# isn't working?? review with Ellen
+# PROBLEM it's pulling up NAs when I use year as a random effect ugh
 
 # 2019:
 # No effect for puma. Or for deer when puma present.

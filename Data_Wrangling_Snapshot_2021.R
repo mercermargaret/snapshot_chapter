@@ -8,7 +8,7 @@ library(suncalc)
 obs_2021 <- read.csv("ssusa_2021_sequences.csv")
 dep_2021 <- read.csv("ssusa_2021_deployments.csv")
 
-left_joined_21 <- merge(obs_2021, dep_2021, by = "deployment_id", all.x = TRUE)
+left_joined_21 <- left_join(obs_2021, dep_2021, by = "deployment_id")
 all_2021 <- left_joined_21[, c("subproject_name", "deployment_id", "start_date", "end_date",  "latitude", "longitude", "start_time", "species_name", "common_name", "group_size")] #"subproject_name" is comparable to "array" in 2019 and 2020 data
 
 # subtract start date from end date to get "Survey_Days" into ONE column, rather than two

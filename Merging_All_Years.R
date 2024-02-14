@@ -3,6 +3,9 @@
 # January 24, 2024
 
 library(dplyr)
+library(tidyr)
+
+# !!! When the csv is getting read in, it's turning the 00:00 times into BLANKS!
 
 # import and combine all dataframes
 raw2019 <- read.csv("2019.csv")
@@ -29,17 +32,15 @@ regex <- paste(bad, collapse = "|")
 all_years$Species_Name <- trimws(sub(regex, "", all_years$Species_Name))
 # add unique number for each row
 all_years$record_ID <- c(1:965331)
-all_years <- select(all_years, ID, Array:Year)
-#write csv
+all_years <- dplyr::select(all_years, record_ID, Array:Year)
+# change Survey_Days "0"s to "1" (it was out a part of a day, not really ZERO days)
+all_years$Survey_Days <- replace(all_years$Survey_Days, all_years$Survey_Days == 0, 1)
+
+# split date and time
+all_years <- separate(all_years, Date_Time, c("Date", "Time"), sep = " ")
+# cool that's great except there are 1095 NAs; why is time missing on some of them?? Because something about converting the times in the wrangling code turns 00:00 into NAs.
+# so that's cool, but 2020 has WAY too many 00:00s, and the altitude is not the same for all of them (some are showing as daytime altitudes! ugh)
+
+# write csv
 write.csv(all_years, "all_years.csv", row.names=FALSE)
-
-# 2019 has 661 dates with missing times
-# 2020 has no dates with missing times
-# 2021 has 1 date with missing time
-# 2022 has 433 dates with missing times
-# ugh
-# ok it corresponds to the ones where I had to convert the time;
-# 2020 and 2021 already had the dates in the correct format so I didn't have to convert.
-# So for some reason the 00:00 times are registering correctly for those, but turning into NAs for 2019 and 2022
-
 

@@ -9,7 +9,7 @@ dep_2019 <- read.csv("SNAPSHOT_USA_2019_deployments.csv")
 ## merge deployment and observation data
 library(dplyr)
 
-left_joined_19 <- merge(obs_2019, dep_2019, by = "Site_Name", all.x = TRUE)
+left_joined_19 <- left_join(obs_2019, dep_2019, by = "Site_Name") # maybe try left join and see if it does something different
 all_2019 <- left_joined_19[, c("Camera_Trap_Array.x", "Site_Name", "Survey_Days", "Latitude.x", "Longitude.x", "Begin_Time", "Species_Name", "Common_Name", "Count")]
 # Ok now we've included only the columns we want.
 
@@ -137,7 +137,3 @@ colnames(new_19)[12] <- "Disturbance"
 # all done! new_19 now has the deployment, observation, day/night binary, and human disturbance data for 2019!
 
 write.csv(new_19, "2019.csv", row.names=FALSE)
-
-# POTENTIAL PROBLEM: why are the observations and merged dataframes the same up until this point:
-obs_2019[11636, ]
-all_2019[11636, ]

@@ -8,15 +8,14 @@ library(suncalc)
 obs_2022 <- read.csv("updated_2022_sequences.csv")
 dep_2022 <- read.csv("updated_2022_deployments.csv")
 
-left_joined_22 <- merge(obs_2022, dep_2022, by = "deployment_id", all.x = TRUE)
+left_joined_22 <- left_join(obs_2022, dep_2022, by = "deployment_id")
 all_2022 <- left_joined_22[, c("subproject_name", "deployment_id", "survey_days",  "latitude", "longitude", "start_time", "genus", "species", "common_name", "group_size")] #"subproject_name" is comparable to "array" in 2019 and 2020 data
 
 # put genus and species together to make a "species_name" column
 all_2022$Species_Name <- paste(all_2022$genus, all_2022$species, sep = " ")
 # if Species_Name is empty, replace it with common_name
 all_2022$Species_Name <- ifelse(all_2022$Species_Name == "   ", all_2022$common_name, all_2022$Species_Name)
-all_2022 <- select(all_2022, -genus, -species)
-## from here down has not been edited or checked that it works on 2022 dataset
+all_2022 <- dplyr::select(all_2022, -genus, -species)
 
 colnames(all_2022)[4] <- "lat"
 colnames(all_2022)[5] <- "lon"
@@ -34,7 +33,7 @@ sun_position <- getSunlightPosition(
 
 all_2022['Altitude'] = sun_position$altitude
 
-all_2022 <- all_2022[, c("Array", "Site_Name", "survey_days", "lat", "lon", "date", "Species_Name", "common_name", "group_size", "Altitude")]
+all_2022 <- all_2022[, c("subproject_name", "deployment_id", "survey_days", "lat", "lon", "date", "Species_Name", "common_name", "group_size", "Altitude")]
 
 colnames(all_2022)[1] <- "Array"
 colnames(all_2022)[2] <- "Site_Name"

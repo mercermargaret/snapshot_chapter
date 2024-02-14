@@ -9,40 +9,40 @@ install.packages("overlap")
 library(dplyr)
 library(overlap)
 
-data <- read.csv("all_years.csv")
+data <- read.csv("2019.csv")
 
 ## convert times to radians
 
 datetime <- as.POSIXct(data$Date_Time, format = "%Y-%m-%d %H:%M:%S")
 sum(is.na(datetime))
-## RIGHT here, 661 values are getting turned into NAs
 which(is.na(datetime))
 # --> they don't have times, just dates. BUT the altitudes are there. Why??
 # whatever. for now we'll just ignore the NAs.
-# PROBLEM: how do I get rid of NAs in this situation?
+datetime <- na.omit(datetime)
 
 hour <- as.numeric(format(datetime, "%H"))
 minute <- as.numeric(format(datetime, "%M"))
 time_radians <- 2 * pi * ((hour + minute / 60) / 24)
+# how come when I remove NAs, the puma graph is the only one that works, and it looks completely different from before??
 
 # density plot for humans
 time_radians[data$Species_Name == 'Homo sapiens'] %>% 
-  densityPlot(rug=TRUE)
+  densityPlot(rug=TRUE, adjust = 1)
 
 # density plot for predators
 time_radians[data$Species_Name == 'Puma concolor'] %>% 
-  densityPlot(rug=TRUE)
+  densityPlot(rug=TRUE, adjust = 1)
 
 # density plot for prey
 time_radians[data$Species_Name == 'Odocoileus hemionus'] %>% 
-  densityPlot(rug=TRUE)
+  densityPlot(rug=TRUE, adjust = 1)
 
 # plot pred and prey
 pred <- time_radians[data$Species_Name == 'Puma concolor']
 prey <- time_radians[data$Species_Name == 'Odocoileus hemionus']
 
 overlapPlot(pred, prey)
-legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n')
+legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n', adjust = 1)
 
 ## Code humans/trapping day/camera
 # create new column with 1 for human or vehicle
@@ -50,7 +50,8 @@ data$Human <- ifelse(data$Species_Name == "Homo sapiens" | data$Species_Name == 
 Humans_Per_Camera <- data %>% filter(Human == 1) %>%
   group_by(Site_Name) %>%
   summarise(Humans_Per_Camera = n())
-data <- merge(data, Humans_Per_Camera, by = "Site_Name")
+data <- left_join(data, Humans_Per_Camera, by = "Site_Name") %>%
+  mutate(Humans_Per_Camera = tidyr::replace_na(Humans_Per_Camera, 0)) # replace nas with 0
 data$Humans_Per_Camera_Per_Day <- data$Humans_Per_Camera/data$Survey_Days
 
 # visualize data to help determine what values to designate as "high" and "low" human activity
@@ -75,6 +76,7 @@ datetime <- as.POSIXct(low_dist$Date_Time, format = "%Y-%m-%d %H:%M:%S")
 hour <- as.numeric(format(datetime, "%H"))  # Extract hour (24-hour format)
 minute <- as.numeric(format(datetime, "%M"))  # Extract minute
 time_radians <- 2 * pi * ((hour + minute / 60) / 24)
+time_radians <- na.omit(time_radians) # remove NAs for now
 
 # plot pred and prey for low disturbance
 low_pred <- time_radians[low_dist$Species_Name == 'Puma concolor']
@@ -102,5 +104,3 @@ high_prey <- time_radians[high_dist$Species_Name == 'Odocoileus hemionus']
 
 overlapPlot(high_pred, high_prey)
 legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n')
-
-# PROBLEM: how come when I split it into high and low, there's more NAs than before??

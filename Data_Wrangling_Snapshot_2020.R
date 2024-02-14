@@ -12,7 +12,7 @@ dep_2020 <- read.csv("SNAPSHOT_USA_2020_deployments.csv")
 ## all over again, with 2020 data
 # not all have deployment IDs, so had to merge by site name!
 
-left_joined_20 <- merge(obs_2020, dep_2020, by = "Site_Name", all.x = TRUE)
+left_joined_20 <- left_join(obs_2020, dep_2020, by = "Site_Name")
 all_2020 <- left_joined_20[, c("Camera_Trap_Array.x", "Site_Name", "Survey_Days", "Latitude", "Longitude", "Begin.Time", "Species_Name", "Common_Name", "Count")]
 
 colnames(all_2020)[4] <- "lat"
