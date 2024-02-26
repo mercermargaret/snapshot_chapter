@@ -5,8 +5,6 @@
 library(dplyr)
 library(tidyr)
 
-# !!! When the csv is getting read in, it's turning the 00:00 times into BLANKS!
-
 # import and combine all dataframes
 raw2019 <- read.csv("2019.csv")
 raw2020 <- read.csv("2020.csv")
@@ -38,8 +36,14 @@ all_years$Survey_Days <- replace(all_years$Survey_Days, all_years$Survey_Days ==
 
 # split date and time
 all_years <- separate(all_years, Date_Time, c("Date", "Time"), sep = " ")
-# cool that's great except there are 1095 NAs; why is time missing on some of them?? Because something about converting the times in the wrangling code turns 00:00 into NAs.
-# so that's cool, but 2020 has WAY too many 00:00s, and the altitude is not the same for all of them (some are showing as daytime altitudes! ugh)
+# time_na <- filter(all_years, is.na(Time))
+# na_rows <- filter(all_years, record_ID %in% time_na$record_ID)
+# test <- filter(all_2019, Site_Name == "MN_Forest_Itasca_County_12")
+
+all_years$Time[is.na(all_years$Time)] <- "00:00:00"
+sum(is.na(all_years$Time))
+
+
 
 # write csv
 write.csv(all_years, "all_years.csv", row.names=FALSE)

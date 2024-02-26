@@ -3,6 +3,7 @@
 # January 2024
 
 data <- read.csv("all_years.csv")
+library(lme4)
 library(dplyr)
 
 species_counts <- table(data$Common_Name)
@@ -18,9 +19,9 @@ withpred <- subset(prey, Pred_Present == 1)
 wopred <- subset(prey, Pred_Present == 0)
 
 # glms
-summary(glm(IsNight ~ Disturbance + (1 | Year), data = pred)) # predator response to human presence
-summary(glm(IsNight ~ Disturbance + (1 | Year), data = withpred)) # prey response to human presence with predators around
-summary(glm(IsNight ~ Disturbance + (1 | Year), data = wopred)) # prey response to human presence without predators around
+summary(glmer(IsNight ~ Disturbance + (1 | Year), data = pred, family = binomial)) # predator response to human presence
+summary(glmer(IsNight ~ Disturbance + (1 | Year), data = withpred, family = binomial)) # prey response to human presence with predators around
+summary(glmer(IsNight ~ Disturbance + (1 | Year), data = wopred, family = binomial)) # prey response to human presence without predators around
 
 # PROBLEM it's pulling up NAs when I use year as a random effect ugh
 
@@ -33,4 +34,3 @@ summary(glm(IsNight ~ Disturbance + (1 | Year), data = wopred)) # prey response 
 
 # all years:
 # 
-
