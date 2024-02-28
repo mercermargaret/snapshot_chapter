@@ -13,7 +13,7 @@ library(forcats)
 
 data <- read.csv("2021.csv")
 
-data <- separate(data, Date_Time, c("Date", "Time"), sep = " ")
+data <- separate(data, Local_Date_Time, c("Date", "Time"), sep = " ")
 
 ggplot(data, aes(x = Time, y = Altitude)) +
   geom_point()

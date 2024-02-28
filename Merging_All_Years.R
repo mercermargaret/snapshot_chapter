@@ -34,15 +34,11 @@ all_years <- dplyr::select(all_years, record_ID, Array:Year)
 # change Survey_Days "0"s to "1" (it was out a part of a day, not really ZERO days)
 all_years$Survey_Days <- replace(all_years$Survey_Days, all_years$Survey_Days == 0, 1)
 
-# split date and time
-all_years <- separate(all_years, Date_Time, c("Date", "Time"), sep = " ")
-# time_na <- filter(all_years, is.na(Time))
-# na_rows <- filter(all_years, record_ID %in% time_na$record_ID)
-# test <- filter(all_2019, Site_Name == "MN_Forest_Itasca_County_12")
-
-all_years$Time[is.na(all_years$Time)] <- "00:00:00"
-sum(is.na(all_years$Time))
-
+# the code below is no longer necessary since I'm getting rid of the 00:00s in the individual wrangling documents now
+# # split date and time
+# all_years <- separate(all_years, Date_Time, c("Date", "Time"), sep = " ")
+# all_years$Time[is.na(all_years$Time)] <- "00:00:00"
+# sum(is.na(all_years$Time))
 
 
 # write csv

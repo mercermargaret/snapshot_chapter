@@ -11,6 +11,7 @@ library(overlap)
 
 data <- read.csv("all_years.csv")
 
+data <- separate(data, Local_Date_Time, c("Date", "Time"), sep = " ")
 
 ## Code humans/trapping day/camera
 # create new column with 1 for human or vehicle
@@ -25,15 +26,14 @@ data$Humans_Per_Camera_Per_Day <- data$Humans_Per_Camera/data$Survey_Days
 
 ## Convert time into radians
 time <- as.POSIXct(data$Time, format = "%H:%M:%S")
-
 # Extract hours, minutes, and seconds
 hours <- as.numeric(format(time, "%H"))
 minutes <- as.numeric(format(time, "%M"))
 seconds <- as.numeric(format(time, "%S"))
-
 # Convert time to radians
 time_radians <- 2 * pi * ((hours + minutes / 60 + seconds / 3600) / 24)
 
+## plot stuff
 # density plot for humans
 time_radians[data$Species_Name == 'Homo sapiens'] %>% 
   densityPlot(rug=TRUE, adjust = 1)
@@ -43,12 +43,12 @@ time_radians[data$Species_Name == 'Puma concolor'] %>%
   densityPlot(rug=TRUE, adjust = 1)
 
 # density plot for prey
-time_radians[data$Species_Name == 'Odocoileus hemionus'] %>% 
+time_radians[data$Species_Name == 'Odocoileus virginianus'] %>% 
   densityPlot(rug=TRUE, adjust = 1)
 
 # plot pred and prey
 pred <- time_radians[data$Species_Name == 'Puma concolor']
-prey <- time_radians[data$Species_Name == 'Odocoileus hemionus']
+prey <- time_radians[data$Species_Name == 'Odocoileus virginianus']
 
 overlapPlot(pred, prey)
 legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n')
@@ -59,7 +59,7 @@ legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n')
 # hist(log(pred$Humans_Per_Camera_Per_Day))
 # median(pred$Humans_Per_Camera_Per_Day)
 # 
-# prey <- subset(data, Species_Name == "Odocoileus hemionus")
+# prey <- subset(data, Species_Name == "Odocoileus virginianus")
 # hist(prey$Humans_Per_Camera_Per_Day)
 # hist(log(prey$Humans_Per_Camera_Per_Day))
 # median(prey$Humans_Per_Camera_Per_Day)
@@ -83,7 +83,7 @@ time_radians <- 2 * pi * ((hours + minutes / 60 + seconds / 3600) / 24)
 
 # plot pred and prey for low disturbance
 low_pred <- time_radians[low_dist$Species_Name == 'Puma concolor']
-low_prey <- time_radians[low_dist$Species_Name == 'Odocoileus hemionus']
+low_prey <- time_radians[low_dist$Species_Name == 'Odocoileus virginianus']
 
 overlapPlot(low_pred, low_prey)
 legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n')
@@ -108,7 +108,7 @@ time_radians <- 2 * pi * ((hours + minutes / 60 + seconds / 3600) / 24)
 
 # plot pred and prey for high disturbance
 high_pred <- time_radians[high_dist$Species_Name == 'Puma concolor']
-high_prey <- time_radians[high_dist$Species_Name == 'Odocoileus hemionus']
+high_prey <- time_radians[high_dist$Species_Name == 'Odocoileus virginianus']
 
 overlapPlot(high_pred, high_prey)
 legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n')

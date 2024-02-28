@@ -70,7 +70,7 @@ colnames(all_2020)[4] <- "Latitude"
 colnames(all_2020)[5] <- "Longitude"
 colnames(all_2020)[11] <- "UTC_Date_Time"
 
-all_2020$IsNight <- ifelse(all_2020$Altitude < 0, 1, 0)
+all_2020$Is_Night <- ifelse(all_2020$Altitude < 0, 1, 0)
 
 
 full_raster <- rast("/Users/mmercer3/Downloads/ml-hfi_v1_2019.tif.crdownload")
