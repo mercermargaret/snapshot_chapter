@@ -7,6 +7,10 @@ library(sf)
 library(terra)
 library(tidyverse)
 
+# do this once I've extracted all the individual species ranges I want
+# rm(ranges)
+# gc()
+
 # get range data
 ranges <- st_read('data/MAMMALS_TERRESTRIAL_ONLY')
 head(ranges)
@@ -17,8 +21,8 @@ ranges
 # files back into R when I need them
 
 # subset
-whiterange <- terra::subset(ranges, ranges$sci_name == "Odocoileus virginianus")
-pumarange <- terra::subset(ranges, ranges$sci_name == "Puma concolor")
+whiterange <- st_make_valid(terra::subset(ranges, ranges$sci_name == "Odocoileus virginianus"))
+pumarange <- st_make_valid(terra::subset(ranges, ranges$sci_name == "Puma concolor"))
 # mulerange <- terra::subset(ranges, ranges$sci_name == "Odocoileus hemionus")
 
 # now overlap
@@ -32,7 +36,7 @@ wpoverlap <- st_intersection(whiterange, pumarange)
 # Assuming df is your dataframe with 'latitude' and 'longitude' columns
 # Convert df to an sf object
 dataframe <- read_csv("data/all_years.csv")
-points_sf <- st_as_sf(dataframe, coords = c("Longitude", "Latitude"), crs = st_crs(ranges))
+points_sf <- st_make_valid(st_as_sf(dataframe, coords = c("Longitude", "Latitude"), crs = st_crs(whiterange)))
 
 # Perform the point-in-polygon test
 inside <- st_within(points_sf, wpoverlap, sparse = FALSE)
@@ -44,33 +48,14 @@ inside <- st_within(points_sf, wpoverlap, sparse = FALSE)
 # Loop 9 is not valid: Edge 1151 is degenerate (duplicate vertex)
 
 # Extract rows from df that are inside the polygon
-df_inside <- dataframe[which(inside[,1]),]
+df_inside <- dataframe[which(inside),]
 
 # df_inside now contains only the rows where coordinates fall inside the polygon
 
+# now make df_inside spatial
+spatial_inside <- st_make_valid(st_as_sf(df_inside, coords = c("Longitude", "Latitude"), crs = st_crs(whiterange)))
 
-
-
-# make a shape file of where the two ranges of interest overlap, then see where THAT overlaps with my lat/long
-
-# this was all from what AI told me
-# # subset
-# whiterange <- terra::subset(ranges, ranges$sci_name == "Odocoileus virginianus")
-# pumarange <- terra::subset(ranges, ranges$sci_name == "Puma concolor")
-# 
-# # get lat long data
-# data <- read_csv("data/all_years.csv")
-# prey <- subset(data, Species_Name == "Odocoileus virginianus")
-# pred <- subset(data, Species_Name == "Puma concolor")
-# 
-# df_white_sf <- st_as_sf(prey, coords = c("Longitude", "Latitude"), crs = 4326)
-# df_puma_sf <- st_as_sf(pred, coords = c("Longitude", "Latitude"), crs = 4326)
-# 
-# whiterange <- st_transform(whiterange, st_crs(df_white_sf))
-# pumarange <- st_transform(pumarange, st_crs(df_puma_sf))
-
-
-# data visualization ####
+# data visualization
 library(ggplot2)
 ggplot() +
   geom_sf(data = whiterange, size = 1.5, color = "black", fill = "#8E518D") +
@@ -84,13 +69,22 @@ ggplot() +
 
 # cool!!!!
 
-# same map
 ggplot() +
   geom_sf(data = whiterange, size = 1.5, color = "black", fill = "#5DD9C1", alpha = 0.5) +
   geom_sf(data = pumarange, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
   geom_sf(data = wpoverlap[1,], size = 1.5, color = "black", fill = "#690375") +
   ggtitle("Puma/Whitetail Overlap") +
-  geom_sf(data = points_sf) +
+  geom_sf(data = spatial_inside) +
   coord_sf()
 
 
+# cut down original range data to a smaller, more manageable dataset
+ranges <- ranges[ranges$order_!="CHIROPTERA",]
+ranges <- ranges[ranges$order_!="PRIMATES",]
+ranges <- ranges[ranges$order_!="AFROSORICIDA",]
+ranges <- ranges[ranges$order_!="EULIPOTYPHLA",]
+ranges <- ranges[ranges$order_!="HYRACOIDEA",]
+ranges <- ranges[ranges$order_!="TUBULIDENTATA",]
+ranges <- ranges[ranges$order_!="MONOTREMATA",]
+
+st_write(ranges, 'data/POSSIBLY_USEFUL_MAMMALS/ranges.shp')
