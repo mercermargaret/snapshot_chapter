@@ -11,7 +11,7 @@ library(terra)
 # Range Subsetting ####
 
 # get range data
-ranges <- st_read('data/POSSIBLY_USEFUL_MAMMALS')
+ranges <- st_read('../data_too_big/POSSIBLY_USEFUL_MAMMALS')
 
 # subset
 prey_range <- st_make_valid(terra::subset(ranges, ranges$sci_name == "Alces alces"))
@@ -27,7 +27,7 @@ pred_range_unified <- st_make_valid(st_union(pred_range))
 range_overlap <- st_intersection(prey_range, pred_range_unified, dimension="polygon")
 
 # Convert df to an sf object
-data <- read_csv("data/all_years.csv")
+data <- read_csv("../data_too_big/all_years.csv")
 points_sf <- st_make_valid(st_as_sf(data, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 # Perform the point-in-polygon test

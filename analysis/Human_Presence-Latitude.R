@@ -4,7 +4,7 @@
 
 library(tidyverse)
 
-data <- read_csv("data/all_years.csv")
+data <- read_csv("../data_too_big/all_years.csv")
 
 plot(data$Humans_Per_Camera_Per_Day ~ data$Latitude)
 

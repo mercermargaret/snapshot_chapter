@@ -8,7 +8,7 @@ library(tidyverse)
 library(overlap)
 
 
-data <- read_csv("data/all_years.csv")
+data <- read_csv("../data_too_big/all_years.csv")
 
 
 # ## what if i only want to include prey in areas where predators are present?

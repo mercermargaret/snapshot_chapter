@@ -12,7 +12,7 @@ library(tidyverse)
 # gc()
 
 # get range data
-ranges <- st_read('data/MAMMALS_TERRESTRIAL_ONLY')
+ranges <- st_read('../data_too_big/MAMMALS_TERRESTRIAL_ONLY')
 head(ranges)
 ranges
 
@@ -87,4 +87,4 @@ ranges <- ranges[ranges$order_!="HYRACOIDEA",]
 ranges <- ranges[ranges$order_!="TUBULIDENTATA",]
 ranges <- ranges[ranges$order_!="MONOTREMATA",]
 
-st_write(ranges, 'data/POSSIBLY_USEFUL_MAMMALS/ranges.shp')
+st_write(ranges, '..data_too_big/POSSIBLY_USEFUL_MAMMALS/ranges.shp')

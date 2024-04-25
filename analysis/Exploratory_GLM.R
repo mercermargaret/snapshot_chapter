@@ -2,7 +2,7 @@
 # Margaret Mercer
 # Dec 14, 2023
 
-raw2019 <- read.csv("2019.csv")
+raw2019 <- read.csv("data/2019.csv")
 options(digits = 3)
 library(dplyr)
 

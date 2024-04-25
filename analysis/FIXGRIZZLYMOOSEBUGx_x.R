@@ -8,7 +8,7 @@ library(terra)
 # ok so the PROBLEM is that the BEAR range is split? And so we have to combine it?? and THAT makes it so it doesn't work :')
 
 # get range data
-ranges <- st_read('data/POSSIBLY_USEFUL_MAMMALS')
+ranges <- st_read('../data_too_big/POSSIBLY_USEFUL_MAMMALS')
 
 # subset
 prey_range <- st_make_valid(terra::subset(ranges, ranges$sci_name == "Alces alces"))

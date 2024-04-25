@@ -12,7 +12,7 @@ library(terra)
 # Range Subsetting ####
 
 # get range data
-ranges <- st_read('data/POSSIBLY_USEFUL_MAMMALS')
+ranges <- st_read('../data_too_big/POSSIBLY_USEFUL_MAMMALS')
 
 # make a shape file for each species I'm interested in
 # subset in R, write shape file into folder I want it in, then read those shape 
@@ -30,7 +30,7 @@ gc()
 range_overlap <- st_intersection(prey_range, pred_range)
 
 # Convert df to an sf object
-data <- read_csv("data/all_years.csv")
+data <- read_csv("../data_too_big/all_years.csv")
 points_sf <- st_make_valid(st_as_sf(data, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 # Perform the point-in-polygon test

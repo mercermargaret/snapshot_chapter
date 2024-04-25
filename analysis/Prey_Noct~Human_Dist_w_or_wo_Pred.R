@@ -2,7 +2,7 @@
 # Margaret Mercer
 # January 2024
 
-data <- read.csv("all_years.csv")
+data <- read_csv("../data_too_big/all_years.csv")
 library(lme4)
 library(dplyr)
 

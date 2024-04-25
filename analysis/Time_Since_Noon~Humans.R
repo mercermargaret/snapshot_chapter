@@ -5,7 +5,7 @@
 
 library(tidyverse)
 
-data <- read_csv("data/all_years.csv")
+data <- read_csv("../data_too_big/all_years.csv")
 
 data <- data %>% mutate("Abs_Diff_From_Noon" = abs(Difference_From_Noon))
 
