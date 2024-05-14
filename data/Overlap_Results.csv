@@ -1,0 +1,23 @@
+Predator_Scientific,Predator,Prey_Scientific,Prey,Overlap_Low,Overlap_High,Difference,p-value,Trend
+Puma concolor,Puma,Odocoileus virginianus,Whitetail Deer,0.85,0.84,-0.01,0.05,decreasing
+Puma concolor,Puma,Odocoileus hemionus,Mule Deer,0.84,0.76,-0.08,<<0.01,decreasing
+Puma concolor,Puma,Cervus canadensis,Elk,0.78,0.61,-0.17,<<0.01,decreasing
+Puma concolor,Puma,Alces alces,Moose,0.82,0.41,-0.41,<<0.01,decreasing
+Canis lupus,Gray Wolf,Odocoileus virginianus,Whitetail Deer,0.86,0.78,-0.08,<<0.01,decreasing
+Canis lupus,Gray Wolf,Odocoileus hemionus,Mule Deer,0.64,0.65,0.01,0.05,increasing
+Canis lupus,Gray Wolf,Cervus canadensis,Elk,0.77,0.72,-0.05,<<0.01,decreasing
+Canis lupus,Gray Wolf,Alces alces,Moose,0.77,0.72,-0.05,<<0.01,decreasing
+Ursus arctos,Grizzly Bear,Odocoileus virginianus,Whitetail Deer,0.77,0.69,-0.08,<<0.01,decreasing
+Ursus arctos,Grizzly Bear,Odocoileus hemionus,Mule Deer,0.72,0.64,-0.08,<<0.01,decreasing
+Ursus arctos,Grizzly Bear,Cervus canadensis,Elk,0.83,0.46,-0.37,<<0.01,decreasing
+Ursus arctos,Grizzly Bear,Alces alces,Moose,0.73,0.43,-0.3,<<0.01,decreasing
+Ursus americanus,Black Bear,Odocoileus virginianus,Whitetail Deer,0.82,0.86,0.04,<<0.01,increasing
+Ursus americanus,Black Bear,Odocoileus hemionus,Mule Deer,0.85,0.75,-0.1,<<0.01,decreasing
+Ursus americanus,Black Bear,Cervus canadensis,Elk,0.79,0.78,-0.01,0.05,decreasing
+Ursus americanus,Black Bear,Alces alces,Moose,0.87,0.67,-0.2,<<0.01,decreasing
+Canis latrans,Coyote,Odocoileus virginianus,Whitetail Deer,0.81,0.75,-0.06,<<0.01,decreasing
+Canis latrans,Coyote,Odocoileus hemionus,Mule Deer,0.79,0.87,0.08,<<0.01,increasing
+Canis latrans,Coyote,Lepus americanus,Snowshoe Hare,0.73,0.73,0,0.4,equal
+Canis latrans,Coyote,Lepus townsendii,Whitetailed Jackrabbit,0.74,0.76,0.02,<<0.01,increasing
+Canis latrans,Coyote,Lepus californicus,Blacktailed Jackrabbit,0.81,0.79,-0.02,<<0.01,decreasing
+Canis latrans,Coyote,Sylvilagus sp.,Cottontail,0.87,0.87,0,0.2,equal
