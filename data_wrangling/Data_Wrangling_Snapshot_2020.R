@@ -7,9 +7,11 @@ library(dplyr)
 library(suncalc)
 library(terra)
 library(sf)
+library(lutz)
+library(doParallel)
 
-obs_2020 <- read.csv("SNAPSHOT_USA_2020_observations.csv")
-dep_2020 <- read.csv("SNAPSHOT_USA_2020_deployments.csv")
+obs_2020 <- read.csv("data/SNAPSHOT_USA_2020_observations.csv")
+dep_2020 <- read.csv("data/SNAPSHOT_USA_2020_deployments.csv")
 
 ## all over again, with 2020 data
 # not all have deployment IDs, so had to merge by site name!
@@ -41,13 +43,16 @@ all_2020 <- all_2020 %>%
 all_2020 <- unite(all_2020, Local_Date_Time, c("Date", "Time"), sep = " ") # unite to see if it fixed it?
 all_2020$Local_Date_Time <- as.POSIXct(all_2020$Local_Date_Time)
 
-# for loop to create a time_utc column. took about 15 minutes
-for(i in 1:nrow(all_2020)) {
+# fix formatting of date times
+ncores <- parallel::detectCores() - 2
+doParallel::registerDoParallel(ncores)
+all_2020$time_utc <- foreach::foreach(i = 1:length(all_2020$Site_Name), .combine = c) %dopar% {
   x <- ymd_hms(all_2020$Local_Date_Time[i], tz = all_2020$Time_Zone[i])
   x <- with_tz(x, tzone = "UTC")
-  all_2020$time_utc[i] <- as.character(x)
+  as.character(x)
 }
-all_2020$time_utc <- ymd_hms(all_2020$time_utc)
+doParallel::stopImplicitCluster()
+
 
 sum(is.na(all_2020$time_utc))
 

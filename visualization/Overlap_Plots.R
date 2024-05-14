@@ -10,7 +10,7 @@ library(dplyr)
 library(tidyr)
 library(overlap)
 
-data <- read.csv("all_years.csv")
+data <- read.csv("../data_too_big/all_years.csv")
 
 data <- separate(data, Local_Date_Time, c("Date", "Time"), sep = " ")
 

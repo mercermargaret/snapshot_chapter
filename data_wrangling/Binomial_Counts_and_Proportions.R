@@ -2,20 +2,22 @@
 # Margaret Mercer
 # January 2024
 
-data <- read.csv("all_years.csv")
+data <- read.csv("../data_too_big/all_years.csv")
 library(dplyr)
 
 
 prey <- subset(data, Common_Name == "White-tailed Deer")
 binomial <- prey %>%
   group_by(Site_Name) %>%
-  summarize(Prop_Noct = mean(IsNight)) # Calculate binomial proportions for each site
+  summarize(Prop_Noct = mean(Is_Night)) # Calculate binomial proportions for each site
 counts <- prey %>%
   group_by(Site_Name) %>%
-  summarize(Night_Obs = sum(IsNight == 1),
+  summarize(Night_Obs = sum(Is_Night == 1),
             Total_Obs = n()) # Create columns for #nightobservations/site and total#observations/site.
 counts_props <- merge(counts, binomial, by = "Site_Name") # merge together. now we have a dataframe with each site, the total night observations, total observations, and the proportion of the two.
 prey <- merge(prey, counts_props, by = "Site_Name") # cool. now we'll merge that back into the dataframe with all prey observations
+
+plot(prey$Prop_Noct ~ log(prey$Humans_Per_Camera_Per_Day))
 
 # This is all commented out because it was a different way of creating the reduced dataframe but it didn't preserve all the original columns
 # dist <- prey %>%

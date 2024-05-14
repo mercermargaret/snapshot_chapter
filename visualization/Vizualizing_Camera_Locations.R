@@ -1,0 +1,165 @@
+# Visualizing Camera Locations
+# Margaret Mercer
+# May 1, 2024
+
+library(tidyverse)
+library(ggplot2)
+library(sf)
+library(rnaturalearthdata)
+library(rnaturalearth)
+library(tigris)
+library(grid)
+library(usmap)
+
+# load and format camera trap data
+cameras <- read_csv("data/cameras.csv")
+cameras$Year <- as.character(cameras$Year) # do this so when we color the points by year, it doesn't think it's a continuous gradient
+points_sf <- st_as_sf(cameras, coords = c("Longitude", "Latitude"),
+                       crs = 4326)
+
+# Load states data from Natural Earth
+usa <- ne_states(country = "united states of america", returnclass = "sf")
+
+# Move Alaska and Hawaii below the contiguous US while keeping alaska to scale
+# you can have "position" set to "below" or "outside" BUT you have to change BOTH line 34 AND line 41! I personally like "below" just a bit better
+new_usa <- tigris::shift_geometry(
+  usa,
+  geoid_column = NULL,
+  preserve_area = TRUE,
+  position = "below"
+)
+
+new_cameras <- tigris::shift_geometry(
+  points_sf,
+  geoid_column = NULL,
+  preserve_area = TRUE,
+  position = "below"
+)
+
+# plotting camera locations
+ggplot() +
+  geom_sf(data = new_usa, fill = "white", color = "black") +
+  geom_sf(data = new_cameras, color = "red", size = 1) +
+  geom_sf(data = new, color = "pop_per_area") +
+  theme_void() +
+  theme(legend.position = "none") +
+  ggtitle("Camera Trap Locations")
+
+
+# subset map
+mini <- ggplot(data = usa) +
+  geom_sf(data = new_usa, fill = "white", color = "black") +
+  geom_sf(data = new_cameras, color = "blue", size = 2) +
+  coord_sf(xlim = c(-124.2075, -124.185), ylim = c(40.692, 40.705), expand = FALSE) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks = element_blank())
+mini
+
+# make it a grob
+mini_grob <- ggplotGrob(mini)
+
+map + 
+  annotation_custom(grob = mini_grob, 
+                    xmin = -120, xmax = -120, 
+                    ymin = 38, ymax = 38)
+
+# put them together
+ggplot() +
+  coord_equal(xlim = c(0, 28), ylim = c(0, 20), expand = FALSE) +
+  annotation_custom(ggplotGrob(map), xmin = 0, xmax = 20, ymin = 0, ymax = 20) +
+  annotation_custom(ggplotGrob(mini), xmin = 20, xmax = 28, ymin = 11.25, ymax = 19) +
+  theme_void()
+
+
+
+# color locations  by year
+ggplot(data = new_cameras, aes(color = Year)) +
+  geom_sf(data = new_usa, fill = "white", color = "black") +
+  geom_sf(size = 1) +
+  theme_bw() +
+  ggtitle("Camera Trap Locations By Year")
+
+
+
+
+
+
+
+# Not much of a visual difference here because many of them are within the same array
+# # map humans high vs humans low
+# # low disturbance
+# low <- filter(cameras, Humans_Per_Camera_Per_Day < median(cameras$Humans_Per_Camera_Per_Day))
+# 
+# low$Year <- as.character(low$Year) # do this so when we color the points by year, it doesn't think it's a continuous gradient
+# low_sf <- st_as_sf(low, coords = c("Longitude", "Latitude"),
+#                       crs = 4326)
+# 
+# new_low <- tigris::shift_geometry(
+#   low_sf,
+#   geoid_column = NULL,
+#   preserve_area = TRUE,
+#   position = "below"
+# )
+# 
+# 
+# ggplot(data = new_low, aes(color = Year)) +
+#   geom_sf(data = new_usa, fill = "white", color = "black") +
+#   geom_sf(size = 1) +
+#   theme_void() +
+#   ggtitle("Low Human Disturbance: Camera Trap Locations By Year")
+# 
+# 
+# # high disturbance
+# high <- filter(cameras, Humans_Per_Camera_Per_Day >= median(cameras$Humans_Per_Camera_Per_Day))
+# 
+# high$Year <- as.character(high$Year) # do this so when we color the points by year, it doesn't think it's a continuous gradient
+# high_sf <- st_as_sf(high, coords = c("Longitude", "Latitude"),
+#                    crs = 4326)
+# 
+# new_high <- tigris::shift_geometry(
+#   high_sf,
+#   geoid_column = NULL,
+#   preserve_area = TRUE,
+#   position = "below"
+# )
+# 
+# ggplot(data = new_high, aes(color = Year)) +
+#   geom_sf(data = new_usa, fill = "white", color = "black") +
+#   geom_sf(size = 1) +
+#   theme_void() +
+#   ggtitle("High Human Disturbance: Camera Trap Locations By Year")
+
+
+
+
+# lets plot counties
+
+
+plot_usmap(regions = "counties") + 
+  labs(title = "U.S. counties",
+       subtitle = "This is a blank map of the United States.") + 
+  theme(panel.background=element_blank())
+
+plot_usmap(data = countypop, values = "pop_2022", color = NA) + 
+  scale_fill_continuous(low = "white", high = "red", name = "Population", label = scales::comma) + 
+  labs(title = "New England Region", subtitle = "Population in New England Counties in 2022") +
+  theme(legend.justification = "right")
+
+# Color maps with data
+plot_usmap(data = new, values = "pop_per_area")
+
+# get population per square mile
+countyinfo <- read_tsv("../../../Downloads/2022_Gaz_counties_national.txt")
+countyinfo$area <- countyinfo$ALAND_SQMI + countyinfo$AWATER_SQMI
+countyinfo$fips <- countyinfo$GEOID
+countypop <- countypop
+new <- left_join(countypop, countyinfo, by = "fips")
+new <- select(new, fips, abbr, county, pop_2022, area)
+new$pop_per_area <- new$pop_2022/new$area
+
+plot_usmap(data = new, values = "pop_per_area") +
+  geom_sf(data = new_usa, fill = "white", color = "black")
+  

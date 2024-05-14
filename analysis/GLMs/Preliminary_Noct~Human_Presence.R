@@ -121,6 +121,8 @@ species <- subset(data, Common_Name == "Puma")
 
 summary(glmer(Is_Night ~ Humans_Per_Camera_Per_Day + (1 | Year), data = species, family = binomial))
 
+plot(species$Is_Night~log(species$Humans_Per_Camera_Per_Day))
+
 # Humans_Per_Camera_Per_Day     0.8771     0.4779   1.835  0.06649 .
 
 # Wolf ####

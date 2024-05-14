@@ -14,7 +14,7 @@ raw2019$Year <- c(2019)
 raw2020$Year <- c(2020)
 raw2021$Year <- c(2021)
 raw2022$Year <- c(2022)
-joined <- full_join(raw2019, raw2020)
+joined <- full_join(raw2019, raw2020) # here is where ALL the NAs show up in Is_Night from 2020. The Is_Nights were FINE until this point :')
 joined <- full_join(joined, raw2021)
 all_years <- full_join(joined, raw2022)
 
