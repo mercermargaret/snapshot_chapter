@@ -45,37 +45,38 @@ ggplot() +
   theme(legend.position = "none") +
   ggtitle("Camera Trap Locations")
 
-
-# subset map
-mini <- ggplot(data = usa) +
-  geom_sf(data = new_usa, fill = "white", color = "black") +
-  geom_sf(data = new_cameras, color = "blue", size = 2) +
-  coord_sf(xlim = c(-124.2075, -124.185), ylim = c(40.692, 40.705), expand = FALSE) +
-  theme_bw() +
-  theme(legend.position = "none",
-        axis.text.y = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks = element_blank())
-mini
-
-# make it a grob
-mini_grob <- ggplotGrob(mini)
-
-map + 
-  annotation_custom(grob = mini_grob, 
-                    xmin = -120, xmax = -120, 
-                    ymin = 38, ymax = 38)
-
-# put them together
-ggplot() +
-  coord_equal(xlim = c(0, 28), ylim = c(0, 20), expand = FALSE) +
-  annotation_custom(ggplotGrob(map), xmin = 0, xmax = 20, ymin = 0, ymax = 20) +
-  annotation_custom(ggplotGrob(mini), xmin = 20, xmax = 28, ymin = 11.25, ymax = 19) +
-  theme_void()
+# # the following is code to create an inset zooming in on a little piece of the map to show an array. Upon further consideration, I don't think it's a priority
+# # subset map
+# mini <- ggplot(data = usa) +
+#   geom_sf(data = new_usa, fill = "white", color = "black") +
+#   geom_sf(data = new_cameras, color = "blue", size = 2) +
+#   coord_sf(xlim = c(-124.2075, -124.185), ylim = c(40.692, 40.705), expand = FALSE) +
+#   theme_bw() +
+#   theme(legend.position = "none",
+#         axis.text.y = element_blank(),
+#         axis.text.x = element_blank(),
+#         axis.ticks = element_blank())
+# mini
+# 
+# # make it a grob
+# mini_grob <- ggplotGrob(mini)
+# 
+# map + 
+#   annotation_custom(grob = mini_grob, 
+#                     xmin = -120, xmax = -120, 
+#                     ymin = 38, ymax = 38)
+# 
+# # put them together
+# ggplot() +
+#   coord_equal(xlim = c(0, 28), ylim = c(0, 20), expand = FALSE) +
+#   annotation_custom(ggplotGrob(map), xmin = 0, xmax = 20, ymin = 0, ymax = 20) +
+#   annotation_custom(ggplotGrob(mini), xmin = 20, xmax = 28, ymin = 11.25, ymax = 19) +
+#   theme_void()
 
 
 
 # color locations  by year
+# (not sure if I care about this)
 ggplot(data = new_cameras, aes(color = Year)) +
   geom_sf(data = new_usa, fill = "white", color = "black") +
   geom_sf(size = 1) +
@@ -84,12 +85,8 @@ ggplot(data = new_cameras, aes(color = Year)) +
 
 
 
-
-
-
-
-# Not much of a visual difference here because many of them are within the same array
 # # map humans high vs humans low
+# Not much of a visual difference here because many of them are within the same array
 # # low disturbance
 # low <- filter(cameras, Humans_Per_Camera_Per_Day < median(cameras$Humans_Per_Camera_Per_Day))
 # 
@@ -135,8 +132,7 @@ ggplot(data = new_cameras, aes(color = Year)) +
 
 
 
-# lets plot counties
-
+# lets plot county populations
 
 plot_usmap(regions = "counties") + 
   labs(title = "U.S. counties",
@@ -160,6 +156,67 @@ new <- left_join(countypop, countyinfo, by = "fips")
 new <- select(new, fips, abbr, county, pop_2022, area)
 new$pop_per_area <- new$pop_2022/new$area
 
-plot_usmap(data = new, values = "pop_per_area") +
-  geom_sf(data = new_usa, fill = "white", color = "black")
-  
+plot_usmap(data = new, values = "pop_per_area")
+
+
+# The following code is from ChatGPT and didn't work
+# # Define the bins
+# bins <- c(0, 1, 20, 88, 500, 2000, Inf)
+# 
+# # Define the corresponding colors for each bin
+# colors <- c("white", "lightblue", "lightgreen", "yellow", "orange", "red")
+# 
+# # Create a function to assign colors based on the bins
+# assign_color <- function(value) {
+#   color <- colors[findInterval(value, bins)]
+#   return(color)
+# }
+# 
+# # Plot the US map with county populations colored according to the specified bins
+# plot_usmap(data = new, values = "pop_per_area", color = assign_color) +
+#   scale_fill_identity() +  # Ensure the legend matches the specified colors
+#   labs(title = "County Populations by Area", fill = "Population") +
+#   theme(legend.position = "right") +  # Adjust legend position
+#   guides(fill = guide_legend(title = "Population Bins"))  # Customize legend title
+# 
+# # Add legend
+# add_legend("Population Bins", colors = colors, values = bins)
+
+
+
+# I don't know why this doesn't work. It's getting stuck when I try to color counties by the "color" column (line 205)
+# Define the bins and corresponding colors
+bins <- c(0, 1, 20, 88, 500, 2000, Inf)
+colors <- c("white", "lightblue", "lightgreen", "yellow", "orange", "red")
+
+# Create a function to assign colors based on the bins
+assign_color <- function(value) {
+  color <- colors[findInterval(value, bins)]
+  return(color)
+}
+
+# Apply color assignment function to your data
+new$color <- sapply(new$pop_per_area, assign_color)
+color_column <- new$color
+pops <- new$pop_per_area
+
+# Plot the US map with county populations colored 
+# according to the specified bins
+plot_usmap(data = new, values = "pop_per_area", color = NA, fill = new$color) +
+  scale_fill_identity() +  # Ensure the legend matches the specified colors
+  labs(title = "County Populations by Area", fill = "Population") +
+  theme(legend.position = "right") +  # Adjust legend position
+  guides(fill = guide_legend(title = "Population Bins", override.aes = list(color = colors)))  # Customize legend title and colors
+add_legend("Population Bins", colors = colors, values = bins)
+
+# ERROR!!!!!
+# ! Problem while setting up geom aesthetics.
+# ℹ Error occurred in the 1st layer.
+# Caused by error in `check_aesthetics()`:
+#   ! Aesthetics must be either length 1 or the same as the data (3144).
+# ✖ Fix the following mappings: `fill`.
+
+
+
+# ALSO this is gonna be a problem when I go to map the points onto the counties, because these counties aren't an sf. I got the US maps from different "places"
+
