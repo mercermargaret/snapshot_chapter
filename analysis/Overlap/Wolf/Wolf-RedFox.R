@@ -24,6 +24,21 @@ sf_use_s2(FALSE)
 range_overlap <- st_intersection(prey_range, pred_range)
 st_is_valid(range_overlap, reason=TRUE)
 
+# let's mess with range_overlap until it gets normal again x_x
+# rebuild ( didn't fix it )
+# range_overlap <- st_make_valid(range_overlap)
+# 
+# # simplify?
+# range_overlap <- st_union(range_overlap)
+
+# if s2_rebuild fails
+range_overlap <- st_transform(range_overlap, crs=9822) # transform object to projected coordinates
+st_crs(range_overlap)$units # check units - should be meters
+range_overlap <- st_buffer(range_overlap, 1) # if meters, buffer by 1 m
+range_overlap <- st_transform(range_overlap, crs=4326) # transform back to original CRS
+range_overlap <- st_union(range_overlap) # merge again (this takes forever but does work eventually)
+s2::s2_rebuild(range_overlap) # rebuild again
+
 # Convert df to an sf object
 data <- read_csv("../data_too_big/all_years.csv")
 points_sf <- st_make_valid(st_as_sf(data, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
@@ -36,6 +51,8 @@ inside <- st_within(points_sf, range_overlap, sparse = FALSE)
 # Error in wk_handle.wk_wkb(wkb, s2_geography_writer(oriented = oriented, 
 # Loop 0 is not valid: Edge 31787 crosses edge 31793
 
+# SOMETHING's off with the range overlap object. The other objects and the spatial points are fine and normal
+
 # Extract rows from df that are inside the polygon
 df_inside <- data[which(inside[,1]),]
 
@@ -45,18 +62,23 @@ df_inside <- data[which(inside[,1]),]
 spatial_inside <- st_make_valid(st_as_sf(df_inside, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 # double check that this works by visualizing on map
-ggplot() +
-  geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
-  geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
-  geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
-  ggtitle("Predator/Prey Overlap") +
-  geom_sf(data = spatial_inside) +
-  coord_sf()
+# ggplot() +
+#   geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
+#   geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
+#   geom_sf(data = range_overlap, size = 1.5, color = "black", fill = "#690375") +
+#   ggtitle("Predator/Prey Overlap") +
+#   geom_sf(data = spatial_inside) +
+#   coord_sf()
 
 # Overlap Analysis ####
 
+# subset to the two species
+pair <- filter(df_inside, Species_Name == 'Canis lupus' | Species_Name == 'Vulpes vulpes')
+# find median and assign to an object
+median <- median(pair$Humans_Per_Camera_Per_Day)
+
 # filter to low human disturbance
-low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median(data$Humans_Per_Camera_Per_Day))
+low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median)
 
 # convert time into radians
 time <- as.POSIXct(low_dist$Local_Time, format = "%H:%M:%S")
@@ -88,7 +110,7 @@ bootCI(overlap_low, bootstrap_low, conf = 0.95)
 
 ## plot pred and prey overlap for HIGH disturbance
 
-high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median(data$Humans_Per_Camera_Per_Day))
+high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median)
 
 # convert time into radians
 time <- as.POSIXct(high_dist$Local_Time, format = "%H:%M:%S")
@@ -128,3 +150,11 @@ hist(bootstrap_low)
 hist(bootstrap_high)
 
 # t test
+# data:  bootstrap_low and bootstrap_high
+# t = 34.778, df = 398, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   0.1503347 0.1683493
+# sample estimates:
+#   mean of x mean of y 
+# 0.8019993 0.6426573

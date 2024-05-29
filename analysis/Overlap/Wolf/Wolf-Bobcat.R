@@ -43,18 +43,23 @@ df_inside <- data[which(inside[,1]),]
 spatial_inside <- st_make_valid(st_as_sf(df_inside, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 # double check that this works by visualizing on map
-ggplot() +
-  geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
-  geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
-  geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
-  ggtitle("Predator/Prey Overlap") +
-  geom_sf(data = spatial_inside) +
-  coord_sf()
+# ggplot() +
+#   geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
+#   geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
+#   geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
+#   ggtitle("Predator/Prey Overlap") +
+#   geom_sf(data = spatial_inside) +
+#   coord_sf()
 
 # Overlap Analysis ####
 
+# subset to the two species
+pair <- filter(df_inside, Species_Name == 'Canis lupus' | Species_Name == 'Lynx rufus')
+# find median and assign to an object
+median <- median(pair$Humans_Per_Camera_Per_Day)
+
 # filter to low human disturbance
-low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median(data$Humans_Per_Camera_Per_Day))
+low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median)
 
 # convert time into radians
 time <- as.POSIXct(low_dist$Local_Time, format = "%H:%M:%S")
@@ -86,7 +91,7 @@ bootCI(overlap_low, bootstrap_low, conf = 0.95)
 
 ## plot pred and prey overlap for HIGH disturbance
 
-high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median(data$Humans_Per_Camera_Per_Day))
+high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median)
 
 # convert time into radians
 time <- as.POSIXct(high_dist$Local_Time, format = "%H:%M:%S")
@@ -134,3 +139,13 @@ hist(bootstrap_high)
 # sample estimates:
 #   mean of x mean of y 
 # 0.7441487 0.4936382 
+
+# with cutoff at median of pairing
+# data:  bootstrap_low and bootstrap_high
+# t = 20.373, df = 398, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   0.1370455 0.1663201
+# sample estimates:
+#   mean of x mean of y 
+# 0.7341777 0.5824949

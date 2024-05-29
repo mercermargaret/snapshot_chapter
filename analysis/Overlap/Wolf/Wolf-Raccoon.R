@@ -53,8 +53,14 @@ ggplot() +
 
 # Overlap Analysis ####
 
+# subset to the two species
+pair <- filter(df_inside, Species_Name == 'Canis lupus' | Species_Name == 'Procyon lotor')
+# find median and assign to an object
+median <- median(pair$Humans_Per_Camera_Per_Day)
+
+
 # filter to low human disturbance
-low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median(data$Humans_Per_Camera_Per_Day))
+low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median)
 
 # convert time into radians
 time <- as.POSIXct(low_dist$Local_Time, format = "%H:%M:%S")
@@ -86,7 +92,7 @@ bootCI(overlap_low, bootstrap_low, conf = 0.95)
 
 ## plot pred and prey overlap for HIGH disturbance
 
-high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median(data$Humans_Per_Camera_Per_Day))
+high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median)
 
 # convert time into radians
 time <- as.POSIXct(high_dist$Local_Time, format = "%H:%M:%S")
@@ -134,3 +140,13 @@ hist(bootstrap_high)
 # sample estimates:
 #   mean of x mean of y 
 # 0.5079539 0.5902299 
+
+# cutoff at median of pairing
+# data:  bootstrap_low and bootstrap_high
+# t = -17.677, df = 398, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   -0.1216397 -0.0972915
+# sample estimates:
+#   mean of x mean of y 
+# 0.4970492 0.6065148
