@@ -46,18 +46,18 @@ range_overlap <- st_simplify(range_overlap, preserveTopology = FALSE, dTolerance
 pred_range <- st_simplify(pred_range, preserveTopology = FALSE, dTolerance = 1000)
 
 # double check that this works by visualizing on map
-ggplot() +
-  geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
-  geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
-  geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
-  ggtitle("Predator/Prey Overlap") +
-  geom_sf(data = spatial_inside) +
-  coord_sf()
+# ggplot() +
+#   geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
+#   geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
+#   geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
+#   ggtitle("Predator/Prey Overlap") +
+#   geom_sf(data = spatial_inside) +
+#   coord_sf()
 
 # Overlap Analysis ####
 
 # filter to low human disturbance
-low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < 0.1)
+low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median(data$Humans_Per_Camera_Per_Day))
 
 # convert time into radians
 time <- as.POSIXct(low_dist$Local_Time, format = "%H:%M:%S")
@@ -87,7 +87,7 @@ bootCI(overlap_low, bootstrap_low, conf = 0.95)
 
 ## plot pred and prey overlap for HIGH disturbance
 
-high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day > 0.1)
+high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median(data$Humans_Per_Camera_Per_Day))
 
 # convert time into radians
 time <- as.POSIXct(high_dist$Local_Time, format = "%H:%M:%S")
@@ -151,3 +151,13 @@ dev.off()
 # sample estimates:
 #   mean of x mean of y 
 # 0.7422815 0.7609327
+
+# cutoff at median
+# data:  bootstrap_low and bootstrap_high
+# t = -12.591, df = 398, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   -0.03365377 -0.02456371
+# sample estimates:
+#   mean of x mean of y 
+# 0.7446887 0.7737974 

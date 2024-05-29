@@ -43,19 +43,28 @@ spatial_inside <- st_make_valid(st_as_sf(df_inside, coords = c("Longitude", "Lat
 
 
 # double check that this works by visualizing on map
-ggplot() +
-  geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
-  geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
-  geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
-  ggtitle("Predator/Prey Overlap") +
-  geom_sf(data = spatial_inside) +
-  coord_sf()
+# ggplot() +
+#   geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
+#   geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
+#   geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
+#   ggtitle("Predator/Prey Overlap") +
+#   geom_sf(data = spatial_inside) +
+#   coord_sf()
 
 
 # Overlap Analysis ####
 
+# subset to the two species
+
+pair <- filter(df_inside, Species_Name == 'Puma concolor' | Species_Name == 'Odocoileus hemionus') 
+
+# find median and assign to an object
+
+median <- median(pair$Humans_Per_Camera_Per_Day)
+
+
 # filter to low human disturbance
-low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < 0.1)
+low_dist <- filter(pair, Humans_Per_Camera_Per_Day < median)
 
 # convert time into radians
 time <- as.POSIXct(low_dist$Local_Time, format = "%H:%M:%S")
@@ -85,7 +94,7 @@ bootCI(overlap_low, bootstrap_low, conf = 0.95)
 
 ## plot pred and prey overlap for HIGH disturbance
 
-high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day > 0.1)
+high_dist <- filter(pair, Humans_Per_Camera_Per_Day >= median)
 
 # convert time into radians
 time <- as.POSIXct(high_dist$Local_Time, format = "%H:%M:%S")
@@ -161,3 +170,23 @@ dev.off()
 # sample estimates:
 #   mean of x mean of y 
 # 0.8355367 0.7607315
+
+# with cutoff at median
+# data:  bootstrap_low and bootstrap_high
+# t = 7.6513, df = 398, p-value = 1.515e-13
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   0.01894782 0.03205167
+# sample estimates:
+#   mean of x mean of y 
+# 0.8155387 0.7900390 
+
+# with cutoff at median of pair
+# data:  bootstrap_low and bootstrap_high
+# t = 8.1335, df = 398, p-value = 5.364e-15
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   0.02194147 0.03592940
+# sample estimates:
+#   mean of x mean of y 
+# 0.8166270 0.7876916

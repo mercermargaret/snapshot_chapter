@@ -7,15 +7,11 @@ library(extrafont)
 library(tidyverse)
 library(scales)
 
-data <- read_csv("data/Overlap_Results.csv")
+data <- read_csv("data/Overlap_Results - Pred_Prey with cutoff at median.csv")
 
-data <- data[1:16,]
+# data <- data[1:16,]
 
 data$Pairing <- paste(data$Predator, data$Prey, sep = "/")
-
-# Add a new variable to specify shading groups
-data <- data %>%
-  mutate(Group = rep(1:4, each = 4))
 
 # my_colors <- c("increasing" = "darkgreen", equal = "steelblue", "decreasing" = "darkred")
 
@@ -60,5 +56,5 @@ ggplot(data, aes(x = Pairing, y = Difference,
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors)
 
-
+# idk why but when I run it with the "cutoff at median" data it puts the bears first :')
 

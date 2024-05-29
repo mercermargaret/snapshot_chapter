@@ -42,19 +42,24 @@ df_inside <- data[which(inside[,1]),]
 spatial_inside <- st_make_valid(st_as_sf(df_inside, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 # double check that this works by visualizing on map
-ggplot() +
-  geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
-  geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
-  geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
-  ggtitle("Predator/Prey Overlap") +
-  geom_sf(data = spatial_inside) +
-  coord_sf()
+# ggplot() +
+#   geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
+#   geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
+#   geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
+#   ggtitle("Predator/Prey Overlap") +
+#   geom_sf(data = spatial_inside) +
+#   coord_sf()
 
 
 # Overlap Analysis ####
 
+# subset to the two species
+pair <- filter(df_inside, Species_Name == 'Canis lupus' | Species_Name == 'Odocoileus virginianus')
+# find median and assign to an object
+median <- median(pair$Humans_Per_Camera_Per_Day)
+
 # filter to low human disturbance
-low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < 0.1)
+low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median)
 
 # convert time into radians
 time <- as.POSIXct(low_dist$Local_Time, format = "%H:%M:%S")
@@ -84,7 +89,7 @@ bootCI(overlap_low, bootstrap_low, conf = 0.95)
 
 ## plot pred and prey overlap for HIGH disturbance
 
-high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day > 0.1)
+high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median)
 
 # convert time into radians
 time <- as.POSIXct(high_dist$Local_Time, format = "%H:%M:%S")
@@ -160,3 +165,23 @@ dev.off()
 # sample estimates:
 #   mean of x mean of y 
 # 0.8652743 0.7861260 
+
+# with cutoff at median
+# data:  bootstrap_low and bootstrap_high
+# t = 14.239, df = 398, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   0.04881510 0.06445443
+# sample estimates:
+#   mean of x mean of y 
+# 0.8572228 0.8005881
+
+# with cutoff at median of pair
+# data:  bootstrap_low and bootstrap_high
+# t = 15.252, df = 398, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   0.05090358 0.06596788
+# sample estimates:
+#   mean of x mean of y 
+# 0.8622096 0.8037739

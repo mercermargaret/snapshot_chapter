@@ -10,15 +10,22 @@ library(rnaturalearth)
 library(tigris)
 library(grid)
 library(usmap)
+library(maps)
+# library(USAboundaries)
+# av <- available.packages(filters=list())
+# av[av[, "Package"] == "USAboundaries", ]
+# USAboundaries is not available anymore
+
 
 # load and format camera trap data
 cameras <- read_csv("data/cameras.csv")
 cameras$Year <- as.character(cameras$Year) # do this so when we color the points by year, it doesn't think it's a continuous gradient
 points_sf <- st_as_sf(cameras, coords = c("Longitude", "Latitude"),
-                       crs = 4326)
+                       crs = 4326) # make camera locations spatial
 
 # Load states data from Natural Earth
 usa <- ne_states(country = "united states of america", returnclass = "sf")
+
 
 # Move Alaska and Hawaii below the contiguous US while keeping alaska to scale
 # you can have "position" set to "below" or "outside" BUT you have to change BOTH line 34 AND line 41! I personally like "below" just a bit better
@@ -40,7 +47,7 @@ new_cameras <- tigris::shift_geometry(
 ggplot() +
   geom_sf(data = new_usa, fill = "white", color = "black") +
   geom_sf(data = new_cameras, color = "red", size = 1) +
-  geom_sf(data = new, color = "pop_per_area") +
+  # geom_sf(data = new, color = "pop_per_area") +
   theme_void() +
   theme(legend.position = "none") +
   ggtitle("Camera Trap Locations")
@@ -77,11 +84,11 @@ ggplot() +
 
 # color locations  by year
 # (not sure if I care about this)
-ggplot(data = new_cameras, aes(color = Year)) +
-  geom_sf(data = new_usa, fill = "white", color = "black") +
-  geom_sf(size = 1) +
-  theme_bw() +
-  ggtitle("Camera Trap Locations By Year")
+# ggplot(data = new_cameras, aes(color = Year)) +
+#   geom_sf(data = new_usa, fill = "white", color = "black") +
+#   geom_sf(size = 1) +
+#   theme_bw() +
+#   ggtitle("Camera Trap Locations By Year")
 
 
 
@@ -144,9 +151,6 @@ plot_usmap(data = countypop, values = "pop_2022", color = NA) +
   labs(title = "New England Region", subtitle = "Population in New England Counties in 2022") +
   theme(legend.justification = "right")
 
-# Color maps with data
-plot_usmap(data = new, values = "pop_per_area")
-
 # get population per square mile
 countyinfo <- read_tsv("../../../Downloads/2022_Gaz_counties_national.txt")
 countyinfo$area <- countyinfo$ALAND_SQMI + countyinfo$AWATER_SQMI
@@ -200,14 +204,16 @@ new$color <- sapply(new$pop_per_area, assign_color)
 color_column <- new$color
 pops <- new$pop_per_area
 
-# Plot the US map with county populations colored 
-# according to the specified bins
-plot_usmap(data = new, values = "pop_per_area", color = NA, fill = new$color) +
+# Plot the US map with county populations colored according to the specified bins
+# this keeps getting stuck (see error message below)
+plot_usmap(data = new, values = "pop_per_area", color = NA) +
   scale_fill_identity() +  # Ensure the legend matches the specified colors
   labs(title = "County Populations by Area", fill = "Population") +
   theme(legend.position = "right") +  # Adjust legend position
   guides(fill = guide_legend(title = "Population Bins", override.aes = list(color = colors)))  # Customize legend title and colors
 add_legend("Population Bins", colors = colors, values = bins)
+
+us_counties(map_date = NULL, resolution = c("low", "high"), states = NULL)
 
 # ERROR!!!!!
 # ! Problem while setting up geom aesthetics.
@@ -218,5 +224,12 @@ add_legend("Population Bins", colors = colors, values = bins)
 
 
 
-# ALSO this is gonna be a problem when I go to map the points onto the counties, because these counties aren't an sf. I got the US maps from different "places"
+# ALSO this is gonna be a problem when I go to map the points onto the counties,
+# because these counties aren't an sf. I got the US maps from different "places"
 
+
+# this is something I got off the internet:
+
+counties <- map_data("county")
+ggplot() + geom_polygon(data=counties, aes(x=long, y=lat, group=group),
+                         color="darkblue", fill="lightblue", linewidth = .1 )

@@ -45,18 +45,18 @@ pred_range <- st_simplify(pred_range, preserveTopology = FALSE, dTolerance = 100
 range_overlap <- st_simplify(range_overlap, preserveTopology = FALSE, dTolerance = 1000)
 
 # double check that this works by visualizing on map
-ggplot() +
-  geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
-  geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
-  geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
-  ggtitle("Predator/Prey Overlap") +
-  geom_sf(data = spatial_inside) +
-  coord_sf()
+# ggplot() +
+#   geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
+#   geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
+#   geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
+#   ggtitle("Predator/Prey Overlap") +
+#   geom_sf(data = spatial_inside) +
+#   coord_sf()
 
 # Overlap Analysis ####
 
 # filter to low human disturbance
-low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < 0.1)
+low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median(data$Humans_Per_Camera_Per_Day))
 
 # convert time into radians
 time <- as.POSIXct(low_dist$Local_Time, format = "%H:%M:%S")
@@ -86,7 +86,7 @@ bootCI(overlap_low, bootstrap_low, conf = 0.95)
 
 ## plot pred and prey overlap for HIGH disturbance
 
-high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day > 0.1)
+high_dist <- filter(df_inside, Humans_Per_Camera_Per_Day >= median(data$Humans_Per_Camera_Per_Day))
 
 # convert time into radians
 time <- as.POSIXct(high_dist$Local_Time, format = "%H:%M:%S")
@@ -150,3 +150,13 @@ dev.off()
 # sample estimates:
 #   mean of x mean of y 
 # 0.8187971 0.7505791 
+
+# cutoff at median
+# data:  bootstrap_low and bootstrap_high
+# t = 128.55, df = 398, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#   0.07580363 0.07815812
+# sample estimates:
+#   mean of x mean of y 
+# 0.8254141 0.7484332 

@@ -1,0 +1,23 @@
+Predator,Predator_Common,Prey,Prey_Common,Overlap_Low,Overlap_High,Difference,p-value,Trend
+Puma concolor,Puma,Odocoileus virginianus,Whitetail,0.839,0.865,0.026,<<0.01,increasing
+Puma concolor,Puma,Odocoileus hemionus,Mule Deer,0.825,0.779,-0.046,<<0.01,decreasing
+Puma concolor,Puma,Cervus canadensis,Elk,0.738,0.644,-0.094,<<0.01,decreasing
+Puma concolor,Puma,Alces alces,Moose,0.754,0.471,-0.283,<<0.01,decreasing
+Canis lupus,Gray Wolf,Odocoileus virginianus,Whitetail,0.894,0.804,-0.09,<<0.01,decreasing
+Canis lupus,Gray Wolf,Odocoileus hemionus,Mule Deer,0.602,0.699,0.097,<<0.01,increasing
+Canis lupus,Gray Wolf,Cervus canadensis,Elk,0.818,0.75,-0.068,<<0.01,decreasing
+Canis lupus,Gray Wolf,Alces alces,Moose,0.768,0.761,-0.007,<<0.01,decreasing
+Ursus arctos,Grizzly Bear,Odocoileus virginianus,Whitetail,0.736,0.647,-0.089,<<0.01,decreasing
+Ursus arctos,Grizzly Bear,Odocoileus hemionus,Mule Deer,0.702,0.608,-0.094,<<0.01,decreasing
+Ursus arctos,Grizzly Bear,Cervus canadensis,Elk,0.828,0.434,-0.394,<<0.01,decreasing
+Ursus arctos,Grizzly Bear,Alces alces,Moose,0.742,0.375,-0.367,<<0.01,decreasing
+Ursus americanus,Black Bear,Odocoileus virginianus,Whitetail,0.828,0.859,0.031,<<0.01,increasing
+Ursus americanus,Black Bear,Odocoileus hemionus,Mule Deer,0.877,0.748,-0.129,<<0.01,decreasing
+Ursus americanus,Black Bear,Cervus canadensis,Elk,0.785,0.828,0.043,<<0.01,increasing
+Ursus americanus,Black Bear,Alces alces,Moose,0.825,0.738,-0.087,<<0.01,decreasing
+Canis latrans,Coyote,Odocoileus virginianus,Whitetail,0.821,0.74,-0.081,<<0.01,decreasing
+Canis latrans,Coyote,Odocoileus hemionus,Mule Deer,0.788,0.857,0.069,<<0.01,increasing
+Canis latrans,Coyote,Lepus americanus,Snowshoe Hare,0.733,0.682,-0.051,<<0.01,decreasing
+Canis latrans,Coyote,Lepus townsendii,Whitetailed Jackrabbit,0.731,0.747,0.016,<<0.01,increasing
+Canis latrans,Coyote,Lepus californicus,Blacktailed Jackrabbit,0.812,0.805,-0.007,<<0.01,decreasing
+Canis latrans,Coyote,Sylvilagus sp.,Cottontail,0.874,0.868,-0.006,0.33,equal

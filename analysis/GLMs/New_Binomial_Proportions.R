@@ -8,7 +8,7 @@ library(lme4)
 
 data <- read.csv("../data_too_big/all_years.csv")
 
-species <- subset(data, Species_Name == 'Odocoileus hemionus')
+species <- subset(data, Species_Name == 'Mephitis mephitis')
 
 
 binomial <- species %>%
@@ -23,7 +23,7 @@ props <- merge(counts, binomial, by = "Site_Name") # merge together. now we have
 
 # now I want to add a "humans per camera per day" column to that (I still want only one row per camera)
 unique_species <- species %>% distinct(Site_Name, .keep_all = TRUE)
-unique_species <- unique_species %>% select(Site_Name, Humans_Per_Camera_Per_Day)
+unique_species <- unique_species %>% dplyr::select(Site_Name, Humans_Per_Camera_Per_Day)
 props_updated <- props %>% 
   left_join(unique_species, by = "Site_Name")
 
@@ -41,9 +41,10 @@ props_updated <- props %>%
 # plot(logit ~ log(props_updated$Humans_Per_Camera_Per_Day)) # this works too
 # 
 # # ugh idk why a glm won't work. I mean i know why, it doesn't like that I'm logging a 0, but idk how to fix it
-# 
-# 
-# 
+
+
+
+
 
 # what if I split it into low/high and see what proportion of occurrences are at night between the two?
 overall_noct <- sum(props_updated$Night_Obs)/sum(props_updated$Total_Obs)
@@ -53,4 +54,31 @@ high <- filter(props_updated, Humans_Per_Camera_Per_Day >= median(props_updated$
 
 low_noct <- sum(low$Night_Obs)/sum(low$Total_Obs)
 high_noct <- sum(high$Night_Obs)/sum(high$Total_Obs)
+
+successes_low <- low$Night_Obs
+total_low <- low$Total_Obs
+
+successes_high <- high$Night_Obs
+total_high <- high$Total_Obs
+
+# lets test for a difference between these
+result <- prop.test(x = c(successes_low, successes_high), n = c(total_low, total_high), conf.level = 0.95)
+print(result)
+# it said chi squared approximation may be incorrect
+
+
+n_successes_low <- sum(successes_low)
+n_total_low <- sum(total_low)
+n_failures_low <- sum(total_low) - sum(successes_low)
+
+n_successes_high <- sum(successes_high)
+n_total_high <- sum(total_high)
+n_failures_high <- sum(total_high) - sum(successes_high)
+
+table <- matrix(c(n_successes_low, n_failures_low, n_successes_high, n_failures_high), nrow = 2, byrow = TRUE)
+colnames(table) <- c("Success", "Failure")
+rownames(table) <- c("Group 1", "Group 2")
+result <- fisher.test(table)
+print(result)
+
 
