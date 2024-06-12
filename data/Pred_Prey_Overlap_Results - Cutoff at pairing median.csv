@@ -1,0 +1,19 @@
+Predator,Predator_Common,Prey,Prey_Common,Overlap_Low,Overlap_High,Difference,p-value,Trend,Prey_Type,Median_Human_Dist,n_Predator_Low,n_Predator_High,n_Prey_Low,n_Prey_High
+Puma concolor,Puma,Odocoileus virginianus,Whitetail,0.8323693,0.7929525,-0.0394168,0.07975,decreasing,herbivore,0.046875,58,149,5471,5392
+Puma concolor,Puma,Odocoileus hemionus,Mule Deer,0.8277507,0.7787861,-0.0489646,<<0.01,decreasing,herbivore,0.08064516,94,151,4899,4974
+Puma concolor,Puma,Cervus canadensis,Elk,0.760235,0.7091364,-0.0510986,<<0.01,decreasing,herbivore,0.0625,66,157,957,868
+Puma concolor,Puma,Alces alces,Moose,0.6731979,0.6157386,-0.0574593,0.0006,decreasing,herbivore,0.07142857,45,78,44,44
+Puma concolor,Puma,Lynx rufus,Bobcat,0.8451445,0.802282,-0.0428625,<<0.01,decreasing,mesocarnivore,0.09859155,114,131,314,300
+Puma concolor,Puma,Procyon lotor,Raccoon,0.6107916,0.7529319,0.1421403,<<0.01,increasing,mesocarnivore,0.4680851,140,16,271,404
+Puma concolor,Puma,Vulpes vulpes,Red Fox,0.6409749,0.8493313,0.2083564,<<0.01,increasing,mesocarnivore,0.2622951,74,136,522,1785
+Puma concolor,Puma,Mephitis mephitis,Striped Skunk,0.5319456,0.7790795,0.2471339,<<0.01,increasing,mesocarnivore,0.09090909,108,137,416,399
+Puma concolor,Puma,Canis latrans,Coyote,0.835566,0.8254164,-0.0101496,0.1944,equal,mesocarnivore,0.1125,121,124,2094,2222
+Canis lupus,Gray Wolf,Odocoileus virginianus,Whitetail,0.9064025,0.804939,-0.1014635,<<0.01,decreasing,herbivore,0.05172414,52,116,8025,8157
+Canis lupus,Gray Wolf,Odocoileus hemionus,Mule Deer,0.6326815,0.655712,0.0230305,0.4771,equal,herbivore,0.04918033,85,62,1109,1244
+Canis lupus,Gray Wolf,Cervus canadensis,Elk,0.7759172,0.7501579,-0.0257593,<<0.01,decreasing,herbivore,0.05,13,54,653,616
+Canis lupus,Gray Wolf,Alces alces,Moose,0.7681705,0.7610595,-0.007111,<<0.01,decreasing,herbivore,0.04545455,149,98,159,44
+Canis lupus,Gray Wolf,Lynx rufus,Bobcat,0.7527049,0.5581127,-0.1945922,<<0.01,decreasing,mesocarnivore,0.06666667,62,106,55,16
+Canis lupus,Gray Wolf,Procyon lotor,Raccoon,0.4540671,0.5745584,0.1204913,<<0.01,increasing,mesocarnivore,0.07894737,55,61,128,123
+Canis lupus,Gray Wolf,Vulpes vulpes,Red Fox,0.8093842,0.6230546,-0.1863296,<<0.01,decreasing,mesocarnivore,0.08823529,152,94,311,373
+Canis lupus,Gray Wolf,Mephitis mephitis,Striped Skunk,0.5355267,0.51264,-0.0228867,0.006016,decreasing,mesocarnivore,0.08510638,71,97,130,109
+Canis lupus,Gray Wolf,Canis latrans,Coyote,0.8704928,0.8324965,-0.0379963,<<0.01,decreasing,mesocarnivore,0.05,120,128,585,601

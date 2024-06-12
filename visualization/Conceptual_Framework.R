@@ -65,7 +65,8 @@ mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.y = element_blank(),
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
-        axis.line = element_blank())
+        axis.line = element_blank(),
+        plot.title = element_text(size = 10, hjust = 0.5))
 mat
 # this works great
 # 
@@ -140,7 +141,8 @@ hs <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.y = element_blank(),
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
-        axis.line = element_blank())
+        axis.line = element_blank(),
+        plot.title = element_text(size = 10, hjust = 0.5))
 hs
 
 # mutual avoidance
@@ -174,7 +176,8 @@ mav <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.y = element_blank(),
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
-        axis.line = element_blank())
+        axis.line = element_blank(),
+        plot.title = element_text(size = 10, hjust = 0.5))
 mav
 
 
@@ -209,7 +212,8 @@ pa <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.y = element_blank(),
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
-        axis.line = element_blank())
+        axis.line = element_blank(),
+        plot.title = element_text(size = 10, hjust = 0.5))
 pa
 
 # stick the four curves together
