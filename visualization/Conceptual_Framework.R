@@ -53,7 +53,7 @@ mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
   geom_line(size = 1) +
   labs(title = "Mutual Attraction Hypothesis",
        x = "x", y = "y") +
-  scale_color_manual(values = c("red", "blue", "gray")) +
+  scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
   xlim(-80, 50) +
   ylim(-900, 200) +
   theme(legend.title = element_blank()) +
@@ -129,7 +129,7 @@ hs <- ggplot(df, aes(x = x, y = y, color = parabola)) +
   geom_line(size = 1) +
   labs(title = "Human Shield Hypothesis",
        x = "x", y = "y") +
-  scale_color_manual(values = c("red", "blue", "gray")) +
+  scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
   xlim(-80, 50) +
   ylim(-900, 200) +
   theme(legend.title = element_blank()) +
@@ -164,7 +164,7 @@ mav <- ggplot(df, aes(x = x, y = y, color = parabola)) +
   geom_line(size = 1) +
   labs(title = "Mutual Avoidance Hypothesis",
        x = "x", y = "y") +
-  scale_color_manual(values = c("red", "blue", "gray")) +
+  scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
   xlim(-80, 50) +
   ylim(-900, 200) +
   theme(legend.title = element_blank()) +
@@ -200,7 +200,7 @@ pa <- ggplot(df, aes(x = x, y = y, color = parabola)) +
   geom_line(size = 1) +
   labs(title = "Predator Attraction Hypothesis",
        x = "x", y = "y") +
-  scale_color_manual(values = c("red", "blue", "gray")) +
+  scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
   xlim(-80, 50) +
   ylim(-900, 200) +
   theme(legend.title = element_blank()) +

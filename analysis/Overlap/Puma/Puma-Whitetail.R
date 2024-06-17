@@ -42,13 +42,13 @@ df_inside <- data[which(inside[,1]),]
 spatial_inside <- st_make_valid(st_as_sf(df_inside, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 # double check that this works by visualizing on map
-# ggplot() +
-#   geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
-#   geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
-#   geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
-#   ggtitle("Predator/Prey Overlap") +
-#   geom_sf(data = spatial_inside) +
-#   coord_sf()
+ggplot() +
+  geom_sf(data = prey_range, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
+  geom_sf(data = pred_range, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
+  geom_sf(data = range_overlap[1,], size = 1.5, color = "black", fill = "#690375") +
+  ggtitle("Predator/Prey Overlap") +
+  geom_sf(data = spatial_inside) +
+  coord_sf()
 
 # Overlap Analysis ####
 

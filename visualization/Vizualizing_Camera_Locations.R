@@ -276,29 +276,44 @@ countyinfo$area <- countyinfo$ALAND_SQMI + countyinfo$AWATER_SQMI
 countyinfo$fips <- countyinfo$GEOID
 countypop <- countypop
 new <- left_join(countypop, countyinfo, by = "fips")
-new <- select(new, GEOID, abbr, county, pop_2022, area)
+new <- dplyr::select(new, GEOID, abbr, county, pop_2022, area)
 new$pop_per_area <- new$pop_2022/new$area
 
+# I THINK all the following is unnecessary
+# # assign colors to counties
+# # Define the bins and corresponding colors
+# bins <- c(0, 1, 20, 88, 500, 2000, Inf)
+# colors <- c("#D9D5DA", "#B4ABB5", "#8E8290", "#68586B", "#432E46", "#301934")
+# 
+# # Create a function to assign colors based on the bins
+# assign_color <- function(value) {
+#   color <- colors[findInterval(value, bins)]
+#   return(color)
+# }
+# 
+# # Apply color assignment function to your data
+# new$color <- sapply(new$pop_per_area, assign_color)
+# 
+# bin_range <- c("< 1", "1 - 20", "20 - 88", "88 - 500", "500 - 2000", "> 2000")
+# 
+# assign_bin <- function(value) {
+#   bin_range <- bin_range[findInterval(value, bins)]
+#   return(bin_range)
+# }
+# 
+# # Apply color assignment function to your data
+# new$pop_bin <- sapply(new$pop_per_area, assign_bin)
 
-# assign colors to counties
-# Define the bins and corresponding colors
-bins <- c(0, 1, 20, 88, 500, 2000, Inf)
-colors <- c("#D9D5DA", "#B4ABB5", "#8E8290", "#68586B", "#432E46", "#301934")
+new$pop_bin <- factor(cut(new$pop_per_area, 
+                                           breaks = c(0, 1, 20, 88, 500, 2000, Inf), 
+                                           labels = c("< 1", "1 - 20", "20 - 88", "88 - 500", "500 - 2000", "> 2000")),
+                                       levels = c("< 1", "1 - 20", "20 - 88", "88 - 500", "500 - 2000", "> 2000"))
 
-# Create a function to assign colors based on the bins
-assign_color <- function(value) {
-  color <- colors[findInterval(value, bins)]
-  return(color)
-}
-
-# Apply color assignment function to your data
-new$color <- sapply(new$pop_per_area, assign_color)
 
 # Load the county data from TIGER/Line
 us_counties <- counties(cb = TRUE, class = "sf")
 us_counties <- us_counties %>% filter(STATE_NAME != "Puerto Rico") # get rid of PR (RIP)
 counties_colored <- left_join(us_counties, new, by = "GEOID")
-
 
 
 
@@ -331,12 +346,24 @@ new_counties_colored <- tigris::shift_geometry(
   position = "below"
 )
 
+bbox <- st_bbox(new_cameras)
+
+# try to get rid of white space?
+buffer <- 1000000  # Adjust this buffer as needed
+xlim <- c(bbox["xmin"] - buffer, bbox["xmax"] + buffer/3)
+ylim <- c(bbox["ymin"] - buffer, bbox["ymax"] + buffer/3)
+
 
 # plotting camera locations
 ggplot() +
-  geom_sf(data = new_counties, fill = new_counties_colored$color, color = NA) +
+  geom_sf(data = new_counties, aes(fill = new_counties_colored$pop_bin), color = NA) +
   geom_sf(data = new_usa, fill = NA, color = "black") +
   geom_sf(data = new_cameras, color = "red", size = 1) +
   theme_void() +
-  theme(legend.position = "none") +
-  ggtitle("Camera Trap Locations")
+  ggtitle("Camera Trap Locations") +
+  scale_fill_manual(values = c("< 1" = "#D9D5DA", "1 - 20" = "#B4ABB5", "20 - 88" = "#8E8290", 
+                             "88 - 500" = "#68586B", "500 - 2000" = "#432E46", "> 2000" = "#301934"),
+                  name = "Human Population per Square Mile", na.translate = FALSE) +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
+  theme(plot.title = element_text(size=22))
+
