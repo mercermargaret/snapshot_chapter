@@ -1,0 +1,19 @@
+Species,Perc_Noct_Overall,Perc_Noct_Low,Perc_Noct_High,Perc_Noct_Diff,Trend,n_Photos,n_Cameras,n_Low_Cameras,n_High_Cameras,Class
+Puma concolor,70.68,59.46,78.71,19.25,increasing,266,123,60,63,carnivore
+Canis lupis,61.29,64.62,57.63,-6.99,decreasing,248,103,51,52,carnivore
+Ursus arctos,78.69,78.22,79.74,1.52,increasing,2576,95,47,48,carnivore
+Ursus americanus,48.78,38.43,56.97,18.54,increasing,3405,785,390,395,carnivore
+Odocoileus virginianus,52.83,50.68,54.83,4.15,increasing,157594,5088,2529,2559,herbivore
+Odocoileus hemionus,54.11,49.23,56.63,7.4,increasing,13961,860,424,436,herbivore
+Cervus canadensis,52.14,57.84,45.09,-12.75,decreasing,3437,351,175,176,herbivore
+Alces alces,57.67,64.9,51.32,-13.58,decreasing,567,153,76,77,herbivore
+Canis latrans,73.17,66.92,76.89,9.97,increasing,14832,2631,1289,1342,carnivore
+Lepus americanus,95.62,94.21,97.26,3.05,increasing,1348,157,76,81,herbivore
+Lepus townsendii,99.21,98.96,99.54,0.58,equal,504,68,34,34,herbivore
+Lepus californicus,86.86,88.8,85.11,-3.69,decreasing,997,114,53,61,herbivore
+Sylvilagus sp.,81.99,81.33,82.61,1.28,increasing,14784,1207,600,607,herbivore
+Lynx rufus,62.17,59.51,64.05,4.54,increasing,2466,924,461,463,mesocarnivore
+Didelphis virginiana,98.26,97.62,98.79,1.17,increasing,13647,1791,887,904,mesocarnivore
+Procyon lotor,93.25,92.75,93.67,0.92,increasing,53407,3311,1637,1674,mesocarnivore
+Vulpes vulpes,80.56,76.9,82.43,5.53,increasing,7542,892,445,447,mesocarnivore
+Mephitis mephitis,97.28,95.77,98.6,2.83,increasing,1878,559,275,284,mesocarnivore

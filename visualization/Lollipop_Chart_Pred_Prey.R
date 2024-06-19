@@ -13,6 +13,8 @@ data$Pairing <- paste(data$Predator, data$Prey, sep = "/")
 
 data$Pairing <- factor(data$Pairing, levels = rev(unique(data$Pairing)))
 
+# data$Prey <- factor(data$Prey, levels = rev(unique(data$Prey))) # didn't help with problem when you try to add axis labels
+
 # Define custom colors
 my_colors <- c("Increase" = "darkgreen", "No Change" = "steelblue", "Decrease" = "darkred")
 
@@ -41,5 +43,7 @@ ggplot(data, aes(x = Pairing, y = Difference,
   labs(x = NULL, y = "Difference in Temporal Overlap", main = "Difference in Temporal Overlap between Predators and Prey in Low versus High Human activity") +
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
-  scale_fill_manual(values = my_colors)
+  scale_fill_manual(values = my_colors) +
+  geom_text(aes(x = Pairing, y = -.29, label = Pairing), hjust = 0, vjust = 0.5, color = "black") # Adjust position to be just inside the plot area
+
 

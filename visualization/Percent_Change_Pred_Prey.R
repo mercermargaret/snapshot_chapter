@@ -44,5 +44,7 @@ ggplot(data, aes(x = Pairing, y = Percent_Change,
   labs(x = NULL, y = "Difference in Temporal Overlap", main = "Difference in Temporal Overlap between Predators and Prey in Low versus High Human activity") +
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
-  scale_fill_manual(values = my_colors)
+  scale_fill_manual(values = my_colors) +
+  geom_text(aes(x = Prey, y = -.49, label = Prey), hjust = 0, vjust = 0.5, color = "black") # Adjust position to be just inside the plot area
+
 

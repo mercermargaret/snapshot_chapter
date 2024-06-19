@@ -11,7 +11,7 @@ data <- read_csv("data/Human_Overlap_Results - Human Overlap.csv")
 
 data$Species <- factor(data$Species, levels = rev(unique(data$Species)))
 
-data <- data[c(1, 2, 4:8, 14:18), ] # subset to only the species we want
+data <- data[c(1, 2, 5:8, 14:18), ] # subset to only the species we want
 
 # percent change column!
 data <- data %>% mutate(Percent_Change = Difference/Overlap_Low)
@@ -44,6 +44,5 @@ ggplot(data, aes(x = Species, y = Percent_Change,
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +
-  # geom_text(aes(x = -0.3, y = Percent_Change, label = Species), hjust = 1, vjust = 0.5, size = 3) +  # Adjust x position and left-justify labels
   geom_text(aes(x = Species, y = -.97, label = Species), hjust = 0, vjust = 0.5, color = "black") # Adjust position to be just inside the plot area
 
