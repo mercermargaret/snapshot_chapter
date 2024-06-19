@@ -1,0 +1,19 @@
+Species,Species_Common,Overlap_Low,Overlap_High,Difference,p-value,Trend,Type
+Puma concolor,Puma,0.42,0.32,-0.1,<<0.01,decreasing,carnivore
+Canis lupus,Gray Wolf,0.31,0.43,0.12,<<0.01,increasing,carnivore
+Ursus arctos,Grizzly Bear,0.2,0.31,0.11,<<0.01,increasing,carnivore
+Ursus americanus,Black Bear,0.48,0.48,0,0.76,equal,carnivore
+Odocoileus virginianus,Whitetail,0.39,0.47,0.08,<<0.01,increasing,herbivore
+Odocoileus hemionus,Mule Deer,0.41,0.47,0.06,<<0.01,increasing,herbivore
+Cervus canadensis,Elk,0.33,0.62,0.29,<<0.01,increasing,herbivore
+Alces alces,Moose,0.29,0.57,0.28,<<0.01,increasing,herbivore
+Canis latrans,Coyote,0.3,0.32,0.02,<<0.01,increasing,mesocarnivore
+Lepus americanus,Snowshoe Hare,0.09,0.1,0.01,<<0.01,increasing,herbivore
+Lepus townsendii,Whitetailed Jackrabbit,0.05,0.14,0.09,<<0.01,increasing,herbivore
+Lepus californicus,Blacktailed Jackrabbit,0.14,0.26,0.12,<<0.01,increasing,herbivore
+Sylvilagus sp.,Cottontail,0.19,0.26,0.07,<<0.01,increasing,herbivore
+Lynx rufus,Bobcat,0.38,0.42,0.04,<<0.01,increasing,mesocarnivore
+Didelphis virginiana,Opossum,0.056,0.094,0.038,<<0.01,increasing,mesocarnivore
+Procyon lotor,Raccoon,0.095,0.147,0.052,<<0.01,increasing,mesocarnivore
+Vulpes vulpes,Red Fox,0.247,0.268,0.021,<<0.01,increasing,mesocarnivore
+Mephitis mephitis,Striped Skunk,0.074,0.091,0.017,<<0.01,increasing,mesocarnivore
