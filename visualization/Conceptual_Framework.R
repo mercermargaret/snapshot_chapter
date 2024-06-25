@@ -6,30 +6,6 @@
 library(ggplot2)
 library(gridExtra)
 
-quadratic_fun <- function(x){
-  -(x^2)
-}
-
-# basic parabola(s)
-ggplot(data.frame(x = c(-30, 30)), aes(x = x)) +
-  stat_function(fun = quadratic_fun) + xlim(c(-20, 20)) +
-  theme_classic() +
-  theme(axis.title.y = element_blank(),
-        axis.title.x = element_blank(),
-        panel.border = element_blank(),
-        legend.position = "none",
-        axis.text.y = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_blank())
-
-
-
-
-
-
-
-
 # Define the function for an upside down parabola
 parabola <- function(x, a = -1, b = 0, c = 0) {
   return(a * (x - b)^2 + c)
@@ -39,7 +15,6 @@ parabola <- function(x, a = -1, b = 0, c = 0) {
 x_value_pred <- seq(-45, 15, length.out = 100)
 x_value_prey <- seq(-30, 30, length.out = 100)
 x_value_human <- seq(-15, 45, length.out = 100)
-
 
 # Create a data frame for the three parabolas
 df <- data.frame(
@@ -68,6 +43,7 @@ mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.line = element_blank(),
         plot.title = element_text(size = 10, hjust = 0.5))
 mat
+# change gm_line to gm_polygon, and fill = (change for different colors, NA for human)
 # this works great
 # 
 # # now we try to shade the area under the first two parabolas (pred and prey)

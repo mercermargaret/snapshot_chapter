@@ -53,36 +53,36 @@ cameras <- dplyr::select(cameras, Array:Longitude, Time_Zone, Year, Humans_Per_C
 
 
 # analysis ####
-# visualize first
-plot(cameras$Species_Per_Camera_Per_Day ~ cameras$Humans_Per_Camera_Per_Day)
-plot(log(cameras$Species_Per_Camera_Per_Day + 1) ~ log(cameras$Humans_Per_Camera_Per_Day + 1))
-ggplot(data = cameras, aes(x = Humans_Per_Camera_Per_Day, y = Species_Per_Camera_Per_Day)) +
-  geom_point() +
-  geom_smooth()
-ggplot(data = cameras, aes(x = log(Humans_Per_Camera_Per_Day + 1), y = log(Species_Per_Camera_Per_Day + 1))) +
-  geom_point() +
-  geom_smooth()
-# hm, i don't like this. its super 0 inflated, even when log transformed
-# lets see how each variable is distributed
-hist(cameras$Species_Per_Camera_Per_Day)
-hist(cameras$Humans_Per_Camera_Per_Day)
-# both are EXTREMEMLY 0 inflated
-# log transformed?
-hist(log(cameras$Species_Per_Camera_Per_Day + 1))
-hist(log(cameras$Humans_Per_Camera_Per_Day + 1))
-# still ugly
-
-# can you DOUBLE log transform it?
-hist(log(log(cameras$Species_Per_Camera_Per_Day + 1)))
-hist(log(log(cameras$Humans_Per_Camera_Per_Day + 1)))
-# well now it looks normal lollll
-# but is it even allowed?
-
-# lets do a ggplot on it
-ggplot(data = cameras, aes(x = (log(log(Humans_Per_Camera_Per_Day + 1) + 1)), y = (log(log(Species_Per_Camera_Per_Day + 1) + 1)))) +
-  geom_point() +
-  geom_smooth()
-# still nah
+# # visualize first
+# plot(cameras$Species_Per_Camera_Per_Day ~ cameras$Humans_Per_Camera_Per_Day)
+# plot(log(cameras$Species_Per_Camera_Per_Day + 1) ~ log(cameras$Humans_Per_Camera_Per_Day + 1))
+# ggplot(data = cameras, aes(x = Humans_Per_Camera_Per_Day, y = Species_Per_Camera_Per_Day)) +
+#   geom_point() +
+#   geom_smooth()
+# ggplot(data = cameras, aes(x = log(Humans_Per_Camera_Per_Day + 1), y = log(Species_Per_Camera_Per_Day + 1))) +
+#   geom_point() +
+#   geom_smooth()
+# # hm, i don't like this. its super 0 inflated, even when log transformed
+# # lets see how each variable is distributed
+# hist(cameras$Species_Per_Camera_Per_Day)
+# hist(cameras$Humans_Per_Camera_Per_Day)
+# # both are EXTREMEMLY 0 inflated
+# # log transformed?
+# hist(log(cameras$Species_Per_Camera_Per_Day + 1))
+# hist(log(cameras$Humans_Per_Camera_Per_Day + 1))
+# # still ugly
+# 
+# # can you DOUBLE log transform it?
+# hist(log(log(cameras$Species_Per_Camera_Per_Day + 1)))
+# hist(log(log(cameras$Humans_Per_Camera_Per_Day + 1)))
+# # well now it looks normal lollll
+# # but is it even allowed?
+# 
+# # lets do a ggplot on it
+# ggplot(data = cameras, aes(x = (log(log(Humans_Per_Camera_Per_Day + 1) + 1)), y = (log(log(Species_Per_Camera_Per_Day + 1) + 1)))) +
+#   geom_point() +
+#   geom_smooth()
+# # still nah
 
 
 # poisson with offset
@@ -146,4 +146,4 @@ summary(model2)
 # wolf:
 # Estimate Std. Error z value Pr(>|z|)    
 # (Intercept)            -1.5581     0.3890  -4.006 6.19e-05 ***
-#   cameras$Human_Present  -0.1665     0.4046  -0.411    0.681  
+#   cameras$Human_Present  -0.1665     0.4046  -0.411    0.681

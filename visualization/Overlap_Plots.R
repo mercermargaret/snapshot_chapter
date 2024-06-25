@@ -2,7 +2,7 @@
 # Margaret Mercer
 # February 7, 2024
 
-install.packages("overlap")
+# install.packages("overlap")
 # https://cran.r-project.org/web/packages/overlap/overlap.pdf
 # https://rdrr.io/cran/overlap/f/inst/doc/overlap.pdf
 
@@ -12,10 +12,8 @@ library(overlap)
 
 data <- read.csv("../data_too_big/all_years.csv")
 
-data <- separate(data, Local_Date_Time, c("Date", "Time"), sep = " ")
-
 ## Convert time into radians
-time <- as.POSIXct(data$Time, format = "%H:%M:%S")
+time <- as.POSIXct(data$Local_Time, format = "%H:%M:%S")
 # Extract hours, minutes, and seconds
 hours <- as.numeric(format(time, "%H"))
 minutes <- as.numeric(format(time, "%M"))

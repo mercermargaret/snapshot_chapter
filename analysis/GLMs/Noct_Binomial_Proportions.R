@@ -1,4 +1,4 @@
-# Binomial analysis
+# Binomial analysis of nocturnality
 # Margaret Mercer
 # May 2, 2024
 
@@ -21,7 +21,7 @@ counts <- species %>%
 props <- merge(counts, binomial, by = "Site_Name") # merge together. now we have a dataframe with each site, the total night observations, total observations, and the proportion of the two.
 
 
-# now I want to add a "humans per camera per day" column to that (I still want only one row per camera)
+# now I want to add "humans per camera per day" column to that (I still want only one row per camera)
 unique_species <- species %>% distinct(Site_Name, .keep_all = TRUE)
 unique_species <- unique_species %>% dplyr::select(Site_Name, Humans_Per_Camera_Per_Day)
 props_updated <- props %>% 

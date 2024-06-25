@@ -7,9 +7,9 @@ Puma concolor,Puma,Lynx rufus,Bobcat,0.8451445,0.802282,-0.0428625,<<0.01,decrea
 Puma concolor,Puma,Procyon lotor,Raccoon,0.6107916,0.7529319,0.1421403,<<0.01,increasing,mesocarnivore,0.4680851,140,16,271,404
 Puma concolor,Puma,Vulpes vulpes,Red Fox,0.6409749,0.8493313,0.2083564,<<0.01,increasing,mesocarnivore,0.2622951,74,136,522,1785
 Puma concolor,Puma,Mephitis mephitis,Striped Skunk,0.5319456,0.7790795,0.2471339,<<0.01,increasing,mesocarnivore,0.09090909,108,137,416,399
-Puma concolor,Puma,Canis latrans,Coyote,0.835566,0.8254164,-0.0101496,0.1944,equal,mesocarnivore,0.1125,121,124,2094,2222
+Puma concolor,Puma,Canis latrans,Coyote,0.835566,0.8254164,-0.0101496,0.1944,slightly decreasing,mesocarnivore,0.1125,121,124,2094,2222
 Canis lupus,Gray Wolf,Odocoileus virginianus,Whitetail,0.9064025,0.804939,-0.1014635,<<0.01,decreasing,herbivore,0.05172414,52,116,8025,8157
-Canis lupus,Gray Wolf,Odocoileus hemionus,Mule Deer,0.6326815,0.655712,0.0230305,0.4771,equal,herbivore,0.04918033,85,62,1109,1244
+Canis lupus,Gray Wolf,Odocoileus hemionus,Mule Deer,0.6326815,0.655712,0.0230305,0.4771,slightly increasing,herbivore,0.04918033,85,62,1109,1244
 Canis lupus,Gray Wolf,Cervus canadensis,Elk,0.7759172,0.7501579,-0.0257593,<<0.01,decreasing,herbivore,0.05,13,54,653,616
 Canis lupus,Gray Wolf,Alces alces,Moose,0.7681705,0.7610595,-0.007111,<<0.01,decreasing,herbivore,0.04545455,149,98,159,44
 Canis lupus,Gray Wolf,Lynx rufus,Bobcat,0.7527049,0.5581127,-0.1945922,<<0.01,decreasing,mesocarnivore,0.06666667,62,106,55,16
