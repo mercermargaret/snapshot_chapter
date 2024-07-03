@@ -33,7 +33,7 @@ ggplot(data, aes(x = Pairing, y = Difference,
   geom_rect(data = data[data$Prey_Type == "herbivore", ],
               aes(xmin = as.numeric(Pairing) - 0.5, xmax = as.numeric(Pairing) + 0.5,
                   ymin = -Inf, ymax = Inf),
-              fill = "gray", alpha = 0.5, color = NA) +
+              fill = "#E5E5E5", alpha = 0.5, color = NA) +
   geom_segment(aes(xend = Pairing, yend = 0)) +
   geom_point(shape = 21, size = 3) +
   scale_y_continuous(expand = c(0, 0), limits = c(-.30, .30), labels = percent_format()) +
@@ -49,6 +49,6 @@ ggplot(data, aes(x = Pairing, y = Difference,
   labs(x = NULL, y = "Difference in Pred/Prey Overlap", main = "Difference of Temporal Overlap Between Predators and Prey") +
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
-  scale_fill_manual(values = my_colors) # +
-  # geom_text(aes(x = Pairing, y = -.29, label = Pairing), hjust = 0, vjust = 0.5, color = "black")
+  scale_fill_manual(values = my_colors) +
+  geom_text(aes(x = Pairing, y = -.29, label = Prey), hjust = 0, vjust = 0.5, color = "black")
 

@@ -32,7 +32,7 @@ ggplot(data, aes(x = Species, y = Noct_Diff,
   geom_rect(data = data[data$Type == "herbivore", ],
             aes(xmin = as.numeric(Species) - 0.5, xmax = as.numeric(Species) + 0.5,
                 ymin = -Inf, ymax = Inf),
-            fill = "gray", alpha = 0.5, color = NA) +
+            fill = "#E5E5E5", alpha = 0.5, color = NA) +
   geom_segment(aes(xend = Species, yend = 0)) +
   geom_point(shape = 21, size = 3) +
   scale_y_continuous(expand = c(0, 0), limits = c(-.26, .26), labels = percent_format()) +

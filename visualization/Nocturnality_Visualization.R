@@ -1,4 +1,4 @@
-# visualize shift in nocturnality
+# visualize shift in nocturnality within a single species
 # Margaret Mercer
 # June 20, 2024
 
