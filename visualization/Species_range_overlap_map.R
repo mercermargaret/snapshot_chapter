@@ -136,14 +136,38 @@ new_pred <- tigris::shift_geometry(
   position = "below"
 )
 
-# and plot with alaska and hawaii in the right places:)
+# Warning message:
+#   None of your features are in Alaska, Hawaii, or Puerto Rico, so no geometries will be shifted.
+# Transforming your object's CRS to 'ESRI:102003'
+
+# this just means you need to keep the "new_usa" as the first thing you plot in the ggplot to preserve area and shape of alaska
+
+# # and plot with alaska and hawaii in the right places:)
+# ggplot() +
+#   geom_sf(data = new_usa, fill = NA, color = "black") +
+#   geom_sf(data = us_prey, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
+#   geom_sf(data = new_pred, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
+#   geom_sf(data = us_overlap, size = 1.5, color = "black", fill = "#690375", alpha = 0.5) +
+#   # geom_sf(data = spatial_inside, color = "black", size = 4) + # not sure about this line, lets just see. it lines the white with black again xD
+#   geom_sf(data = spatial_inside, color = "white", size = 3) +
+#   geom_sf(data = new_cameras, color = "black", size = 1) +
+#   ggtitle("Predator/Prey Overlap") +
+#   theme_classic() +
+#   coord_sf()
+# # ^^ white outline of black dot
+
 ggplot() +
-  geom_sf(data = new_usa, fill = NA, color = "black") +
-  geom_sf(data = us_prey, size = 1.5, color = "black", fill = "#0075C4", alpha = 0.5) +
-  geom_sf(data = new_pred, size = 1.5, color = "black", fill = "#CB429F", alpha = 0.5) +
-  geom_sf(data = us_overlap, size = 1.5, color = "black", fill = "#690375", alpha = 0.5) +
-  geom_sf(data = spatial_inside, color = "white", pch = 18, size = 3) +
-  geom_sf(data = new_cameras, color = "black", size = 1) +
+  # geom_sf(data = new_usa, fill = NA, color = NA) +  
+  # geom_sf(data = us_prey, size = 1.5, color = "#4D4D4D", fill = "#0075C4", alpha = 0.5) +
+  # geom_sf(data = new_pred, size = 1.5, color = "#4D4D4D", fill = "#CB429F", alpha = 0.5) +
+  # geom_sf(data = us_overlap, size = 1.5, color = "#4D4D4D", fill = "#690375", alpha = 0.5) +
+  # geom_sf(data = new_usa, fill = NA, color = "#4D4D4D") +
+  geom_sf(data = new_cameras, fill = alpha("black", 0.2), size = 1) +
+  # geom_sf(data = spatial_inside, fill = "white", color = "black", size = 2, shape = 21) +
   ggtitle("Predator/Prey Overlap") +
   theme_classic() +
   coord_sf()
+# ^^ black outline of white dot
+
+# pull out lat and long, and make points and plot them as points and then you can change alpha
+# also cut OUT the black dots from under the overlapped area

@@ -15,17 +15,17 @@ data$Species <- factor(data$Species, levels = rev(unique(data$Species)))
 
 
 # Define custom colors
-my_colors <- c("Increase" = "#0B5401", "Slight Increase" = "#77A87C", "No Change" = "steelblue", "Slight Decrease" = "#C67976", "Decrease" = "#8B0000")
+my_colors <- c("Increase" = "#0B5401", "Slight Increase" = "#77A87C", "No Change" = "steelblue", "Slight Decrease" = "#C67976", "Decrease" = "#8B0000", "White" = "white", "Shaded" = "#E5E5E5")
 
 # Create the lollipop chart with legend title removed and custom colors
 ggplot(data, aes(x = Species, y = Noct_Diff,
                  fill = ifelse(Trend == "increasing", "Increase",
-                               ifelse(Trend == "slightly increasing", "Slight Increase",
-                                      ifelse(Trend == "slightly decreasing", "Slight Decrease",
+                               ifelse(Trend == "slightly increasing", "Shaded",
+                                      ifelse(Trend == "slightly decreasing", "White",
                                              ifelse(Trend == "decreasing", "Decrease", "No Change")))),
                  color = ifelse(Trend == "increasing", "Increase",
-                                ifelse(Trend == "slightly increasing", "Slight Increase",
-                                       ifelse(Trend == "slightly decreasing", "Slight Decrease",
+                                ifelse(Trend == "slightly increasing", "Increase",
+                                       ifelse(Trend == "slightly decreasing", "Decrease",
                                               ifelse(Trend == "decreasing", "Decrease", "No Change"))))
 )) +
   geom_segment(aes(xend = Species, yend = 0)) +
