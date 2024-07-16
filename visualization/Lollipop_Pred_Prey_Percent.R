@@ -6,6 +6,8 @@ library(ggplot2)
 library(extrafont)
 library(tidyverse)
 library(scales)
+library(grid)
+library(png)
 
 data <- read_csv("data/Pred_Prey_Overlap_Results - Cutoff at pairing median.csv")
 

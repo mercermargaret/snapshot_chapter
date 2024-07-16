@@ -6,11 +6,12 @@ library(ggplot2)
 library(extrafont)
 library(tidyverse)
 library(scales)
+library(grid)
+library(png)
 
 data <- read_csv("data/Pred_Prey_Overlap_Results - Cutoff at pairing median.csv")
 
 data$Pairing <- paste(data$Predator, data$Prey, sep = "/")
-
 data$Pairing <- factor(data$Pairing, levels = rev(unique(data$Pairing)))
 
 # data$Prey <- factor(data$Prey, levels = rev(unique(data$Prey))) # didn't help with problem when you try to add axis labels
@@ -19,7 +20,7 @@ data$Pairing <- factor(data$Pairing, levels = rev(unique(data$Pairing)))
 my_colors <- c("Increase" = "#0B5401", "Slight Increase" = "#77A87C", "No Change" = "steelblue", "Slight Decrease" = "#C67976", "Decrease" = "#8B0000", "White" = "white", "Shaded" = "#E5E5E5")
 
 # Create the lollipop chart with legend title removed and custom colors
-ggplot(data, aes(x = Pairing, y = Difference,
+lol <- ggplot(data, aes(x = Pairing, y = Difference,
                  fill = ifelse(Trend == "increasing", "Increase",
                                ifelse(Trend == "slightly increasing", "Shaded",
                                       ifelse(Trend == "slightly decreasing", "White",
@@ -52,3 +53,11 @@ ggplot(data, aes(x = Pairing, y = Difference,
   scale_fill_manual(values = my_colors) +
   geom_text(aes(x = Pairing, y = -.48, label = Prey), hjust = 0, vjust = 0.5, color = "black") 
 
+# add animations
+puma <- readPNG("visualization/puma.png") %>% rasterGrob(interpolate=TRUE)
+wolf <- readPNG("visualization/wolf.png") %>% rasterGrob(interpolate=TRUE)
+
+
+lol +
+  annotation_custom(puma, xmin=13, xmax=17, ymin=0.25, ymax=.5) +
+  annotation_custom(wolf, xmin=3, xmax=8, ymin=0.25, ymax=.5)

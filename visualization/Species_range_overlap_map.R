@@ -24,9 +24,21 @@ sf_use_s2(FALSE)
 range_overlap <- st_intersection(prey_range, pred_range)
 st_is_valid(range_overlap, reason=TRUE)
 
-# Convert df to an sf object
+# Trim df for duplicate points
 data <- read_csv("../data_too_big/all_years.csv")
-points_sf <- st_make_valid(st_as_sf(data, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
+data_new <- data %>% mutate(across(c('Latitude', 'Longitude'), round, 3))
+trimmed <- data_new %>%
+  group_by(Array) %>%
+  slice(1) %>%
+  ungroup()
+trimmed <- trimmed %>%
+  distinct_at("Latitude", .keep_all = TRUE)
+trimmed <- trimmed %>%
+  distinct_at("Longitude", .keep_all = TRUE)
+# trimming like above cuts off the point in florida
+
+# convert to an sf object
+points_sf <- st_make_valid(st_as_sf(trimmed, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 sf_use_s2(TRUE)
 
@@ -34,7 +46,7 @@ sf_use_s2(TRUE)
 inside <- st_within(points_sf, range_overlap, sparse = FALSE)
 
 # Extract rows from df that are inside the polygon
-df_inside <- data[which(inside[,1]),]
+df_inside <- trimmed[which(inside[,1]),]
 
 # df_inside now contains only the rows where coordinates fall inside the polygon
 
@@ -113,6 +125,14 @@ us_overlap <- st_intersection(range_overlap, usa)
 #   theme_classic() +
 #   coord_sf()
 
+# Invert the logical matrix to find points OUTSIDE the polygon
+outside <- !inside[,1]
+
+# Extract rows from df that are outside the polygon
+df_outside <- trimmed[which(outside),]
+
+# make it spatial
+spatial_outside <- st_make_valid(st_as_sf(df_outside, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 # now fix alaska and hawaii
 new_usa <- tigris::shift_geometry(
@@ -131,6 +151,13 @@ new_cameras <- tigris::shift_geometry(
 
 new_pred <- tigris::shift_geometry(
   us_pred,
+  geoid_column = NULL,
+  preserve_area = TRUE,
+  position = "below"
+)
+
+new_outside <- tigris::shift_geometry(
+  spatial_outside,
   geoid_column = NULL,
   preserve_area = TRUE,
   position = "below"
@@ -157,17 +184,15 @@ new_pred <- tigris::shift_geometry(
 # # ^^ white outline of black dot
 
 ggplot() +
-  # geom_sf(data = new_usa, fill = NA, color = NA) +  
-  # geom_sf(data = us_prey, size = 1.5, color = "#4D4D4D", fill = "#0075C4", alpha = 0.5) +
-  # geom_sf(data = new_pred, size = 1.5, color = "#4D4D4D", fill = "#CB429F", alpha = 0.5) +
-  # geom_sf(data = us_overlap, size = 1.5, color = "#4D4D4D", fill = "#690375", alpha = 0.5) +
-  # geom_sf(data = new_usa, fill = NA, color = "#4D4D4D") +
-  geom_sf(data = new_cameras, fill = alpha("black", 0.2), size = 1) +
-  # geom_sf(data = spatial_inside, fill = "white", color = "black", size = 2, shape = 21) +
+  geom_sf(data = new_usa, fill = NA, color = NA) +  
+  geom_sf(data = us_prey, size = 1.5, color = "#4D4D4D", fill = "#0075C4", alpha = 0.5) +
+  geom_sf(data = new_pred, size = 1.5, color = "#4D4D4D", fill = "#CB429F", alpha = 0.5) +
+  geom_sf(data = us_overlap, size = 1.5, color = "#4D4D4D", fill = "#690375", alpha = 0.5) +
+  geom_sf(data = new_usa, fill = NA, color = "#4D4D4D") +
+  geom_sf(data = new_outside, fill = "black", color = "black", size = 2, alpha = 0.5) +
+  geom_sf(data = spatial_inside, fill = "white", color = "black", size = 3, shape = 21, alpha = 0.75) +
   ggtitle("Predator/Prey Overlap") +
   theme_classic() +
   coord_sf()
 # ^^ black outline of white dot
 
-# pull out lat and long, and make points and plot them as points and then you can change alpha
-# also cut OUT the black dots from under the overlapped area
