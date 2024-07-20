@@ -1,0 +1,13 @@
+Species,Morn_Overall,Morn_Low,Morn_High,Morn_Diff,Trend,n_Photos,n_Cameras,n_Low_Cameras,n_High_Cameras,Type,Fishers_test_p_value,Significant?
+Puma concolor,0.5263158,0.4144144,0.6064516,0.1920372,increasing,,,,,carnivore,0.002735,Yes
+Canis lupus,0.6370968,0.6076923,0.6694915,0.0617992,increasing,,,,,carnivore,0.3553,No
+Odocoileus virginianus,0.534646,0.5332576,0.5359307,0.0026731,increasing,,,,,herbivore,0.2885,No
+Odocoileus hemionus,0.5003223,0.499056,0.5009789,0.0019229,increasing,,,,,herbivore,0.8304,No
+Cervus canadensis,0.5158569,0.5410526,0.4847105,-0.0563421,decreasing,,,,,herbivore,1.11E-03,Yes
+Alces alces,0.4479718,0.445283,0.4503311,0.0050481,increasing,,,,,herbivore,0.9326,No
+Canis latrans,0.551308,0.5459303,0.5545151,0.0085848,increasing,,,,,carnivore,0.3141,No
+Lynx rufus,0.5279805,0.5307317,0.5260236,-0.0047081,decreasing,,,,,mesocarnivore,0.8379,No
+Procyon lotor,0.5867957,0.5658451,0.6043964,0.0385513,increasing,,,,,mesocarnivore,<<0.01,Yes
+Vulpes vulpes,0.5043755,0.5037328,0.5047028,0.00097,increasing,,,,,mesocarnivore,0.9418,No
+Mephitis mephitis,0.5484558,0.5062857,0.5852443,0.0789586,increasing,,,,,mesocarnivore,0.0006879,Yes
+Homo sapiens,0.3630661,0.407677,0.358276,-0.049401,decreasing,,,,,human,<<0.01,Yes

@@ -27,6 +27,8 @@ x_value_pred <- seq(-45, 15, length.out = 100)
 x_value_prey <- seq(-30, 30, length.out = 100)
 x_value_human <- seq(-15, 45, length.out = 100)
 
+
+
 # Create a data frame for the three parabolas
 df <- data.frame(
   x = rep(c(x_value_pred, x_value_prey, x_value_human)),
@@ -42,7 +44,7 @@ df <- df %>%
 
 # Create the plot using ggplot
 mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
-  geom_polygon(size = 1, fill = df$color, alpha = 0.3) +
+  geom_line(size = 1) +
   labs(title = "Mutual Attraction Hypothesis",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
@@ -54,16 +56,16 @@ mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.title.x = element_blank(),
         panel.border = element_blank(),
         legend.position = "none",
-        # axis.text.y = element_blank(),
-        # axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 10, hjust = 0.5))
+        plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
 mat
 
 mat_s <- mat + 
-  annotation_custom(hum, xmin=-50, xmax=110, ymin=-50, ymax=250) +
-  annotation_custom(pry, xmin=-97, xmax=103, ymin=20, ymax=270) +
+  annotation_custom(hum, xmin=-50, xmax=110, ymin=-50, ymax=250) + # experimenting by adding 10 to "ymax" --> did nothing
+  annotation_custom(pry, xmin=-97, xmax=103, ymin=20, ymax=270) + # then add 20 to xmax --> moved it over. ???
   annotation_custom(prd, xmin=-115, xmax=85, ymin=-0, ymax=200)
 
 # change gm_line to gm_polygon, and fill = (change for different colors, NA for human)
@@ -141,7 +143,7 @@ hs <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 10, hjust = 0.5))
+        plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
 hs
 
 hs_s <- hs + 
@@ -183,7 +185,8 @@ mav <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 10, hjust = 0.5))
+        plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+
 mav
 mav_s <- mav + 
   annotation_custom(hum, xmin=-50, xmax=110, ymin=-50, ymax=250) +
@@ -223,7 +226,7 @@ pa <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 10, hjust = 0.5))
+        plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
 pa
 
 pa_s <- pa + 
@@ -233,23 +236,53 @@ pa_s <- pa +
 
 
 # stick the four curves together
-g <- grid.arrange(pa_s, mat_s, mav_s, hs_s, ncol=2) + 
-  annotation_custom(hum, xmin=-500, xmax=500, ymin=-500, ymax=500)
+g <- grid.arrange(pa_s, mat_s, mav_s, hs_s, ncol=2)
 
+# add labels for overlap predictions
+t1 <- textGrob("Increasing 
+Overlap", x = 0.92, y = 0.75, gp = gpar(col = "darkgreen", fontsize = 8, fontface = "bold"))
+t2 <- textGrob("Decreasing 
+Overlap", x = 0.1, y = 0.75, gp = gpar(col = "darkred", fontsize = 8, fontface = "bold"))
+t3 <- textGrob("Increasing 
+Overlap", x = 0.1, y = 0.3, gp = gpar(col = "darkgreen", fontsize = 8, fontface = "bold"))
+t4 <- textGrob("Decreasing 
+Overlap", x = 0.92, y = 0.3, gp = gpar(col = "darkred", fontsize = 8, fontface = "bold"))
 
+t5 <- textGrob("Predator 
+Attraction", x = 0.5, y = 0.95, gp = gpar(col = "black", fontsize = 8))
+t6 <- textGrob("Prey 
+Attraction", x = 0.95, y = 0.5, gp = gpar(col = "black", fontsize = 8))
+t7 <- textGrob("Predator 
+Avoidance", x = 0.5, y = 0.05, gp = gpar(col = "black", fontsize = 8))
+t8 <- textGrob("Prey 
+Avoidance", x = 0.05, y = 0.5, gp = gpar(col = "black", fontsize = 8))
 
-arrow_data <- data.frame(
-  x = c(0, 0),
-  y = c(-200, 200)  # y-values are kept constant to draw a horizontal arrow
-)
+# Create a new page
+grid.newpage()
 
-# Add the double-ended arrow using geom_segment
-g + 
-  geom_line()
+# Create a larger viewport with margins
+pushViewport(viewport(layout = grid.layout(1, 1, 
+                                           widths = unit(.8, "npc") + unit(c(.8, .8), "cm"), 
+                                           heights = unit(.8, "npc") + unit(c(.8, .8), "cm"))))
 
-arrows(-100, 50, 100, 50, length = 100, angle = 30,
-       code = 2, col = "red", lty = "solid",
-       lwd = 1)
+# Create a viewport for the arranged plots with margins
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, 
+                      xscale = c(-1, 1), yscale = c(-1, 1),
+                      clip = "off"))
 
+# Draw the arranged plots
+grid.draw(g)
 
+# Pop the viewport to return to the original plotting context
+popViewport(2)
+
+# Overlay the text grob
+grid.draw(t1)
+grid.draw(t2)
+grid.draw(t3)
+grid.draw(t4)
+grid.draw(t5)
+grid.draw(t6)
+grid.draw(t7)
+grid.draw(t8)
 

@@ -1,6 +1,7 @@
 # Binomial analysis of nocturnality
 # Margaret Mercer
 # May 2, 2024
+# (visualize this in "Nocturnality_Visualization")
 
 
 library(tidyverse)
@@ -8,7 +9,7 @@ library(lme4)
 
 data <- read.csv("../data_too_big/all_years.csv")
 
-species <- subset(data, Species_Name == 'Mephitis mephitis')
+species <- subset(data, Species_Name == 'Homo sapiens')
 
 
 binomial <- species %>%
@@ -61,10 +62,10 @@ total_low <- low$Total_Obs
 successes_high <- high$Night_Obs
 total_high <- high$Total_Obs
 
-# lets test for a difference between these
-result <- prop.test(x = c(successes_low, successes_high), n = c(total_low, total_high), conf.level = 0.95)
-print(result)
-# it said chi squared approximation may be incorrect
+# # lets test for a difference between these
+# result <- prop.test(x = c(successes_low, successes_high), n = c(total_low, total_high), conf.level = 0.95)
+# print(result)
+# # it said chi squared approximation may be incorrect
 
 
 n_successes_low <- sum(successes_low)
