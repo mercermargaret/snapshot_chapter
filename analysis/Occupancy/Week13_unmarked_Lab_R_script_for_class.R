@@ -1,6 +1,4 @@
-# practice for unmarked package
-# margaret mercer (initial code provided by javan bauder)
-# july 24, 2024
+rm(list=ls()) # clean workspace.  Caution!!!!
 
 library(unmarked)
 library(AICcmodavg)
@@ -16,29 +14,59 @@ library(ggplot2)
 # Remember for survey-level covariates we need one covariate (i.e., column) per survey/visit.
 # Also note that Obs1, Obs2, and Obs3 are 4-level categorical factors. 
 
-hist <- read.csv("data/encounter_histories.csv")
-DOY <- read.csv("data/day_of_year.csv")
-survey_days <- read.csv("data/survey_days.csv")
-site_info <- read.csv("data/site_info.csv")
+data <- read.csv("data/UMoccupancy_v2.csv")
+str(data)
+head(data)
 
 # Let's z-score standardize our continuous covariates as this is generally a good idea
 # when fitting any kind of hierarchical model to help facilitate convergence
-DOY <- scale(DOY) # how do this? ah
+data$Native <- scale(data$Native)
+data$PatchSize <- scale(data$PatchSize)
+data[,grep("temp",colnames(data))] <- scale(data[,grep("temp",colnames(data))])
+data[,grep("wind",colnames(data))] <- scale(data[,grep("wind",colnames(data))])
 
 # As a first step, let's pull out the data that will inform each of the following three 
 # components of our input data for fitting models in unmarked:
-observations <- hist[,2:(length(hist) - 1)]
-DOY <- DOY[,2:(length(DOY) - 1)]
-survey_days <- survey_days[,2:(length(survey_days) - 1)] 
-# we're doing this weird math to remove the first column ("X" for some reason) and the last (Site Name)
+visits <- data[,grep("VISIT",colnames(data),ignore.case = T)]
+tail(visits)
+#  Notice that we do not have three surveys for all sites. That is totally fine and
+# unmarked can handle the missing data.
 
-site_covs <- as.data.frame(site_info[,c("Humans_Per_Camera_Per_Day")]) # do we not scale our site level covariates?
-site_covs <- site_covs %>%
-  rename(
-    humans = `site_info[, c("Humans_Per_Camera_Per_Day")]`)
+SiteCovs <- data[,c("Native","PatchSize")]
 
-obs_covs <- list(DOY = DOY,
-                 survey_days = survey_days)
+ObsCovs <- list(temp=data[,grep("temp",colnames(data),ignore.case = T)], 
+                wind=data[,grep("wind",colnames(data),ignore.case = T)], 
+                obs=data[,grep("obs",colnames(data),ignore.case = T)])
+
+# But wait, what if we think that detection might vary according to the amount of native
+# vegetation? Can we use the same covariate to model occupancy and detection? You bet.
+# All we need to do is create a data frame of a given site covariate with number of columns
+# equal to the maximum number of surveys. Each survey within a site would have the same
+# value (e.g., Native doesn't change from survey to survey).
+NativeObs <- data.frame(Native1=data$Native,Native2=data$Native,
+                        Native3=data$Native)
+
+# Also, let's select one of the observers to serve as a demonstration of how we can
+# use binary covariates and no-intercept models to model interactions. Let's pick Fred
+# because he has the most observations. Note that because we have three surveys we need three 
+# binary covariates denoting whether or not Fred was the observer. If we wanted to 
+# create binary covariates for all four observers we would need 4 x 3 columns total!
+# Aren't you glad that unmarked can handle factors instead of requiring dummy covariates!
+
+FredObs <- data.frame(Fred1=ifelse(data$Obs1=="Fred",1,0),
+                      Fred2=ifelse(data$Obs2=="Fred",1,0),
+                      Fred3=ifelse(data$Obs3=="Fred",1,0))
+
+OtherObs <- data.frame(Fred1=ifelse(data$Obs1!="Fred",1,0),
+                      Fred2=ifelse(data$Obs2!="Fred",1,0),
+                      Fred3=ifelse(data$Obs3!="Fred",1,0))
+
+ObsCovs <- list(temp=data[,grep("temp",colnames(data),ignore.case = T)], 
+                wind=data[,grep("wind",colnames(data),ignore.case = T)], 
+                obs=data[,grep("obs",colnames(data),ignore.case = T)],
+                native=NativeObs,
+                FredObs=FredObs,
+                OtherObs=OtherObs)
 
 # Create an object for model fitting -----------
 
@@ -49,13 +77,13 @@ obs_covs <- list(DOY = DOY,
 # When in doubt about what data input object to use, just use the ? to find the help
 # page for your particular model and find the associated input data object.
 
-umf <- unmarkedFrameOccu(y = observations, # Encounter history, must be a data frame or matrix
-                         siteCovs = site_covs, # Site covariates, must be a data frame
-                         obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
+javans_umf <- unmarkedFrameOccu(y = visits, # Encounter history, must be a data frame or matrix
+                         siteCovs = SiteCovs, # Site covariates, must be a data frame
+                         obsCovs = ObsCovs # Observer covariates, must be list of data frames or matrices
+                         )
 
 # Let's look at our data with the summary function
-summary(umf) # there are two NAs for humans, which should be 0s since no humans were caught on camera
-
+summary(javans_umf)
 
 # Now fit some single-season occupancy models --------------
 
@@ -66,7 +94,7 @@ summary(umf) # there are two NAs for humans, which should be 0s since no humans 
 # detection and occupancy.
 # Let's start with the dot model.
 
-m1 <- occu(~1 ~1, data = umf)
+m1 <- occu(~1 ~1, data = javans_umf)
 class(m1)
 
 # Let's examine the output
@@ -84,9 +112,9 @@ plogis(m1@estimates@estimates$state@estimates)
 backTransform(m1, 'state')
 backTransform(m1, 'det')
 
-# Now let's model occupancy as a function of humans
+# Now let's model detection as a function of wind
 
-m2 <- occu(~ 1 ~ humans, data = umf)
+m2 <- occu(~wind ~ 1, data=javans_umf)
 
 summary(m2)
 
@@ -113,8 +141,8 @@ backTransform(linearComb(m2, coefficients = c(1,0), type='det'))
 # Note that if we wanted to predict for occupancy we would change type="det" to
 # type="state" because occupancy is technically the state variable.
 
-new_data <- data.frame(wind=seq(min(as.numeric(as.matrix(umf@obsCovs$wind)),na.rm=T),
-                                max(as.numeric(as.matrix(umf@obsCovs$wind)),na.rm=T),0.1))
+new_data <- data.frame(wind=seq(min(as.numeric(as.matrix(javans_umf@obsCovs$wind)),na.rm=T),
+                                max(as.numeric(as.matrix(javans_umf@obsCovs$wind)),na.rm=T),0.1))
 new_data <- predict(m2, type = 'det', newdata = new_data, appendData=TRUE)
 head(new_data)
 
@@ -125,9 +153,9 @@ lines(new_data$wind,new_data$upper,lty=3)
 
 
 # I'm gonna practice this and predict for an occupancy variable
-m0 <- occu(~ 1 ~ Native, data=umf)
-new_data <- data.frame(Native=seq(min(as.numeric(as.matrix(umf@siteCovs$Native)),na.rm=T),
-                                  max(as.numeric(as.matrix(umf@siteCovs$Native)),na.rm=T),0.1))
+m0 <- occu(~ 1 ~ Native, data=javans_umf)
+new_data <- data.frame(Native=seq(min(as.numeric(as.matrix(javans_umf@siteCovs$Native)),na.rm=T),
+                                max(as.numeric(as.matrix(javans_umf@siteCovs$Native)),na.rm=T),0.1))
 new_data <- predict(m0, type = 'state', newdata = new_data, appendData=TRUE)
 head(new_data)
 
@@ -162,7 +190,7 @@ lines(new_data$Native,new_data$upper,lty=3)
 
 # Let's fit a global model just for illustrative purposes
 
-global_mod <- occu(~temp + wind + obs + Native ~Native + PatchSize, data = umf)
+global_mod <- occu(~temp + wind + obs + Native ~Native + PatchSize, data = javans_umf)
 
 # The AICcmodavg package we loaded at the beginning
 # of the lab contains a function that can run this test for us. 
@@ -182,10 +210,10 @@ global_MB
 # Go ahead and fit 4 more models and call them m3, m4, m5, and m6.
 # These can be any models you like, not just the ones shown here.
 
-m3 <- occu(~1 + obs ~ 1, data=umf) # whats the difference between this and not including the one before the + (like above)?
-m4 <- occu(~1 + temp ~ 1, data=umf)
-m5 <- occu(~1 + temp + wind ~ 1, data=umf)
-m6 <- occu(~1 + temp + wind + obs ~ 1, data=umf)
+m3 <- occu(~1 + obs ~ 1, data=javans_umf) # whats the difference between this and not including the one before the + (like above)?
+m4 <- occu(~1 + temp ~ 1, data=javans_umf)
+m5 <- occu(~1 + temp + wind ~ 1, data=javans_umf)
+m6 <- occu(~1 + temp + wind + obs ~ 1, data=javans_umf)
 
 # Now let's compare model fit of these models.
 # First we need to create a list of the model outputs so they can be compared
@@ -197,7 +225,7 @@ m6 <- occu(~1 + temp + wind + obs ~ 1, data=umf)
 # to see if we can model detection as a function of temperature for just one
 # observer
 
-m7 <- occu(~-1 + FredObs + OtherObs + FredObs:temp ~ 1, data=umf)
+m7 <- occu(~-1 + FredObs + OtherObs + FredObs:temp ~ 1, data=javans_umf)
 summary(m7)
 
 # We use unmarked's fitList() function to create a list of models that we can then 
@@ -221,7 +249,7 @@ aictab(ms@fits)
 aictab(ms@fits, c.hat=1.7)
 
 # Notice how our model uncertainty just increased when using QAICc
-
+  
 # Model-averaged predicted values -------------
 
 # We can also calculate model-averaged predicted occupancy and detection just
@@ -248,13 +276,13 @@ aictab(ms@fits, c.hat=1.7)
 # the relationship between detection and temperature for each observer. We can use
 # the expand.grid() function to create our newdata= data frame as follows.
 
-temp_values <- seq(min(as.numeric(as.matrix(umf@obsCovs$temp)),na.rm=T),
-                   max(as.numeric(as.matrix(umf@obsCovs$temp)),na.rm=T),0.2)
+temp_values <- seq(min(as.numeric(as.matrix(javans_umf@obsCovs$temp)),na.rm=T),
+                   max(as.numeric(as.matrix(javans_umf@obsCovs$temp)),na.rm=T),0.2)
 
 all_new_data <- expand.grid(wind=0,
                             temp=temp_values,
-                            obs=na.omit(unique(umf@obsCovs$obs))
-)
+                            obs=na.omit(unique(javans_umf@obsCovs$obs))
+                            )
 
 all_new_data
 # Notice how we now have a range of temperature values for each observer
@@ -300,19 +328,19 @@ ModAvg_Temp_plot # view plot
 # What happens if we had no over-dispersion and c.hat=1?
 
 det_pred_MA_chat1 <- modavgPred(cand.set=mod_list,
-                                modnames=names(mod_list), 
-                                newdata=all_new_data,
-                                c.hat=1,
-                                parm.type=c("detect"))
+                          modnames=names(mod_list), 
+                          newdata=all_new_data,
+                          c.hat=1,
+                          parm.type=c("detect"))
 
 plot_data_chat1 <- data.frame(est=det_pred_MA_chat1$mod.avg.pred,
-                              lower=det_pred_MA_chat1$lower.CL,
-                              upper=det_pred_MA_chat1$upper.CL,
-                              temp=all_new_data$temp,
-                              obs=all_new_data$obs)
+                        lower=det_pred_MA_chat1$lower.CL,
+                        upper=det_pred_MA_chat1$upper.CL,
+                        temp=all_new_data$temp,
+                        obs=all_new_data$obs)
 
 ModAvg_Temp_plot_chat1 <- ggplot(data=plot_data_chat1,
-                                 aes(x=temp))+
+                           aes(x=temp))+
   geom_ribbon(aes(ymin=lower,ymax=upper,fill=obs),alpha=0.1)+
   geom_line(aes(y=est,colour=obs),lwd=0.8)+
   scale_y_continuous("Probability of detection (p)",limits=c(0,1))+
@@ -390,24 +418,24 @@ Primary <- matrix(c("First","Second","Third","Fourth","Fifth"),
 # because these are our primary periods. But if we had site-level covariates or
 # observation-level covariates we would include them in siteCovs= and obsCovs=, respectively.
 
-umfRD <- unmarkedMultFrame(y=detection, 
+javans_umfRD <- unmarkedMultFrame(y=detection, 
                            obsCovs= , 
                            siteCovs= , 
                            yearlySiteCovs=list(primary=Primary),
                            numPrimary=5)
 # Let's view the data.
 
-summary(umfRD)
+summary(javans_umfRD)
 
 # So how well does the dynamic occupancy model estimate our parameters of interest?
 # Notice that we no longer have a double formula. Each parameter has its own separate 
 # formula.
 
 MS_null <- colext(psiformula = ~ 1, 
-                  gammaformula = ~ 1, 
-                  epsilonformula = ~ 1, 
-                  pformula = ~ 1, 
-                  data=umfRD)
+               gammaformula = ~ 1, 
+               epsilonformula = ~ 1, 
+               pformula = ~ 1, 
+               data=javans_umfRD)
 summary(MS_null)
 
 # how about confidence intervals on the back-transformed estimates?
@@ -429,10 +457,10 @@ backTransform(MS_null,type="det") # Detection
 # Let's refit our model with year-specific detection probability. 
 
 MS_year_p <- colext(psiformula = ~ 1, 
-                    gammaformula = ~ 1, 
-                    epsilonformula = ~ 1, 
-                    pformula = ~ primary, 
-                    data=umfRD)
+                  gammaformula = ~ 1, 
+                  epsilonformula = ~ 1, 
+                  pformula = ~ primary, 
+                  data=javans_umfRD)
 
 # Compare with AICc
 
@@ -441,7 +469,7 @@ AICc(MS_year_p)
 
 # Plot our predicted detection probabilities against the true values
 
-new_data <- data.frame(primary=as.vector(as.matrix(unique(umfRD@yearlySiteCovs))))
+new_data <- data.frame(primary=as.vector(as.matrix(unique(javans_umfRD@yearlySiteCovs))))
 new_data <- predict(MS_year_p, type = 'det', newdata = new_data, appendData=TRUE)
 new_data$Primary <- seq(1,nrow(new_data))
 head(new_data)
@@ -466,3 +494,151 @@ legend('topright',legend=c("True","Estimated"),pch=c(21,16),
 system.time(MS_occu_GOF <- mb.gof.test(MS_year_p, nsim = 100))
 
 MS_occu_GOF
+
+# N-mixture abundance model ---------------------------- 
+# so I won't use this because I don't care about abundance?
+
+# Now let's fit some N-mixture models in unmarked. We are now estimating abundance 
+# (rather than detection) as the state variable while still controlling for imperfect
+# detection. 
+
+# Let's read in the data -----------
+
+kestrelData <- read.csv("FalconData.csv")
+
+head(kestrelData)
+
+# We have three repeat visits, two observation-level covariates (Day and Temp),
+# and two site-level covariates (County and Point)
+
+# As with the occupancy models, unmarked requires our data be in a specific
+# format before fitting an N-mixture abundance model. Because we will fit our data
+# using the pcount() function, we will use the unmarkedFramePCount() function
+# to format our data.
+
+kestrel  <- unmarkedFramePCount(y =kestrelData[,grep("Visit",colnames(kestrelData))], 
+                                siteCovs = kestrelData[,c("County","Point")], 
+                                obsCovs = list(day = kestrelData[,grep("Day",colnames(kestrelData))], 
+                                               temp=kestrelData[,grep("Temp",colnames(kestrelData))])
+                                )
+summary(kestrel)
+
+# If you are an old-timey biologist, you may be interested in an index of Kestrel abundance, 
+# and you get average counts per point per visit. Let's do this using the apply function
+# remembering that "1" means we are applying our function (the mean() function in this case)
+# across rows ("2" would mean we are taking the mean across columns)
+
+MeanCounts <- apply(kestrel@y,1,mean)
+
+# and create histogram of the mean number of kestrels detected per point
+
+hist(MeanCounts, col="gray", breaks=seq(0,6,1), main="Kestrel", xlab="Detections per point")
+
+# Fit some N-mixture models --------
+
+# Now let's fit some models assuming abundance has a Poisson distribution (N-mixture model) 
+# The structure of pcount() has the detection process first and state variable second
+# as with occu() but let's start with the null model
+
+# Notice that we have a new argument, K=. K is the upper summation limit for the summation
+# over the random effects of the integrated likelihood. The default is the observed
+# maximum count (5 in this case) plus 100. So note that K=10 is much lower than we use
+# just by default. But let's see what happens.
+
+null <- pcount(~1 ~1, data = kestrel, K=10) 
+
+# Yay! you ran your first N-Mixture model, Take a look at these estimates
+null
+
+# let's increase K and see if there is any change.
+
+null2 <- pcount(~1 ~1, data = kestrel, K=100)
+null2
+
+# Were the estimates the same? What's going on? Here's a case where we aren't integrating 
+# the maximum likelihood over the entire possible range, we need our estimates to stabilize 
+# so let's try this once more.
+
+null3 <- pcount(~1 ~1, data = kestrel, K=1000)
+null3
+
+# Note the difference in time it took to run the model. 
+# However, also note there was no change in maximum likelihood estimator as indicated by AIC, 
+# so you should be fine sticking with the smaller number.  However, for some really crazy 
+# datasets, ones that are highly variable, you may find that you can't get this 
+# thing to settle down. The negative binomial is especially problematic so 
+# be very careful when running with that. It happens to be fairly unstable.
+
+# Back to the data. Let's convert our estimates back to the original scale. 
+
+# What will those scales be for each of our parameters?
+
+# We can use backTransform() because we have no covariates
+
+backTransform(null2, type="state")	
+backTransform(null2, type="det")		
+
+# Any ideas of how we could "manually" calculate these estimates using just our
+# beta estimates?
+
+# Notice how temperature is one of our observation-level covariates. What if we think that
+# detection is lower at the extreme temperature (highs and lows)? Any ideas?
+
+temp_quad <- pcount(~temp+I(temp^2) ~1, kestrel, K=50)
+
+# We can predict detection across our observed range of temperatures to see what type
+# of relationship we have.
+
+new_data <- data.frame(temp=seq(min(as.numeric(as.matrix(kestrel@obsCovs$temp)),na.rm=T),
+                                max(as.numeric(as.matrix(kestrel@obsCovs$temp)),na.rm=T),0.5))
+new_data <- predict(temp_quad, type = 'det', newdata = new_data, appendData=TRUE)
+head(new_data)
+
+plot(Predicted~temp, new_data,ylim=c(0,1),type="l",lwd=3,
+     ylab="Probability of Detection",xlab="Temperature")
+lines(new_data$temp,new_data$lower,lty=3)
+lines(new_data$temp,new_data$upper,lty=3)
+
+# Now remember how we are assuming that our true (latent) counts follow a Poisson distribution?
+# You may recall that the Poisson distribution assumes the mean is equal to the variance.
+# Turns out this often not the case with real-world count data; typically the variance
+# is greater than the mean which means that Poisson models often suffer from 
+# over-dispersion (i.e., extra-Poisson variation). One alternative is to fit our
+# N-mixture model with a Negative Binomial distribution. This can easily be done in 
+# pcount() using the mixture= argument. You can model counts using either
+# Poisson ("P"), Negative Binomial ("NB"), or Zero-Inflated Poisson ("ZIP")
+# distributions.
+# Try re-fitting the quadratic temperature model using the Negative Binomial
+# and then use AICc to compare with the Poisson model.
+
+temp_quad_NB <- pcount(~temp+I(temp^2) ~1, kestrel, K=50,
+                       mixture="NB")
+
+AICc(temp_quad)
+AICc(temp_quad_NB)
+
+# How about the parameter estimates? Are they the same?
+
+summary(temp_quad)
+summary(temp_quad_NB)
+
+# Goodness-of-fit testing for N-mixture models -----------
+
+# Just as with occupancy models, there is a function within the AICcmodavg package
+# that can run a chi-square-based GOF test for N-mixture models. The conceptual basis
+# behind this test is virtually the same as for occupancy models. So let's run some
+# simulations and see what we get. 
+
+Nmix_global <- pcount(~day + temp ~County, kestrel, K=100)
+
+system.time(Nmix_GOF <- Nmix.gof.test(Nmix_global, nsim=10))
+
+# Notice that these simulations also take some time.
+
+Nmix_GOF
+
+# Our p-value is highly non-significant and this is reflected by our low estimate
+# for c-hat confirming good model fit and no evidence of over-dispersion.
+
+
+            

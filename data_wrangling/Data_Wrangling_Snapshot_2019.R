@@ -3,8 +3,8 @@
 # Margaret Mercer
 # December 11, 2023
 
-obs_2019 <- read.csv("SNAPSHOT_USA_2019_observations.csv")
-dep_2019 <- read.csv("SNAPSHOT_USA_2019_deployments.csv")
+obs_2019 <- read.csv("data/SNAPSHOT_USA_2019_observations.csv")
+dep_2019 <- read.csv("data/SNAPSHOT_USA_2019_deployments.csv")
 
 ## merge deployment and observation data
 library(dplyr)
@@ -17,6 +17,7 @@ library(forcats)
 library(suncalc)
 library(lutz)
 library(tidyr)
+
 
 left_joined_19 <- left_join(obs_2019, dep_2019, by = "Site_Name") # maybe try left join and see if it does something different
 all_2019 <- left_joined_19[, c("Camera_Trap_Array.x", "Site_Name", "Survey_Days", "Latitude.x", "Longitude.x", "Begin_Time", "Species_Name", "Common_Name", "Count")]

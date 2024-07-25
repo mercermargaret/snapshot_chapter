@@ -5,8 +5,8 @@
 library(dplyr)
 library(suncalc)
 
-obs_2022 <- read.csv("updated_2022_sequences.csv")
-dep_2022 <- read.csv("updated_2022_deployments.csv")
+obs_2022 <- read.csv("data/updated_2022_sequences.csv")
+dep_2022 <- read.csv("data/updated_2022_deployments.csv")
 
 left_joined_22 <- left_join(obs_2022, dep_2022, by = "deployment_id")
 all_2022 <- left_joined_22[, c("subproject_name", "deployment_id", "survey_days",  "latitude", "longitude", "start_time", "genus", "species", "common_name", "group_size")] #"subproject_name" is comparable to "array" in 2019 and 2020 data
