@@ -9,9 +9,7 @@ library(scales)
 library(grid)
 library(png)
 
-data <- read_csv("data/Human_Overlap_Results - Human Overlap.csv")
-
-data <- data[c(1, 2, 5:8, 14:18), ] # subset to only the species we want
+data <- read_csv("results/human_overlap_results.csv")
 
 data$Species <- factor(data$Species, levels = rev(unique(data$Species)))
 
@@ -39,7 +37,7 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
             fill = "#E5E5E5", color = NA) +
   geom_segment(aes(xend = Species, yend = 0)) +
   geom_point(shape = 21, size = 3) +
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.75, 1), labels = percent_format()) +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.8, 1.2), labels = percent_format()) +
   coord_flip() +
   theme_classic () +
   theme(axis.title.y = element_blank(),
@@ -53,10 +51,14 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +
-  geom_text(aes(x = Species, y = -.72, label = Species), hjust = 0, vjust = 0.5, color = "black")
+  geom_text(aes(x = Species, y = -.78, label = Species), hjust = 0, vjust = 0.5, color = "black")
 lol
 
-hum <- readPNG("visualization/human.png") %>% rasterGrob(interpolate=TRUE)
+hum <- readPNG("visualization/pngs/human.png") %>% rasterGrob(interpolate=TRUE)
 
 lol +
-  annotation_custom(hum, xmin=-2, xmax=8, ymin=.75, ymax=.95)
+  annotation_custom(hum, 
+                    xmin=-3, 
+                    xmax=10, 
+                    ymin=.8, 
+                    ymax=1.1)

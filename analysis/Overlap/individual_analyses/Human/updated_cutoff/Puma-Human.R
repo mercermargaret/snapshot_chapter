@@ -19,7 +19,6 @@ st_is_valid(range, reason=TRUE)
 sf_use_s2(FALSE)
 
 # Convert df to an sf object
-data <- read_csv("../data_too_big/all_years.csv")
 points_sf <- st_make_valid(st_as_sf(data, coords = c("Longitude", "Latitude"), crs = st_crs(range)))
 
 sf_use_s2(TRUE)
