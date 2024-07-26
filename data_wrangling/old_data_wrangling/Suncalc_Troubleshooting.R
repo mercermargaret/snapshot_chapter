@@ -11,7 +11,7 @@ library(lutz)
 library(lubridate)
 library(forcats)
 
-data <- read.csv("all_years.csv")
+data <- read.csv("../data_too_big/five_year_observation_data.csv")
 
 data <- separate(data, Local_Date_Time, c("Date", "Time"), sep = " ")
 

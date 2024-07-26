@@ -63,7 +63,6 @@ deployments$Site_Name <- paste(deployments$Site_Name, deployments$Year, sep = "_
 # filter out the columns for which "survey days" is 0 (cuz they contain no data :'))
 deployments <- deployments[deployments$Survey_Days != 0, ]
 
-# import observation data and create encounter histories ####
 # let's see if we can merge these in a way that keeps ALL site names (7218) and just has a row of "NA"s if there were no pics.
 data_raw <- read.csv("../data_too_big/all_years.csv") 
 joined <- left_join(deployments, data_raw, by = "Site_Name")

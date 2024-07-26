@@ -7,9 +7,12 @@
 library(tidyverse)
 library(lme4)
 
-data <- read.csv("../data_too_big/all_years.csv")
+# clear workspace
+rm(list=ls())
 
-species <- subset(data, Species_Name == 'Homo sapiens')
+data <- read.csv("../data_too_big/five_year_observation_data.csv")
+
+species <- subset(data, Species_Name == 'Mephitis mephitis')
 
 
 binomial <- species %>%
@@ -81,5 +84,13 @@ colnames(table) <- c("Success", "Failure")
 rownames(table) <- c("Group 1", "Group 2")
 result <- fisher.test(table)
 print(result)
+p <- result$p.value
 
-
+overall_noct
+low_noct
+high_noct
+length(species$Site_Name)
+length(props$Site_Name)
+length(low$Site_Name)
+length(high$Site_Name)
+p

@@ -20,18 +20,27 @@ library(tidyr)
 
 
 left_joined_19 <- left_join(obs_2019, dep_2019, by = "Site_Name") # maybe try left join and see if it does something different
-all_2019 <- left_joined_19[, c("Camera_Trap_Array.x", "Site_Name", "Survey_Days", "Latitude.x", "Longitude.x", "Begin_Time", "Species_Name", "Common_Name", "Count")]
+all_2019 <- left_joined_19[, c("Camera_Trap_Array.x", 
+                               "Site_Name", 
+                               "Survey_Days", 
+                               "Latitude.x", 
+                               "Longitude.x", 
+                               "Begin_Time", 
+                               "Species_Name", 
+                               "Common_Name", 
+                               "Count")]
 # Ok now we've included only the columns we want.
 
 colnames(all_2019)[6] <- "Local_Date_Time"
 
 # look up time zones and associate them with each camera
-all_2019$Time_Zone <- tz_lookup_coords(all_2019$Latitude.x, all_2019$Longitude.x, method = "accurate", warn = TRUE)
+all_2019$Time_Zone <- 
+  tz_lookup_coords(all_2019$Latitude.x, all_2019$Longitude.x, method = "accurate", warn = TRUE)
 
 # fix date format
 all_2019$Local_Date_Time <- as.POSIXct(strptime(all_2019$Local_Date_Time, format = "%m/%d/%y %H:%M"))
 
-# fix problem children
+# fix problem children (you have to change all the ones that end in "00:00" to "00:01" :') )
 all_2019 <- separate(all_2019, Local_Date_Time, c("Date", "Time"), sep = " ") # first we separate dates and times
 all_2019$Time[is.na(all_2019$Time)] <- "00:00:01" # now replace all NAs with "00:00:01"
 sum(is.na(all_2019$Time)) # check for NAs
@@ -52,20 +61,16 @@ all_2019$Local_Date_Time <- as.POSIXct(all_2019$Local_Date_Time)
 # This took about 10-15 minutes
 
 for(i in 1:nrow(all_2019)) {
+  
   x <- ymd_hms(all_2019$Local_Date_Time[i], tz = all_2019$Time_Zone[i])
   x <- with_tz(x, tzone = "UTC")
   all_2019$time_utc[i] <- as.character(x)
+  
 }
 all_2019$time_utc <- ymd_hms(all_2019$time_utc)
 
 sum(is.na(all_2019$time_utc))
-# second runthrough, since fixing the "00:00"s, those ones worked. Now it's just the 97 that are problems
-# nas <- all_2019[is.na(all_2019$time_utc), ]
-# nas
-# obviously lots of 00:00:00. A lot of 17:00:00, 19:00:00, 20:00:00, and some 14:00:00.
-# Ew. WHY?? There are a lot of rows with exact hours (ex row 141), that convert just fine.
-# IT WORKED AHHHH
-# you just have to change all the ones that end in "00:00" to "00:01" :')
+
 
 # rename columns so suncalc can recognize them
 colnames(all_2019)[4] <- "lat"
