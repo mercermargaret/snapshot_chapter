@@ -31,7 +31,8 @@ data <- subset(joined, select = c("Array",
                                   "Habitat",
                                   "Development_Level",
                                   "Humans_Per_Camera",
-                                  "Humans_Per_Camera_Per_Day")) 
+                                  "Humans_Per_Camera_Per_Day",
+                                  "Disturbance")) 
 trimmed <- data %>%
   group_by(Site_Name) %>%
   slice(1) %>%

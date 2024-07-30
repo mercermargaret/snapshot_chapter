@@ -18,6 +18,7 @@ data <- read.csv("data/UMoccupancy_v2.csv")
 str(data)
 head(data)
 
+
 # Let's z-score standardize our continuous covariates as this is generally a good idea
 # when fitting any kind of hierarchical model to help facilitate convergence
 data$Native <- scale(data$Native)

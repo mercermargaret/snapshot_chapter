@@ -23,6 +23,7 @@ joined$Longitude <- joined$Longitude.x
 joined$Survey_Nights <- joined$Survey_Nights.x
 joined$Habitat <- joined$Habitat.x
 joined$Development_Level <- joined$Development_Level.x
+joined$Disturbance <- joined$Disturbance.x
 data <- subset(joined, select = c("record_ID", 
                                      "Array", 
                                      "Site_Name", 
@@ -37,7 +38,8 @@ data <- subset(joined, select = c("record_ID",
                                      "Start_Date", # start and end date are weird!!!!
                                      "End_Date",
                                      "Habitat",
-                                     "Development_Level")) 
+                                     "Development_Level",
+                                     "Disturbance")) 
 # cool, so merging like that keeps the rows for which there are NO observations?
 
 # geographic subsetting of "data" and "deployments" to only the species range
