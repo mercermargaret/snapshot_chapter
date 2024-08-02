@@ -41,7 +41,8 @@ site_info$Year <- as.character(site_info$Year)
 # when fitting any kind of hierarchical model to help facilitate convergence
 DOY_scaled <- scale(as.matrix(DOY[,grep("V",colnames(DOY))]))
 days_scaled <- scale(as.matrix(survey_days[,grep("V",colnames(survey_days))]))
-# use apply function
+site_info$Humans_Per_Camera_Per_Day <- scale((site_info$Humans_Per_Camera_Per_Day))
+site_info$Disturbance <- scale(as.matrix(site_info$Disturbance))
 # z score standardize all continuous covariates! (you just need to backtransform when you plot it)
 # and all your slopes will be directly comparable!
 
@@ -53,11 +54,12 @@ site_covs <- as.data.frame(site_info[,c("Humans_Per_Camera_Per_Day",
                                         "Disturbance", 
                                         "Array", 
                                         "Year")]) 
-# do we not scale our site level covariates? 
+
 # also should we call each array "array_year" in case the some of the arrays had the same name across years?
 site_covs <- site_covs %>%
   rename(
-    Humans = "Humans_Per_Camera_Per_Day")
+    Humans = "Humans_Per_Camera_Per_Day",
+    Disturbance = "Disturbance")
 
 obs_covs <- list(DOY_scaled = DOY_scaled,
                  days_scaled = days_scaled) 
@@ -109,7 +111,7 @@ summary(m1)
 plogis(m1@estimates@estimates$state@estimates)
 
 # We can also use unmarked's backTransform() function to do this for us
-
+# Transform this back from the logit scale TO the probability scale
 backTransform(m1, 'state')
 backTransform(m1, 'det')
 
@@ -126,6 +128,8 @@ summary(m2)
 # numeric values. The linearComb() function will interpret this as 
 # 1*Intercept + 0*Humans We can then place linearComb() within backTransform() to
 # get our estimates on the real scale.
+# still backtransforming from logit to probability scale (another way to do it!)
+# I probably wont do this (I'll use predict like below)
 linearComb(m2, coefficients = c(1, 0), type = 'state')
 backTransform(linearComb(m2, coefficients = c(1, 0), type = 'state'))
 
@@ -163,7 +167,9 @@ plot(Predicted ~ Disturbance, new_data, ylim = c (0, 1),type = "l", lwd = 3,
      ylab = "Probability of Occupancy", xlab = "Human Disturbance")
 lines(new_data$Disturbance, new_data$lower, lty=3)
 lines(new_data$Disturbance, new_data$upper, lty=3)
-
+# fix this if i want to
+# Ok, so crap. This looks like a better metric of human disturbance than humans_per_camera.
+# does this mean we have to rerun everything, using this as our metric instead of the other?
 
 
 # testing another covariate (this time for observation)
@@ -177,12 +183,23 @@ plot(Predicted ~ days_scaled, new_data, ylim = c (0, 1), type = "l", lwd = 3,
      ylab = "Probability of Detection", xlab = "Number Survey Days")
 lines(new_data$days_scaled, new_data$lower, lty = 3)
 lines(new_data$days_scaled, new_data$upper, lty = 3)
-
+# this is a "complete nuisance" covariate, which I could put in if I want, but if
+# its not significant, dont need it. dropping incomplete sampling events would
+# also solve this
 
 
 
 
 # Evaluating model goodness-of-fit (GOF) ----------
+
+# this whole part only matters if we're doing a single species occupancy model!!!
+# basically seeing if your model generates the type of encounter histories
+# you'd expect. Is there overdispersion? (more variation in your data than
+# is accounted for in your model)
+
+# don't do goodness of fit for multispecies occupancy model!
+# wouldn't do goodness of fit test either, if I'm just looking at species
+# occupancy in low vs high human presence (no model selection)
 
 # Before we proceed with fitting multiple models let's go over how to calculate 
 # goodness-of-fit (GOF) for a single-season occupancy model.
@@ -207,8 +224,9 @@ lines(new_data$days_scaled, new_data$upper, lty = 3)
 
 # Let's fit a global model just for illustrative purposes
 
-global_mod <- occu(~ DOY_scaled + days_scaled ~ Humans + Development + Habitat, data = umf)
+global_mod <- occu(~ DOY_scaled + days_scaled ~ Humans + Disturbance, data = umf)
 # why no ones here like in the models below?  What do the ones mean?
+# --> if chat is larger than 1
 
 # The AICcmodavg package we loaded at the beginning
 # of the lab contains a function that can run this test for us. 
@@ -224,7 +242,10 @@ system.time(global_MB <- mb.gof.test(global_mod, nsim = 10))
 # over the weekend!
 # The error messages are because we have missing observations in our data.
 
-global_MB # how do I know whether it passed the goodness of fit test? what do i do if it didn't?
+global_MB 
+# if this model doesn't account for all expected variance, I have overdispersion
+# I have overdispersion if chat is greater than 1
+# if there's no evidence of overdisperison, don't need to worry about this!
 
 # Fit and compare additional models ---------------
 
@@ -238,10 +259,13 @@ m5 <- occu(~ 1 + DOY_scaled + days_scaled ~ 1, data = umf)
 # and why don't you include any occurrence covariates in these models?
 # how do you choose which models to include?
 # random effects like this?: 
-rand <- occu(~ DOY_scaled + days_scaled ~ Humans + Development + Habitat + (1 | Array) + (1 + Year), data = umf)
-rand <- occu(~ DOY_scaled ~ Habitat + (1 | Array), data = umf)
+rand <- occu(~ DOY_scaled + days_scaled ~ Humans + Disturbance + (1 | Array) + (1 + Year), data = umf)
+rand <- occu(~ DOY_scaled ~ Humans + (1 | Array), data = umf)
+# this should work. this is how random effects are notated in "occu()" (Kellner et al 2022)
+# Error in optim(tmb_mod$par, fn = tmb_mod$fn, gr = tmb_mod$gr, method = method,  : 
+#                  initial value in 'vmmin' is not finite
 
-m6 <- occu(~ 1 ~ 1 + Humans + Development + Habitat, data = umf)
+m6 <- occu(~ 1 ~ 1 + Humans + Disturbance + Habitat, data = umf)
 # heres one with the occurrence instead of detection covariates
 
 # Now let's compare model fit of these models.

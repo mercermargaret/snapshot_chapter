@@ -2,6 +2,7 @@
 # margaret mercer
 # july 29
 # figure out what's going on and why we have so many NAs in our human disturbance index
+# nevermind, were not gonna use disturbance after all
 
 # this has always been a problem
 old2020 <- read.csv("data/four_year_data/2019.csv")
