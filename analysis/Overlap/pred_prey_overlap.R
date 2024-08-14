@@ -171,11 +171,9 @@ for (i in 1:length(pred_list)) {
     # # overlap analysis
     
     # subset to the two species
-    
     pair <- filter(df_inside, Species_Name == pred_name | Species_Name == prey_name) 
     
     # find median and assign to an object
-    
     median <- median(pair$Humans_Per_Camera_Per_Day)
     
     # filter to low human disturbance

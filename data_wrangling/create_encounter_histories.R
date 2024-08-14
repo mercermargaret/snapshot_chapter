@@ -24,22 +24,24 @@ joined$Survey_Nights <- joined$Survey_Nights.x
 joined$Habitat <- joined$Habitat.x
 joined$Development_Level <- joined$Development_Level.x
 joined$Disturbance <- joined$Disturbance.x
+joined$Humans_Per_Camera_Per_Day <- joined$Humans_Per_Camera_Per_Day.x
 data <- subset(joined, select = c("record_ID", 
-                                     "Array", 
-                                     "Site_Name", 
-                                     "Survey_Nights", 
-                                     "Latitude", 
-                                     "Longitude", 
-                                     "Local_Date_Time", 
-                                     "Species_Name", 
-                                     "Time_Zone",
-                                     "UTC_Date_Time",
-                                     "Year",
-                                     "Start_Date", # start and end date are weird!!!!
-                                     "End_Date",
-                                     "Habitat",
-                                     "Development_Level",
-                                     "Disturbance")) 
+                                  "Array", 
+                                  "Site_Name", 
+                                  "Survey_Nights", 
+                                  "Latitude", 
+                                  "Longitude", 
+                                  "Local_Date_Time", 
+                                  "Species_Name", 
+                                  "Time_Zone",
+                                  "UTC_Date_Time",
+                                  "Year",
+                                  "Start_Date",
+                                  "End_Date",
+                                  "Habitat",
+                                  "Development_Level",
+                                  "Disturbance",
+                                  "Humans_Per_Camera_Per_Day"))  
 # cool, so merging like that keeps the rows for which there are NO observations?
 
 # geographic subsetting of "data" and "deployments" to only the species range

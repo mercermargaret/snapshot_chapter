@@ -1,10 +1,8 @@
-# occupancy analysis
+# occupancy analysis master file
+# (all examples provided by javan, with my comments and fit to my data)
 # margaret mercer (initial code provided by javan bauder)
 # july 24, 2024
 
-
-# clear workspace
-rm(list=ls())
 
 library(tidyverse)
 library(unmarked)
@@ -12,6 +10,9 @@ library(AICcmodavg)
 library(ggplot2)
 library(TMB)
 
+
+# clear workspace
+rm(list=ls())
 
 # Single-Season Occupancy Models -----------------
 # Read in a csv file of our data --------
@@ -36,11 +37,32 @@ site_info$Humans_Per_Camera_Per_Day <- ifelse(is.na(site_info$Humans_Per_Camera_
 
 # and make sure year is a character not a number!!
 site_info$Year <- as.character(site_info$Year)
+# 
+# # Let's z-score standardize our continuous covariates as this is generally a good idea
+# # when fitting any kind of hierarchical model to help facilitate convergence
+DOY <- as.matrix(DOY[,grep("V",colnames(DOY))])
+# DOY <- as.data.frame(DOY)
+# DOY_scaled <- scale(DOY)
+# 
+survey_days <- as.matrix(survey_days[,grep("V",colnames(survey_days))])
+# survey_days <- as.data.frame(survey_days)
+# days_scaled <- scale(survey_days)
 
-# Let's z-score standardize our continuous covariates as this is generally a good idea
-# when fitting any kind of hierarchical model to help facilitate convergence
-DOY_scaled <- scale(as.matrix(DOY[,grep("V",colnames(DOY))]))
-days_scaled <- scale(as.matrix(survey_days[,grep("V",colnames(survey_days))]))
+# how to scale to the whole dataframe!
+mean_DOY <- mean(as.vector((DOY)), na.rm = T)
+sd_DOY <- sd(as.vector((DOY)), na.rm = T)
+DOY_scaled <- (DOY - mean_DOY)/sd_DOY
+
+mean_days <- mean(as.vector((survey_days)), na.rm = T)
+sd_days <- sd(as.vector((survey_days)), na.rm = T)
+days_scaled <- (survey_days - mean_days)/sd_days
+
+# check for inconsistent number of NAs (should be the same for all four dfs)
+# sum(is.na(DOY))
+# sum(is.na(DOY_scaled))
+# sum(is.na(survey_days))
+# sum(is.na(days_scaled))
+
 site_info$Humans_Per_Camera_Per_Day <- scale((site_info$Humans_Per_Camera_Per_Day))
 site_info$Disturbance <- scale(as.matrix(site_info$Disturbance))
 # z score standardize all continuous covariates! (you just need to backtransform when you plot it)
@@ -117,9 +139,9 @@ backTransform(m1, 'det')
 
 # Now let's model occupancy as a function of humans
 
-m2 <- occu(~ 1 ~ Humans, data = umf)
+m2a <- occu(~ 1 ~ Humans, data = umf)
 
-summary(m2)
+summary(m2a)
 
 # Let's see what occupancy is when Humans is average, which would be 0 because we
 # z-score standardized our covariates. Here's where we get a little tricky because 
@@ -130,8 +152,8 @@ summary(m2)
 # get our estimates on the real scale.
 # still backtransforming from logit to probability scale (another way to do it!)
 # I probably wont do this (I'll use predict like below)
-linearComb(m2, coefficients = c(1, 0), type = 'state')
-backTransform(linearComb(m2, coefficients = c(1, 0), type = 'state'))
+linearComb(m2a, coefficients = c(1, 0), type = 'state')
+backTransform(linearComb(m2a, coefficients = c(1, 0), type = 'state'))
 
 # We can also see how occupancy varies by Humans by calculating predicted values
 # using the predict() function.
@@ -147,7 +169,7 @@ backTransform(linearComb(m2, coefficients = c(1, 0), type = 'state'))
 
 new_data <- data.frame(Humans = seq(min(as.numeric(as.matrix(umf@siteCovs$Humans)),na.rm=T),
                                 max(as.numeric(as.matrix(umf@siteCovs$Humans)),na.rm=T),0.1))
-new_data <- predict(m2, type = 'state', newdata = new_data, appendData=TRUE)
+new_data <- predict(m2a, type = 'state', newdata = new_data, appendData=TRUE)
 head(new_data)
 
 plot(Predicted ~ Humans, new_data, ylim = c (0, 1),type = "l", lwd = 3,
@@ -158,19 +180,20 @@ lines(new_data$Humans, new_data$upper, lty=3)
     # as human presence goes up. Is that what this is saying?
 
 # now another covariate
+m2b <- occu(~ 1 ~ Disturbance, data = umf)
+
+summary(m2b)
+
 new_data <- data.frame(Disturbance = seq(min(as.numeric(as.matrix(umf@siteCovs$Disturbance)),na.rm=T),
                                     max(as.numeric(as.matrix(umf@siteCovs$Disturbance)),na.rm=T),0.1))
-new_data <- predict(m2, type = 'state', newdata = new_data, appendData=TRUE)
+new_data <- predict(m2b, type = 'state', newdata = new_data, appendData=TRUE)
 head(new_data)
 
 plot(Predicted ~ Disturbance, new_data, ylim = c (0, 1),type = "l", lwd = 3,
      ylab = "Probability of Occupancy", xlab = "Human Disturbance")
 lines(new_data$Disturbance, new_data$lower, lty=3)
 lines(new_data$Disturbance, new_data$upper, lty=3)
-# fix this if i want to
 # Ok, so crap. This looks like a better metric of human disturbance than humans_per_camera.
-# does this mean we have to rerun everything, using this as our metric instead of the other?
-
 
 # testing another covariate (this time for observation)
 m3 <- occu(~ 1 + days_scaled ~ 1, data = umf) 
@@ -188,8 +211,8 @@ lines(new_data$days_scaled, new_data$upper, lty = 3)
 # also solve this
 
 
-
-
+comment
+# FROM HERE DOWN DOESN'T APPLY TO ME!!
 # Evaluating model goodness-of-fit (GOF) ----------
 
 # this whole part only matters if we're doing a single species occupancy model!!!
@@ -224,9 +247,10 @@ lines(new_data$days_scaled, new_data$upper, lty = 3)
 
 # Let's fit a global model just for illustrative purposes
 
-global_mod <- occu(~ DOY_scaled + days_scaled ~ Humans + Disturbance, data = umf)
+global_mod <- occu(~ DOY_scaled + days_scaled ~ Humans, data = umf)
 # why no ones here like in the models below?  What do the ones mean?
 # --> if chat is larger than 1
+# have to fit disturbance or this wont run
 
 # The AICcmodavg package we loaded at the beginning
 # of the lab contains a function that can run this test for us. 
@@ -234,8 +258,7 @@ global_mod <- occu(~ DOY_scaled + days_scaled ~ Humans + Disturbance, data = umf
 
 system.time(global_MB <- mb.gof.test(global_mod, nsim = 10))
 # you say below that 10,000 simulations would take 30 hours. 
-# Do you recommend doing that many? Also can you split it up into cores so it doesn't take so long?
-# can you use the universitys hpc or whatever to do it better?
+# Do you recommend doing that many?
 
 # Note that this takes about 24 seconds to run just 10 simulations. So 10,000
 # simulations would require about 30 hours! Sounds like a great use for the computer
@@ -259,13 +282,11 @@ m5 <- occu(~ 1 + DOY_scaled + days_scaled ~ 1, data = umf)
 # and why don't you include any occurrence covariates in these models?
 # how do you choose which models to include?
 # random effects like this?: 
-rand <- occu(~ DOY_scaled + days_scaled ~ Humans + Disturbance + (1 | Array) + (1 + Year), data = umf)
+rand <- occu(~ DOY_scaled + days_scaled ~ Humans + (1 | Array) + (1 + Year), data = umf)
 rand <- occu(~ DOY_scaled ~ Humans + (1 | Array), data = umf)
-# this should work. this is how random effects are notated in "occu()" (Kellner et al 2022)
-# Error in optim(tmb_mod$par, fn = tmb_mod$fn, gr = tmb_mod$gr, method = method,  : 
-#                  initial value in 'vmmin' is not finite
+# this worked!!!!!! Yay!
 
-m6 <- occu(~ 1 ~ 1 + Humans + Disturbance + Habitat, data = umf)
+m6 <- occu(~ 1 ~ 1 + Humans, data = umf)
 # heres one with the occurrence instead of detection covariates
 
 # Now let's compare model fit of these models.
@@ -277,15 +298,15 @@ m6 <- occu(~ 1 ~ 1 + Humans + Disturbance + Habitat, data = umf)
 # Just for fun let's fit a no-intercept model using our binary observer covariates
 # to see if we can model detection as a function of temperature for just one
 # observer
-
-m7 <- occu(~ -1 + FredObs + OtherObs + FredObs:temp ~ 1, data=umf)
-summary(m7)
-# I don't understand this but I don't think I need to
+# 
+# m7 <- occu(~ -1 + FredObs + OtherObs + FredObs:temp ~ 1, data=umf)
+# summary(m7)
+# # I don't understand this but I don't think I need to
 
 # We use unmarked's fitList() function to create a list of models that we can then 
 # compare using AIC
 
-ms <- fitList(m1,m2,m3,m4,m5,m6)
+ms <- fitList(m1,m2a,m3,m4,m5,m6,rand)
 
 # We can then use unmarked's modSel() function to create an AICc table
 

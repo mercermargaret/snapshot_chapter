@@ -1,4 +1,4 @@
-# Binomial analysis of nocturnality for all species
+# analysis of nocturnality for all species
 # Margaret Mercer
 # july 25, 2024
 
@@ -10,7 +10,7 @@ rm(list=ls())
 library(tidyverse)
 library(lme4)
 
-
+# replace with your file path
 data <- read_csv("../data_too_big/five_year_observation_data.csv")
 
 data <- data %>%
