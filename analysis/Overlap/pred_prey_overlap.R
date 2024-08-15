@@ -173,8 +173,14 @@ for (i in 1:length(pred_list)) {
     # subset to the two species
     pair <- filter(df_inside, Species_Name == pred_name | Species_Name == prey_name) 
     
-    # find median and assign to an object
-    median <- median(pair$Humans_Per_Camera_Per_Day)
+    
+    # select median of sites and assign to object
+    sites <- pair %>% 
+      group_by(Site_Name) %>% 
+      summarize(Humans_Per_Camera_Per_Day) %>% 
+      unique()
+  
+    median <- median(sites$Humans_Per_Camera_Per_Day)
     
     # filter to low human disturbance
     low_dist <- filter(pair, Humans_Per_Camera_Per_Day < median)

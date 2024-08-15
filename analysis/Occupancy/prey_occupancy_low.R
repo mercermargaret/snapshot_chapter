@@ -319,3 +319,10 @@ prey_model <- occu(~ days_scaled ~ Predator_Occupancy + (1 | Array), data = umf)
 # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
 
 summary(prey_model)
+
+
+# The equivalent of the overlap coefficient for this analysis is the Estimate/Predator_Occupancy number (beta).
+# The higher this number, the MORE overlap between predator and prey
+# like for puma/whitetail it is 0.00457. P value matters. If nonsignificant, number is basically 0.
+# lollipop chart will be the difference between beta in LOW versus HIGH.
+

@@ -121,8 +121,13 @@ for (i in 1:length(species_list)) {
   
   species <- filter(df_inside, Species_Name == species_name) # grab a species from species list
   
-  # find median and assign to an object
-  median <- median(species$Humans_Per_Camera_Per_Day)
+  # select median of sites and assign to object
+  sites <- species %>% 
+    group_by(Site_Name) %>%  
+    summarize(Humans_Per_Camera_Per_Day) %>% 
+    unique()
+  
+  median <- median(sites$Humans_Per_Camera_Per_Day)
   
   # filter TOTAL dataframe to low human disturbance
   low_dist <- filter(df_inside, Humans_Per_Camera_Per_Day < median)
