@@ -17,6 +17,25 @@ data <- read_csv("results/pred_prey_overlap_results.csv")
 data$Pairing <- paste(data$Predator, data$Prey, sep = "/")
 data$Pairing <- factor(data$Pairing, levels = rev(unique(data$Pairing)))
 
+data$Prey_Common <- c("White-tailed Deer",
+                       "Mule Deer",
+                       "Elk",
+                       "Moose",
+                       "Coyote",
+                       "Bobcat",
+                       "Raccoon",
+                       "Red Fox",
+                       "Striped Skunk",
+                       "White-tailed Deer",
+                       "Mule Deer",
+                       "Elk",
+                       "Moose",
+                       "Coyote",
+                       "Bobcat",
+                       "Raccoon",
+                       "Red Fox",
+                       "Striped Skunk")
+
 # percent change column!
 data <- data %>% mutate(Percent_Change = Difference/Overlap_Low)
 
@@ -41,7 +60,7 @@ lol <- ggplot(data, aes(x = Pairing, y = Percent_Change,
             fill = "#E5E5E5", color = NA) +
   geom_segment(aes(xend = Pairing, yend = 0)) +
   geom_point(shape = 21, size = 3) +
-  scale_y_continuous(expand = c(0, 0), limits = c(-.50, .50), labels = percent_format()) +
+  scale_y_continuous(expand = c(0, 0), limits = c(min(data$Percent_Change) - 0.1, max(data$Percent_Change) + .05), labels = percent_format()) +
   coord_flip() +
   theme_classic () +
   theme(axis.title.y = element_blank(),
@@ -55,7 +74,7 @@ lol <- ggplot(data, aes(x = Pairing, y = Percent_Change,
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +
-  geom_text(aes(x = Pairing, y = -.48, label = Prey), hjust = 0, vjust = 0.5, color = "black") 
+  geom_text(aes(x = Pairing, y = min(Percent_Change) - 0.09, label = Prey_Common), hjust = 0, vjust = 0.5, color = "black") 
 lol
 
 # add animations
@@ -64,5 +83,5 @@ wolf <- readPNG("visualization/pngs/wolf.png") %>% rasterGrob(interpolate=TRUE)
 
 
 lol +
-  annotation_custom(puma, xmin=11, xmax=17, ymin=0.1, ymax=.5) +
+  annotation_custom(puma, xmin=11, xmax=17, ymin=0.05, ymax=.4) +
   annotation_custom(wolf, xmin=2, xmax=9, ymin=0.15, ymax=.5)

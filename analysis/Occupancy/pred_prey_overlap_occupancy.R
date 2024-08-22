@@ -5,6 +5,8 @@
 
 # note: this file takes around 30 min to run
 
+# broke at puma/moose high (k = 1, l = 4) when included year as a covariate
+
 # load packages
 library(lubridate)
 library(sf)
@@ -97,11 +99,12 @@ prey_range_list <- list(whitetail,
 
 # create empty dataframe for occupancy values
 results <- data.frame(
-  Predator = character(36), 
-  Prey = character(36), 
-  "Human Disturbance" = numeric(36), 
-  "Effect of Predator Presence on Prey" = numeric(36), 
-  "p-value" = numeric(36), 
+  Predator = character(18), 
+  Prey = character(18),
+  "overlap_low" = numeric(18), 
+  "p-value_low" = numeric(18), 
+  "overlap_high" = numeric(18), 
+  "p-value_high" = numeric(18), 
   stringsAsFactors = FALSE
 )
 
@@ -358,7 +361,7 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    pred_model_low <- occu(~ days_scaled ~ 1 + (1 | Array), data = umf) 
+    pred_model_low <- occu(~ days_scaled ~ Year + (1 | Array), data = umf) 
     # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
     
     summary(pred_model_low)
@@ -564,7 +567,7 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    prey_model_low <- occu(~ days_scaled ~ Predator_Occupancy + (1 | Array), data = umf) 
+    prey_model_low <- occu(~ days_scaled ~ Predator_Occupancy + Year + (1 | Array), data = umf) 
     # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
     
     summary_prey_low <- summary(prey_model_low)
@@ -650,8 +653,7 @@ for (k in 1:length(pred_list)) {
       
       if(days_i > 7) { 
         # we need to do this to tell it to ONLY loop through other sampling events 
-        # if there is more than one samping event (if days_i is greater than 7)
-        
+        # if there is more than one sampling event (if days_i is greater than 7)
         
         # Now start looping through the other sampling events
         for(j in 2:events_i){
@@ -735,8 +737,7 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    pred_model_high <- occu(~ days_scaled ~ 1 + (1 | Array), data = umf) 
-    # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
+    pred_model_high <- occu(~ days_scaled ~ Year + (1 | Array), data = umf) 
     
     summary(pred_model_high)
     
@@ -938,45 +939,67 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    prey_model_high <- occu(~ days_scaled ~ Predator_Occupancy + (1 | Array), data = umf) 
-    # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
+    prey_model_high <- occu(~ days_scaled ~ Predator_Occupancy + Year + (1 | Array), data = umf)
+    
+    # this errors for puma/moose when I added year as a covariate
+    # Error in solve.default(full) : 
+    #   system is computationally singular: reciprocal condition number = 0
+    
+    # number of lines was 202 (low prey had less at 198)
+    # number of observations was 41 (low prey had 45)
     
     summary_prey_high <- summary(prey_model_high)
     
-    
     # set row number for adding results to results dataframe
     if (k == 1) {
-      m <- ((2 * (l)) - 1)
+      m <- (l)
     } else {
-      m <- (2 * (l) + 17)
+      m <- (l + 9)
     }
     
     # fill in results dataframe
     effect_pred_on_prey_low <- summary_prey_low$state$Estimate[2]
     p_value_effect_pred_on_prey_low <- summary_prey_low$state$`P(>|z|)`[2]
-    
-    results[m, 1] <- pred_name
-    results[m, 2] <- prey_name
-    results[m, 3] <- "low"
-    results[m, 4] <- effect_pred_on_prey_low
-    results[m, 5] <- p_value_effect_pred_on_prey_low
-    
-    n <- m + 1
-    
-    # fill in results dataframe
     effect_pred_on_prey_high <- summary_prey_high$state$Estimate[2]
     p_value_effect_pred_on_prey_high <- summary_prey_high$state$`P(>|z|)`[2]
     
-    results[n, 1] <- pred_name
-    results[n, 2] <- prey_name
-    results[n, 3] <- "high"
-    results[n, 4] <- effect_pred_on_prey_high
-    results[n, 5] <- p_value_effect_pred_on_prey_high
     
+    results[m, 1] <- pred_name
+    results[m, 2] <- prey_name
+    results[m, 3] <- effect_pred_on_prey_low
+    results[m, 4] <- p_value_effect_pred_on_prey_low
+    results[m, 5] <- effect_pred_on_prey_high
+    results[m, 6] <- p_value_effect_pred_on_prey_high
+
 
   }
 }
 
+results$Difference <- results$overlap_high - results$overlap_low
+
+results$Prey_Type <- c("herbivore",
+                       "herbivore",
+                       "herbivore",
+                       "herbivore",
+                       "mesocarnivore",
+                       "mesocarnivore",
+                       "mesocarnivore",
+                       "mesocarnivore",
+                       "mesocarnivore",
+                       "herbivore",
+                       "herbivore",
+                       "herbivore",
+                       "herbivore",
+                       "mesocarnivore",
+                       "mesocarnivore",
+                       "mesocarnivore",
+                       "mesocarnivore",
+                       "mesocarnivore")
+
+results <- results %>%
+  mutate(Trend = if_else(Difference < 0, "decreasing", 
+                         if_else(Difference > 0, "increasing", "no change")))
 
 # write results as csv
-write_csv(results, "Occupancy Modeling Results.csv")
+write_csv(results, "results/pred_prey_overlap_occupancy_results.csv")
+

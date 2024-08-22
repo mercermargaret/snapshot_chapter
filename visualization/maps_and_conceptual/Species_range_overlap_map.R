@@ -24,22 +24,13 @@ sf_use_s2(FALSE)
 range_overlap <- st_intersection(prey_range, pred_range)
 st_is_valid(range_overlap, reason=TRUE)
 
-# Trim df for duplicate points
-data <- read_csv("../data_too_big/all_years.csv")
-# data <- arrange(data, Latitude)
-data_new <- data %>% mutate(across(c('Latitude', 'Longitude'), round, 3))
-trimmed <- data_new %>%
-  group_by(Array) %>%
-  slice(1) %>%
-  ungroup()
-trimmed <- trimmed %>%
-  distinct_at("Latitude", .keep_all = TRUE)
-trimmed <- trimmed %>%
-  distinct_at("Longitude", .keep_all = TRUE)
-# trimming like above cuts off the point in florida
+# import data
+# data <- read_csv("../data_too_big/five_year_observation_data.csv")
+# ORRR
+data <- read_csv("data/five_year_deployments.csv")
 
 # convert to an sf object
-points_sf <- st_make_valid(st_as_sf(trimmed, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
+points_sf <- st_make_valid(st_as_sf(data, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
 
 sf_use_s2(TRUE)
 
@@ -47,7 +38,18 @@ sf_use_s2(TRUE)
 inside <- st_within(points_sf, range_overlap, sparse = FALSE)
 
 # Extract rows from df that are inside the polygon
-df_inside <- trimmed[which(inside[,1]),]
+df_inside <- data[which(inside[,1]),]
+
+df_inside <- df_inside %>% mutate(across(c('Latitude', 'Longitude'), round, 3))
+trimmed <- df_inside %>%
+  group_by(Array) %>%
+  slice(1) %>%
+  ungroup()
+trimmed <- trimmed %>%
+  distinct_at("Latitude", .keep_all = TRUE)
+df_inside <- trimmed %>%
+  distinct_at("Longitude", .keep_all = TRUE)
+
 
 # df_inside now contains only the rows where coordinates fall inside the polygon
 
@@ -130,7 +132,18 @@ us_overlap <- st_intersection(range_overlap, usa)
 outside <- !inside[,1]
 
 # Extract rows from df that are outside the polygon
-df_outside <- trimmed[which(outside),]
+df_outside <- data[which(outside),]
+
+df_outside <- df_outside %>% mutate(across(c('Latitude', 'Longitude'), round, 3))
+trimmed <- df_outside %>%
+  group_by(Array) %>%
+  slice(1) %>%
+  ungroup()
+trimmed <- trimmed %>%
+  distinct_at("Latitude", .keep_all = TRUE)
+df_outside <- trimmed %>%
+  distinct_at("Longitude", .keep_all = TRUE)
+
 
 # make it spatial
 spatial_outside <- st_make_valid(st_as_sf(df_outside, coords = c("Longitude", "Latitude"), crs = st_crs(prey_range)))
@@ -143,12 +156,12 @@ new_usa <- tigris::shift_geometry(
   position = "below"
 )
 
-new_cameras <- tigris::shift_geometry(
-  points_sf,
-  geoid_column = NULL,
-  preserve_area = TRUE,
-  position = "below"
-)
+# new_cameras <- tigris::shift_geometry(
+#   points_sf,
+#   geoid_column = NULL,
+#   preserve_area = TRUE,
+#   position = "below"
+# )
 
 new_pred <- tigris::shift_geometry(
   us_pred,

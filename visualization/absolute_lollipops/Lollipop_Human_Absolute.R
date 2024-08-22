@@ -9,25 +9,36 @@ library(scales)
 library(grid)
 library(png)
 
-data <- read_csv("data/Human_Overlap_Results - Human Overlap.csv")
-
-data <- data[c(1, 2, 5:8, 14:18), ] # subset to only the species we want
+data <- read_csv("results/human_overlap_results.csv")
 
 data$Species <- factor(data$Species, levels = rev(unique(data$Species)))
+
+data$Common_Name <- c("Puma",
+                      "Gray Wolf",
+                      "White-tailed Deer",
+                      "Mule Deer",
+                      "Elk",
+                      "Moose",
+                      "Coyote",
+                      "Bobcat",
+                      "Raccoon",
+                      "Red Fox",
+                      "Striped Skunk")
+
 
 # Define custom colors
 my_colors <- c("Increase" = "#0B5401", "Slight Increase" = "#77A87C", "No Change" = "steelblue", "Slight Decrease" = "#C67976", "Decrease" = "#8B0000")
 
 # Create the lollipop chart with legend title removed and custom colors
-ggplot(data, aes(x = Species, y = Difference,
-                 fill = ifelse(Trend == "increasing", "Increase",
-                               ifelse(Trend == "slightly increasing", "Slight Increase",
-                                      ifelse(Trend == "slightly decreasing", "Slight Decrease",
-                                             ifelse(Trend == "decreasing", "Decrease", "No Change")))),
-                 color = ifelse(Trend == "increasing", "Increase",
-                                ifelse(Trend == "slightly increasing", "Slight Increase",
-                                       ifelse(Trend == "slightly decreasing", "Slight Decrease",
-                                              ifelse(Trend == "decreasing", "Decrease", "No Change"))))
+lol <- ggplot(data, aes(x = Species, y = Difference,
+                        fill = ifelse(Trend == "increasing", "Increase",
+                                      ifelse(Trend == "slightly increasing", "Slight Increase",
+                                             ifelse(Trend == "slightly decreasing", "Slight Decrease",
+                                                    ifelse(Trend == "decreasing", "Decrease", "No Change")))),
+                        color = ifelse(Trend == "increasing", "Increase",
+                                       ifelse(Trend == "slightly increasing", "Slight Increase",
+                                              ifelse(Trend == "slightly decreasing", "Slight Decrease",
+                                                     ifelse(Trend == "decreasing", "Decrease", "No Change"))))
 )) +
   geom_segment(aes(xend = Species, yend = 0)) +
   geom_rect(data = data[data$Type == "herbivore", ],
@@ -36,7 +47,7 @@ ggplot(data, aes(x = Species, y = Difference,
             fill = "#E5E5E5", color = NA) +
   geom_segment(aes(xend = Species, yend = 0)) +
   geom_point(shape = 21, size = 3) +
-  scale_y_continuous(expand = c(0, 0), limits = c(-.30, .30), labels = percent_format()) +
+  scale_y_continuous(expand = c(0, 0), limits = c(min(data$Difference) - 0.08, max(data$Difference) + 0.03), labels = percent_format()) +
   coord_flip() +
   theme_classic () +
   theme(axis.title.y = element_blank(),
@@ -50,5 +61,14 @@ ggplot(data, aes(x = Species, y = Difference,
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +
-  geom_text(aes(x = Species, y = -.29, label = Species), hjust = 0, vjust = 0.5, color = "black")
+  geom_text(aes(x = Species, y = min(data$Difference - 0.07), label = Common_Name), hjust = 0, vjust = 0.5, color = "black")
+lol
 
+hum <- readPNG("visualization/pngs/human.png") %>% rasterGrob(interpolate=TRUE)
+
+lol +
+  annotation_custom(hum, 
+                    xmin=1, 
+                    xmax=6, 
+                    ymin=.1, 
+                    ymax=.3)

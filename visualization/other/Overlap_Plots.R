@@ -10,7 +10,11 @@ library(dplyr)
 library(tidyr)
 library(overlap)
 
-data <- read.csv("../data_too_big/all_years.csv")
+data <- read.csv("../data_too_big/five_year_observation_data.csv")
+
+# split local_date_time into date and time
+data$Local_Date_Time <- as.character(data$Local_Date_Time)
+data <- separate(data, Local_Date_Time, into = c("Local_Date", "Local_Time"), sep = " ")
 
 ## Convert time into radians
 time <- as.POSIXct(data$Local_Time, format = "%H:%M:%S")
@@ -41,25 +45,25 @@ human <- time_radians[data$Species_Name == 'Homo sapiens']
 overlapPlot(pred, human)
 legend('topright', c("Predator", "Human"), lty=c(1,2), col=c(1,4), bty='n')
 
-# visualize data to help determine what values to designate as "high" and "low" human activity
-# pred <- subset(data, Species_Name == "Puma concolor")
-# hist(pred$Humans_Per_Camera_Per_Day)
-# hist(log(pred$Humans_Per_Camera_Per_Day))
-# median(pred$Humans_Per_Camera_Per_Day)
-# 
-# prey <- subset(data, Species_Name == "Odocoileus virginianus")
-# hist(prey$Humans_Per_Camera_Per_Day)
-# hist(log(prey$Humans_Per_Camera_Per_Day))
-# median(prey$Humans_Per_Camera_Per_Day)
 
-# avg median of the two is 0.1, so let's use that as cutoff for "high" vs "low" dist
+# get median
+# subset to the two species
+pair <- filter(data, Species_Name == 'Puma concolor' | Species_Name == 'Odocoileus hemionus') 
+
+# select median of sites and assign to object
+sites <- pair %>% 
+  group_by(Site_Name) %>% 
+  summarize(Humans_Per_Camera_Per_Day) %>% 
+  unique()
+
+median <- median(sites$Humans_Per_Camera_Per_Day)
 
 ## plot pred and prey overlap for LOW disturbance
 
-low_dist <- filter(data, Humans_Per_Camera_Per_Day < 0.1)
+low_dist <- filter(data, Humans_Per_Camera_Per_Day < median)
 
 # convert time into radians
-time <- as.POSIXct(low_dist$Time, format = "%H:%M:%S")
+time <- as.POSIXct(low_dist$Local_Time, format = "%H:%M:%S")
 
 # Extract hours, minutes, and seconds
 hours <- as.numeric(format(time, "%H"))
@@ -77,14 +81,12 @@ overlapPlot(low_pred, low_prey)
 legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n')
 
 
-
-
 ## plot pred and prey overlap for HIGH disturbance
 
-high_dist <- filter(data, Humans_Per_Camera_Per_Day > 0.1)
+high_dist <- filter(data, Humans_Per_Camera_Per_Day > median)
 
 # convert time into radians
-time <- as.POSIXct(high_dist$Time, format = "%H:%M:%S")
+time <- as.POSIXct(high_dist$Local_Time, format = "%H:%M:%S")
 
 # Extract hours, minutes, and seconds
 hours <- as.numeric(format(time, "%H"))
@@ -102,23 +104,9 @@ overlapPlot(high_pred, high_prey)
 legend('topright', c("Predator", "Prey"), lty=c(1,2), col=c(1,4), bty='n')
 
 
-# prey in high human activity vs prey in low human activity
-overlapPlot(high_prey, low_prey)
+# predator in high human activity vs predator in low human activity
+overlapPlot(high_pred, low_pred)
 legend('topright', c("High Human Activity", "Low Human Activity"), lty=c(1,2), col=c(1,4), bty='n')
 
 
 
-# Plot examples from package (with different options and formatting)
-overlapPlot(pred, human)
-# Make it prettier:
-overlapPlot(pred, human, linet = c(1,1), linec = c("red", "blue"),
-            rug=TRUE, extend="lightgreen", main="Simulated data")
-legend("topleft", c("Puma", "Human"), lty=1, col=c("red", "blue"), bg="white")
-# Add vertical dotted lines to mark sunrise (05:30) and sunset (18:47):
-# (times must be in hours if the x-axis is labelled in hours)
-abline(v=c(5.5, 18+47/60), lty=3)
-# A plot centered on midnight:
-overlapPlot(pred, human, xcenter = "m", rug=TRUE)
-# Mark sunrise/sunset; values to the left of "00:00" are negative
-# so subtract 24:
-abline(v=c(5.5, (18+47/60) - 24), lty=3)

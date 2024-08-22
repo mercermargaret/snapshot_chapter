@@ -13,6 +13,18 @@ data <- read_csv("results/human_overlap_results.csv")
 
 data$Species <- factor(data$Species, levels = rev(unique(data$Species)))
 
+data$Common_Name <- c("Puma",
+                       "Gray Wolf",
+                       "White-tailed Deer",
+                       "Mule Deer",
+                       "Elk",
+                       "Moose",
+                       "Coyote",
+                       "Bobcat",
+                       "Raccoon",
+                       "Red Fox",
+                       "Striped Skunk")
+
 # percent change column!
 data <- data %>% mutate(Percent_Change = Difference/Overlap_Low)
 
@@ -37,7 +49,7 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
             fill = "#E5E5E5", color = NA) +
   geom_segment(aes(xend = Species, yend = 0)) +
   geom_point(shape = 21, size = 3) +
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.8, 1.2), labels = percent_format()) +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.55, 1.1), labels = percent_format()) +
   coord_flip() +
   theme_classic () +
   theme(axis.title.y = element_blank(),
@@ -51,14 +63,15 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +
-  geom_text(aes(x = Species, y = -.78, label = Species), hjust = 0, vjust = 0.5, color = "black")
+  geom_text(aes(x = Species, y = -.53, label = Common_Name), hjust = 0, vjust = 0.5, color = "black")
 lol
 
 hum <- readPNG("visualization/pngs/human.png") %>% rasterGrob(interpolate=TRUE)
 
 lol +
   annotation_custom(hum, 
-                    xmin=-3, 
-                    xmax=10, 
-                    ymin=.8, 
-                    ymax=1.1)
+                    xmin=1, 
+                    xmax=6, 
+                    ymin=.7, 
+                    ymax=.9)
+

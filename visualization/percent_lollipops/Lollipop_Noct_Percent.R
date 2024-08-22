@@ -13,8 +13,20 @@ data <- read_csv("results/nocturnality.csv")
 
 data <- data[c(1:11), ]
 
-data$Trend[2] <- "slightly decreasing"
+# add common names
+data$Common_Name <- c("Puma",
+                       "Gray Wolf",
+                       "White-tailed Deer",
+                       "Mule Deer",
+                       "Elk",
+                       "Moose",
+                       "Coyote",
+                       "Bobcat",
+                       "Raccoon",
+                       "Red Fox",
+                       "Striped Skunk")
 
+data$Trend[2] <- "slightly decreasing"
 
 data$Species <- factor(data$Species, levels = rev(unique(data$Species)))
 
@@ -43,8 +55,8 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
   geom_segment(aes(xend = Species, yend = 0)) +
   geom_point(shape = 21, size = 3) +
   scale_y_continuous(expand = c(0, 0), 
-                     limits = c((-max(abs(data$Percent_Change)) - 0.2), 
-                                (max(abs(data$Percent_Change)) + 0.1)), 
+                     limits = c((min((data$Percent_Change)) - 0.15), 
+                                (max((data$Percent_Change)) + 0.1)), 
                      labels = percent_format()) +
   coord_flip() +
   theme_classic () +
@@ -62,8 +74,8 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +
   geom_text(aes(x = Species, 
-                y = (-max(abs(Percent_Change)) - 0.18), 
-                label = Species), 
+                y = (min((Percent_Change)) - 0.14), 
+                label = Common_Name), 
             hjust = 0, 
             vjust = 0.5, 
             color = "black")
@@ -81,7 +93,5 @@ lol +
   annotation_custom(sun, 
                     xmin=1, 
                     xmax=5.5, 
-                    ymin=-0.3, 
+                    ymin=-0.2, 
                     ymax=0)
-
-    

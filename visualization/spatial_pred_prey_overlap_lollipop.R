@@ -1,6 +1,11 @@
-# lollipop chart for overlap of pred vs prey
-# Margaret Mercer
-# May 8, 2024
+# occupancy results pred prey
+# margaret mercer
+# august 21 2024
+
+
+
+# clear workspace
+rm(list=ls())
 
 library(ggplot2)
 library(extrafont)
@@ -9,29 +14,10 @@ library(scales)
 library(grid)
 library(png)
 
-data <- read_csv("results/pred_prey_overlap_results.csv")
+data <- read_csv("results/pred_prey_overlap_occupancy_results.csv")
 
 data$Pairing <- paste(data$Predator, data$Prey, sep = "/")
 data$Pairing <- factor(data$Pairing, levels = rev(unique(data$Pairing)))
-
-data$Prey_Common <- c("White-tailed Deer",
-                      "Mule Deer",
-                      "Elk",
-                      "Moose",
-                      "Coyote",
-                      "Bobcat",
-                      "Raccoon",
-                      "Red Fox",
-                      "Striped Skunk",
-                      "White-tailed Deer",
-                      "Mule Deer",
-                      "Elk",
-                      "Moose",
-                      "Coyote",
-                      "Bobcat",
-                      "Raccoon",
-                      "Red Fox",
-                      "Striped Skunk")
 
 # Define custom colors
 my_colors <- c("Increase" = "#0B5401", "Slight Increase" = "#77A87C", "No Change" = "steelblue", "Slight Decrease" = "#C67976", "Decrease" = "#8B0000", "White" = "white", "Shaded" = "#E5E5E5")
@@ -54,7 +40,7 @@ lol <- ggplot(data, aes(x = Pairing, y = Difference,
             fill = "#E5E5E5", color = NA) +
   geom_segment(aes(xend = Pairing, yend = 0)) +
   geom_point(shape = 21, size = 3) +
-  scale_y_continuous(expand = c(0, 0), limits = c(min(data$Difference) - 0.09, max(data$Difference) + .05), labels = percent_format()) +
+  scale_y_continuous(expand = c(0, 0), limits = c(min(data$Difference) - .7, max(data$Difference) + .1)) +
   coord_flip() +
   theme_classic () +
   theme(axis.title.y = element_blank(),
@@ -64,11 +50,11 @@ lol <- ggplot(data, aes(x = Pairing, y = Difference,
         axis.ticks = element_blank(),
         text = element_text(family = "Helvetica", size = 15)) +
   geom_hline(yintercept = 0, color = "darkgray") +
-  labs(x = NULL, y = "Difference in Temporal Overlap", main = "Difference in Temporal Overlap between Predators and Prey") +
+  labs(x = NULL, y = "Difference in Spatial Overlap", main = "Difference in Spatial Overlap between Predators and Prey") +
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +
-  geom_text(aes(x = Pairing, y = min(Difference) - 0.08, label = Prey_Common), hjust = 0, vjust = 0.5, color = "black") 
+  geom_text(aes(x = Pairing, y = min(data$Difference) - .68, label = Prey), hjust = 0, vjust = 0.5, color = "black") 
 lol
 
 # add animations
@@ -77,5 +63,6 @@ wolf <- readPNG("visualization/pngs/wolf.png") %>% rasterGrob(interpolate=TRUE)
 
 
 lol +
-  annotation_custom(puma, xmin=11, xmax=17, ymin=0.08, ymax=.23) +
-  annotation_custom(wolf, xmin=2, xmax=9, ymin=0.13, ymax=.23)
+  annotation_custom(puma, xmin=10, xmax=15, ymin=0.25, ymax=.75) +
+  annotation_custom(wolf, xmin=1, xmax=6, ymin=0.4, ymax=.9)
+

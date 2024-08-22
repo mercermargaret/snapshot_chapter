@@ -10,9 +10,9 @@ library(png)
 library(tidyverse)
 
 # import silhouettes
-human_image <- readPNG("visualization/human_black.png")
-prey_image <- readPNG("visualization/muledeer_black.png")
-pred_image <- readPNG("visualization/puma_black.png")
+human_image <- readPNG("visualization/pngs/human_black.png")
+prey_image <- readPNG("visualization/pngs/muledeer_black.png")
+pred_image <- readPNG("visualization/pngs/puma_black.png")
 hum <- rasterGrob(human_image, interpolate=TRUE)
 pry <- rasterGrob(prey_image, interpolate=TRUE)
 prd <- rasterGrob(pred_image, interpolate=TRUE)
@@ -45,7 +45,7 @@ df <- df %>%
 # Create the plot using ggplot
 mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
   geom_line(size = 1) +
-  labs(title = "Mutual Attraction Hypothesis",
+  labs(title = "Mutual Attraction",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
   xlim(-80, 50) +
@@ -64,8 +64,8 @@ mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
 mat
 
 mat_s <- mat + 
-  annotation_custom(hum, xmin=-50, xmax=110, ymin=-50, ymax=250) + # experimenting by adding 10 to "ymax" --> did nothing
-  annotation_custom(pry, xmin=-97, xmax=103, ymin=20, ymax=270) + # then add 20 to xmax --> moved it over. ???
+  annotation_custom(hum, xmin=-50, xmax=110, ymin=-50, ymax=250) + 
+  annotation_custom(pry, xmin=-97, xmax=103, ymin=20, ymax=270) +
   annotation_custom(prd, xmin=-115, xmax=85, ymin=-0, ymax=200)
 
 # change gm_line to gm_polygon, and fill = (change for different colors, NA for human)
@@ -128,7 +128,7 @@ df <- data.frame(
 # Create the plot using ggplot
 hs <- ggplot(df, aes(x = x, y = y, color = parabola)) +
   geom_line(size = 1) +
-  labs(title = "Human Shield Hypothesis",
+  labs(title = "Human Shield",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
   xlim(-80, 50) +
@@ -170,7 +170,7 @@ df <- data.frame(
 # Create the plot using ggplot
 mav <- ggplot(df, aes(x = x, y = y, color = parabola)) +
   geom_line(size = 1) +
-  labs(title = "Mutual Avoidance Hypothesis",
+  labs(title = "Mutual Avoidance",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
   xlim(-80, 50) +
@@ -211,7 +211,7 @@ df <- data.frame(
 # Create the plot using ggplot
 pa <- ggplot(df, aes(x = x, y = y, color = parabola)) +
   geom_line(size = 1) +
-  labs(title = "Predator Attraction Hypothesis",
+  labs(title = "Predator Attraction",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
   xlim(-80, 50) +
@@ -238,15 +238,15 @@ pa_s <- pa +
 # stick the four curves together
 g <- grid.arrange(pa_s, mat_s, mav_s, hs_s, ncol=2)
 
-# add labels for overlap predictions
-t1 <- textGrob("Increasing 
-Overlap", x = 0.92, y = 0.75, gp = gpar(col = "darkgreen", fontsize = 8, fontface = "bold"))
-t2 <- textGrob("Decreasing 
-Overlap", x = 0.1, y = 0.75, gp = gpar(col = "darkred", fontsize = 8, fontface = "bold"))
-t3 <- textGrob("Increasing 
-Overlap", x = 0.1, y = 0.3, gp = gpar(col = "darkgreen", fontsize = 8, fontface = "bold"))
-t4 <- textGrob("Decreasing 
-Overlap", x = 0.92, y = 0.3, gp = gpar(col = "darkred", fontsize = 8, fontface = "bold"))
+# # add labels for overlap predictions
+# t1 <- textGrob("Increasing 
+# Overlap", x = 0.92, y = 0.75, gp = gpar(col = "darkgreen", fontsize = 8, fontface = "bold"))
+# t2 <- textGrob("Decreasing 
+# Overlap", x = 0.1, y = 0.75, gp = gpar(col = "darkred", fontsize = 8, fontface = "bold"))
+# t3 <- textGrob("Increasing 
+# Overlap", x = 0.1, y = 0.3, gp = gpar(col = "darkgreen", fontsize = 8, fontface = "bold"))
+# t4 <- textGrob("Decreasing 
+# Overlap", x = 0.92, y = 0.3, gp = gpar(col = "darkred", fontsize = 8, fontface = "bold"))
 
 t5 <- textGrob("Predator 
 Attraction", x = 0.5, y = 0.95, gp = gpar(col = "black", fontsize = 8))
@@ -277,10 +277,10 @@ grid.draw(g)
 popViewport(2)
 
 # Overlay the text grob
-grid.draw(t1)
-grid.draw(t2)
-grid.draw(t3)
-grid.draw(t4)
+# grid.draw(t1)
+# grid.draw(t2)
+# grid.draw(t3)
+# grid.draw(t4)
 grid.draw(t5)
 grid.draw(t6)
 grid.draw(t7)
