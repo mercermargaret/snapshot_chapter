@@ -3,9 +3,7 @@
 # margaret mercer
 # august 16, 2024
 
-# note: this file takes around 30 min to run
-
-# broke at puma/moose high (k = 1, l = 4) when included year as a covariate
+# note: this file takes around 20 min to run
 
 # load packages
 library(lubridate)
@@ -22,9 +20,9 @@ rm(list=ls())
 # import and wrangle data ####
 # let's see if we can merge these in a way that keeps ALL site names and just has a row of "NA"s if there were no pics.
 deployments_all <- read.csv("data/five_year_deployments.csv") 
+deployments_all$Array_Year <- paste(deployments_all$Array, deployments_all$Year, sep = "_")
 observations_all <- read.csv("../data_too_big/five_year_observation_data.csv") 
 joined <- left_join(deployments_all, observations_all, by = "Site_Name")
-joined$Array <- joined$Array.x
 joined$Latitude <- joined$Latitude.x
 joined$Longitude <- joined$Longitude.x
 joined$Survey_Nights <- joined$Survey_Nights.x
@@ -33,7 +31,7 @@ joined$Development_Level <- joined$Development_Level.x
 joined$Disturbance <- joined$Disturbance.x
 joined$Humans_Per_Camera_Per_Day <- joined$Humans_Per_Camera_Per_Day.x
 observations_all <- subset(joined, select = c("record_ID", 
-                                              "Array", 
+                                              "Array_Year", 
                                               "Site_Name", 
                                               "Survey_Nights", 
                                               "Latitude", 
@@ -104,7 +102,11 @@ results <- data.frame(
   "overlap_low" = numeric(18), 
   "p-value_low" = numeric(18), 
   "overlap_high" = numeric(18), 
-  "p-value_high" = numeric(18), 
+  "p-value_high" = numeric(18),
+  "lower_CI_low" = numeric(18),
+  "upper_CI_low" = numeric(18),
+  "lower_CI_high" = numeric(18),
+  "upper_CI_high" = numeric(18),
   stringsAsFactors = FALSE
 )
 
@@ -344,14 +346,12 @@ for (k in 1:length(pred_list)) {
     # start here
     site_covs <- as.data.frame(site_info_low[,c("Humans_Per_Camera_Per_Day", 
                                             "Disturbance", 
-                                            "Array", 
+                                            "Array_Year", 
                                             "Year")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
-    # Thought: should we call each array "array_year" in case the some of the arrays 
-    # had the same name across years?
     
     obs_covs <- list(DOY_scaled = DOY_scaled,
                      days_scaled = days_scaled) 
@@ -361,7 +361,7 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    pred_model_low <- occu(~ days_scaled ~ Year + (1 | Array), data = umf) 
+    pred_model_low <- occu(~ days_scaled ~ 1 + (1 | Array_Year), data = umf) 
     # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
     
     summary(pred_model_low)
@@ -549,15 +549,13 @@ for (k in 1:length(pred_list)) {
     
     site_covs <- as.data.frame(site_info_low[,c("Humans_Per_Camera_Per_Day", 
                                             "Disturbance", 
-                                            "Array", 
+                                            "Array_Year", 
                                             "Year",
                                             "Predator_Occupancy")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
-    # Thought: should we call each array "array_year" in case the some of the arrays 
-    # had the same name across years?
     
     obs_covs <- list(DOY_scaled = DOY_scaled,
                      days_scaled = days_scaled) 
@@ -567,7 +565,7 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    prey_model_low <- occu(~ days_scaled ~ Predator_Occupancy + Year + (1 | Array), data = umf) 
+    prey_model_low <- occu(~ days_scaled ~ Predator_Occupancy + 1 + (1 | Array_Year), data = umf) 
     # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
     
     summary_prey_low <- summary(prey_model_low)
@@ -720,14 +718,12 @@ for (k in 1:length(pred_list)) {
     
     site_covs <- as.data.frame(site_info_high[,c("Humans_Per_Camera_Per_Day", 
                                             "Disturbance", 
-                                            "Array", 
+                                            "Array_Year", 
                                             "Year")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
-    # Thought: should we call each array "array_year" in case the some of the arrays 
-    # had the same name across years?
     
     obs_covs <- list(DOY_scaled = DOY_scaled,
                      days_scaled = days_scaled) 
@@ -737,7 +733,7 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    pred_model_high <- occu(~ days_scaled ~ Year + (1 | Array), data = umf) 
+    pred_model_high <- occu(~ days_scaled ~ 1 + (1 | Array_Year), data = umf) 
     
     summary(pred_model_high)
     
@@ -921,15 +917,13 @@ for (k in 1:length(pred_list)) {
     
     site_covs <- as.data.frame(site_info_high[,c("Humans_Per_Camera_Per_Day", 
                                             "Disturbance", 
-                                            "Array", 
+                                            "Array_Year", 
                                             "Year",
                                             "Predator_Occupancy")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
-    # Thought: should we call each array "array_year" in case the some of the arrays 
-    # had the same name across years?
     
     obs_covs <- list(DOY_scaled = DOY_scaled,
                      days_scaled = days_scaled) 
@@ -939,7 +933,7 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    prey_model_high <- occu(~ days_scaled ~ Predator_Occupancy + Year + (1 | Array), data = umf)
+    prey_model_high <- occu(~ days_scaled ~ Predator_Occupancy + (1 | Array_Year), data = umf)
     
     # this errors for puma/moose when I added year as a covariate
     # Error in solve.default(full) : 
@@ -957,19 +951,29 @@ for (k in 1:length(pred_list)) {
       m <- (l + 9)
     }
     
-    # fill in results dataframe
+    # calculate CI
+    lower_CI_low <- summary_prey_low$state$Estimate[2] - summary_prey_low$state$SE[2]
+    upper_CI_low <- summary_prey_low$state$Estimate[2] + summary_prey_low$state$SE[2]
+    lower_CI_high<- summary_prey_high$state$Estimate[2] - summary_prey_high$state$SE[2]
+    upper_CI_high<- summary_prey_high$state$Estimate[2] + summary_prey_high$state$SE[2]
+    
+    # pull out values
     effect_pred_on_prey_low <- summary_prey_low$state$Estimate[2]
     p_value_effect_pred_on_prey_low <- summary_prey_low$state$`P(>|z|)`[2]
     effect_pred_on_prey_high <- summary_prey_high$state$Estimate[2]
     p_value_effect_pred_on_prey_high <- summary_prey_high$state$`P(>|z|)`[2]
     
-    
+    # fill in results dataframe
     results[m, 1] <- pred_name
     results[m, 2] <- prey_name
     results[m, 3] <- effect_pred_on_prey_low
     results[m, 4] <- p_value_effect_pred_on_prey_low
     results[m, 5] <- effect_pred_on_prey_high
     results[m, 6] <- p_value_effect_pred_on_prey_high
+    results[m, 7] <- lower_CI_low
+    results[m, 8] <- upper_CI_low
+    results[m, 9] <- lower_CI_high
+    results[m, 10] <- upper_CI_high
 
 
   }
@@ -996,10 +1000,17 @@ results$Prey_Type <- c("herbivore",
                        "mesocarnivore",
                        "mesocarnivore")
 
+results$Significant <- ifelse(results$upper_CI_low >= results$lower_CI_high & 
+                                results$lower_CI_low <= results$upper_CI_high, 
+                              "No", "Yes")
+
 results <- results %>%
   mutate(Trend = if_else(Difference < 0, "decreasing", 
                          if_else(Difference > 0, "increasing", "no change")))
 
+results$Trend <- if_else(results$Significant == "No",
+                         paste("slightly", results$Trend), paste(results$Trend))
+
 # write results as csv
-write_csv(results, "results/pred_prey_overlap_occupancy_results.csv")
+write_csv(results, "results/pred_prey_occupancy_results.csv")
 

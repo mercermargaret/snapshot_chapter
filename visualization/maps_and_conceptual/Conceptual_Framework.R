@@ -60,7 +60,7 @@ mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+        plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 mat
 
 mat_s <- mat + 
@@ -143,7 +143,7 @@ hs <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+        plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 hs
 
 hs_s <- hs + 
@@ -185,7 +185,7 @@ mav <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+        plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 mav
 mav_s <- mav + 
@@ -226,7 +226,7 @@ pa <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+        plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 pa
 
 pa_s <- pa + 
@@ -249,21 +249,21 @@ g <- grid.arrange(pa_s, mat_s, mav_s, hs_s, ncol=2)
 # Overlap", x = 0.92, y = 0.3, gp = gpar(col = "darkred", fontsize = 8, fontface = "bold"))
 
 t5 <- textGrob("Predator 
-Attraction", x = 0.5, y = 0.95, gp = gpar(col = "black", fontsize = 8))
+Attraction", x = 0.5, y = 0.95, gp = gpar(col = "black", fontsize = 12))
 t6 <- textGrob("Prey 
-Attraction", x = 0.95, y = 0.5, gp = gpar(col = "black", fontsize = 8))
+Attraction", x = 0.9, y = 0.5, gp = gpar(col = "black", fontsize = 12))
 t7 <- textGrob("Predator 
-Avoidance", x = 0.5, y = 0.05, gp = gpar(col = "black", fontsize = 8))
+Avoidance", x = 0.5, y = 0.05, gp = gpar(col = "black", fontsize = 12))
 t8 <- textGrob("Prey 
-Avoidance", x = 0.05, y = 0.5, gp = gpar(col = "black", fontsize = 8))
+Avoidance", x = 0.1, y = 0.5, gp = gpar(col = "black", fontsize = 12))
 
 # Create a new page
 grid.newpage()
 
 # Create a larger viewport with margins
 pushViewport(viewport(layout = grid.layout(1, 1, 
-                                           widths = unit(.8, "npc") + unit(c(.8, .8), "cm"), 
-                                           heights = unit(.8, "npc") + unit(c(.8, .8), "cm"))))
+                                           widths = unit(.6, "npc") + unit(c(.6, .6), "cm"), 
+                                           heights = unit(.6, "npc") + unit(c(.6, .6), "cm"))))
 
 # Create a viewport for the arranged plots with margins
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, 

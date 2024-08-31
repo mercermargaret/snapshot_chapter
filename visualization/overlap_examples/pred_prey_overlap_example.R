@@ -16,7 +16,7 @@ data <- separate(data, Local_Date_Time, into = c("Local_Date", "Local_Time"), se
 
 # get median
 # subset to the two species
-pair <- filter(data, Species_Name == 'Puma concolor' | Species_Name == 'Odocoileus hemionus') 
+pair <- filter(data, Species_Name == 'Puma concolor' | Species_Name == 'Alces alces') 
 
 # select median of sites and assign to object
 sites <- pair %>% 
@@ -43,7 +43,7 @@ time_radians <- 2 * pi * ((hours + minutes / 60 + seconds / 3600) / 24)
 
 # plot pred and prey for low disturbance
 low_pred <- time_radians[low_dist$Species_Name == 'Puma concolor']
-low_prey <- time_radians[low_dist$Species_Name == 'Odocoileus virginianus']
+low_prey <- time_radians[low_dist$Species_Name == 'Alces alces']
 
 ## plot pred and prey overlap for HIGH disturbance
 
@@ -62,7 +62,7 @@ time_radians <- 2 * pi * ((hours + minutes / 60 + seconds / 3600) / 24)
 
 # plot pred and prey for high disturbance
 high_pred <- time_radians[high_dist$Species_Name == 'Puma concolor']
-high_prey <- time_radians[high_dist$Species_Name == 'Odocoileus virginianus']
+high_prey <- time_radians[high_dist$Species_Name == 'Alces alces']
 
 
 # overlap examples ####
@@ -70,30 +70,29 @@ high_prey <- time_radians[high_dist$Species_Name == 'Odocoileus virginianus']
 
 # just pred
 overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", NA), linewidth = c(2, NA), olapcol = NA,
-            rug=FALSE, main="Low Human Disturbance")
+            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
 legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
-
 # add line
 abline(v=c(5.5, 18+47/60), lty=3)
 legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
 
 # both pred and prey
 overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="Low Human Disturbance")
+            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma", "Deer"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 # add overlap shading
 overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2),
-            rug=FALSE, main="Low Human Disturbance")
+            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma", "Deer"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 
 # high
 # just pred
 overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", NA), linewidth = c(2, NA), olapcol = NA,
-            rug=FALSE, main="High Human Disturbance")
+            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
 legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
 
 # add line
@@ -102,13 +101,13 @@ legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg
 
 # both pred and prey
 overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="High Human Disturbance")
+            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma", "Deer"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 # add overlap shading
 overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2),
-            rug=FALSE, main="High Human Disturbance")
+            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma", "Deer"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 

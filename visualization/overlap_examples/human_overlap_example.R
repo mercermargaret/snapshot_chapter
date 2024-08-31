@@ -70,24 +70,24 @@ high_species <- time_radians[high_dist$Species_Name == 'Cervus canadensis']
 
 # empty
 overlapPlot(low_hum, low_species, linet = c(1,5), linec = c(NA, NA), linewidth = c(2, NA), olapcol = NA,
-            rug=FALSE, main="Low Human Disturbance")
+            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
 
 # just human
 overlapPlot(low_hum, low_species, linet = c(1,5), linec = c("red", NA), linewidth = c(2, NA), olapcol = NA,
-            rug=FALSE, main="Low Human Disturbance")
+            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
 legend("topleft", c("Human"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
 
 # both human and animal
 overlapPlot(low_hum, low_species, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="Low Human Disturbance")
+            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
 legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 # add overlap shading
 overlapPlot(low_hum, low_species, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2),
-            rug=FALSE, main="Low Human Disturbance")
+            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
 legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
@@ -95,26 +95,26 @@ legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c
 # high
 # empty
 overlapPlot(high_hum, high_species, linet = c(1,5), linec = c(NA, NA), linewidth = c(2, NA), olapcol = NA,
-            rug=FALSE, main="High Human Disturbance")
+            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
 # add line
 abline(v=c(5.5, 18+47/60), lty=3)
 
 # just human
 overlapPlot(high_hum, high_species, linet = c(1,5), linec = c("red", NA), linewidth = c(2, NA), olapcol = NA,
-            rug=FALSE, main="High Human Disturbance")
+            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
 # add line
 abline(v=c(5.5, 18+47/60), lty=3)
 legend("topleft", c("Human"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
 
 # both human and animal
 overlapPlot(high_hum, high_species, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="High Human Disturbance")
+            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
 legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 # add overlap shading
 overlapPlot(high_hum, high_species, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2),
-            rug=FALSE, main="High Human Disturbance")
+            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
 legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 

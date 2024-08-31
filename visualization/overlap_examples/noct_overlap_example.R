@@ -61,21 +61,21 @@ high_species <- time_radians[high_dist$Species_Name == 'Canis latrans']
 
 # empty
 overlapPlot(low_species, high_species, linet = c(1,5), linec = c(NA, NA), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="Nocturnality")
+            rug=FALSE, main="Coyote Activity in Wild Vs Urban Areas", ylab = NA, yaxt = "n")
 # add line
 abline(v=c(5.5, 18+47/60), lty=3)
 
 
 # just low
 overlapPlot(low_species, high_species, linet = c(1,5), linec = c("darkgreen", NA), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="Nocturnality")
+            rug=FALSE, main="Coyote Activity in Wild Vs Urban Areas", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Low Human Activity"), lty=c(1), lwd = c(2, 2), col=c("darkgreen"), bg="white")
+legend("bottomleft", c("Wild Areas"), lty=c(1), lwd = c(2, 2), col=c("darkgreen"), bg="white")
 
 
 # both
 overlapPlot(low_species, high_species, linet = c(1,5), linec = c("darkgreen", "purple"), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="Nocturnality")
+            rug=FALSE, main="Coyote Activity in Wild Vs Urban Areas", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Low Human Activity", "High Human Activity"), lty=c(1,5), lwd = c(2, 2), col=c("darkgreen", "purple"), bg="white")
+legend("bottomleft", c("Wild Areas", "Urban Areas"), lty=c(1,5), lwd = c(2, 2), col=c("darkgreen", "purple"), bg="white")
 

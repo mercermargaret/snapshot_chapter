@@ -21,9 +21,9 @@ tic()
 # import and wrangle data ####
 # let's see if we can merge these in a way that keeps ALL site names and just has a row of "NA"s if there were no pics.
 deployments_all <- read.csv("data/five_year_deployments.csv") 
+deployments_all$Array_Year <- paste(deployments_all$Array, deployments_all$Year, sep = "_")
 observations_all <- read.csv("../data_too_big/five_year_observation_data.csv") 
 joined <- left_join(deployments_all, observations_all, by = "Site_Name")
-joined$Array <- joined$Array.x
 joined$Latitude <- joined$Latitude.x
 joined$Longitude <- joined$Longitude.x
 joined$Survey_Nights <- joined$Survey_Nights.x
@@ -32,7 +32,7 @@ joined$Development_Level <- joined$Development_Level.x
 joined$Disturbance <- joined$Disturbance.x
 joined$Humans_Per_Camera_Per_Day <- joined$Humans_Per_Camera_Per_Day.x
 observations_all <- subset(joined, select = c("record_ID", 
-                                              "Array", 
+                                              "Array_Year", 
                                               "Site_Name", 
                                               "Survey_Nights", 
                                               "Latitude", 
@@ -101,6 +101,10 @@ results <- data.frame(
   "p-value_low" = numeric(11),
   "Occupancy_High" = numeric(11), 
   "p-value_high" = numeric(11),
+  "lower_CI_low" = numeric(11),
+  "upper_CI_low" = numeric(11),
+  "lower_CI_high" = numeric(11),
+  "upper_CI_high" = numeric(11),
   stringsAsFactors = FALSE
 )
 
@@ -292,14 +296,13 @@ for (k in 1:length(species_list)) {
     # start here
     site_covs <- as.data.frame(site_info_low[,c("Humans_Per_Camera_Per_Day", 
                                                 "Disturbance", 
-                                                "Array", 
+                                                "Array_Year", 
                                                 "Year")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
-    # Thought: should we call each array "array_year" in case the some of the arrays 
-    # had the same name across years?
+
     
     obs_covs <- list(DOY_scaled = DOY_scaled,
                      days_scaled = days_scaled) 
@@ -309,7 +312,7 @@ for (k in 1:length(species_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    model_low <- occu(~ days_scaled ~ Year + (1 | Array), data = umf) 
+    model_low <- occu(~ days_scaled ~ 1 + (1 | Array_Year), data = umf) 
     # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
     
     summary_low <- summary(model_low)
@@ -463,14 +466,12 @@ for (k in 1:length(species_list)) {
     
     site_covs <- as.data.frame(site_info_high[,c("Humans_Per_Camera_Per_Day", 
                                                  "Disturbance", 
-                                                 "Array", 
+                                                 "Array_Year", 
                                                  "Year")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
-    # Thought: should we call each array "array_year" in case the some of the arrays 
-    # had the same name across years?
     
     obs_covs <- list(DOY_scaled = DOY_scaled,
                      days_scaled = days_scaled) 
@@ -480,22 +481,33 @@ for (k in 1:length(species_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    model_high <- occu(~ days_scaled ~ Year + (1 | Array), data = umf) 
+    model_high <- occu(~ days_scaled ~ 1 + (1 | Array_Year), data = umf) 
     # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
     
     summary_high <- summary(model_high)
     
-    # fill in results dataframe
+    # calculate CI
+    lower_CI_low <- summary_low$state$Estimate[1] - summary_low$state$SE[1]
+    upper_CI_low <- summary_low$state$Estimate[1] + summary_low$state$SE[1]
+    lower_CI_high<- summary_high$state$Estimate[1] - summary_high$state$SE[1]
+    upper_CI_high<- summary_high$state$Estimate[1] + summary_high$state$SE[1]
+    
+    # pull out values
     occupancy_low <- summary_low$state$Estimate[1]
     p_value_low <- summary_low$state$`P(>|z|)`[1]
     occupancy_high <- summary_high$state$Estimate[1]
     p_value_high <- summary_high$state$`P(>|z|)`[1]
     
+    # fill in results dataframe
     results[k, 1] <- species_name
     results[k, 2] <- occupancy_low
     results[k, 3] <- p_value_low
     results[k, 4] <- occupancy_high
     results[k, 5] <- p_value_high
+    results[k, 6] <- lower_CI_low
+    results[k, 7] <- upper_CI_low
+    results[k, 8] <- lower_CI_high
+    results[k, 9] <- upper_CI_high
 
 }
 
@@ -503,5 +515,28 @@ toc()
 
 results$Difference <- results$Occupancy_High - results$Occupancy_Low
 
+results$Significant <- ifelse(results$upper_CI_low >= results$lower_CI_high & 
+                                results$lower_CI_low <= results$upper_CI_high, 
+                              "No", "Yes")
+
+results <- results %>%
+  mutate(Trend = if_else(Difference < 0, "decreasing", 
+                         if_else(Difference > 0, "increasing", "no change")))
+
+results$Trend <- if_else(results$Significant == "No",
+                         paste("slightly", results$Trend), paste(results$Trend))
+
+results$Type <- c("carnivore",
+                  "carnivore",
+                  "herbivore",
+                  "herbivore",
+                  "herbivore",
+                  "herbivore",
+                  "mesocarnivore",
+                  "mesocarnivore",
+                  "mesocarnivore",
+                  "mesocarnivore",
+                  "mesocarnivore")
+
 # write results as csv
-write_csv(results, "results/low_vs_high_occupancy_modeling_results.csv")
+write_csv(results, "results/single_species_occupancy_results.csv")
