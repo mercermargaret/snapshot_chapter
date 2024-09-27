@@ -96,7 +96,7 @@ prey_range_list <- list(whitetail,
                         skunk)
 
 # create empty dataframe for occupancy values
-results <- data.frame(
+results_occ <- data.frame(
   Predator = character(18), 
   Prey = character(18),
   "overlap_low" = numeric(18), 
@@ -109,6 +109,9 @@ results <- data.frame(
   "upper_CI_high" = numeric(18),
   stringsAsFactors = FALSE
 )
+
+# and one for detection values
+results_det <- results_occ
 
 # begin the for loop ####
 # since i and j are already used within this, we'll use k and l
@@ -192,7 +195,7 @@ for (k in 1:length(pred_list)) {
       
     }
     
-
+    
     # split down median of SITES, not observations
     # find median dist and assign to an object
     median <- median(deps_within_range$Humans_Per_Camera_Per_Day)
@@ -345,13 +348,14 @@ for (k in 1:length(pred_list)) {
     
     # start here
     site_covs <- as.data.frame(site_info_low[,c("Humans_Per_Camera_Per_Day", 
-                                            "Disturbance", 
-                                            "Array_Year", 
-                                            "Year")]) 
+                                                "Disturbance", 
+                                                "Array_Year", 
+                                                "Year")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
+    
     
     obs_covs <- list(DOY_scaled = DOY_scaled,
                      days_scaled = days_scaled) 
@@ -548,26 +552,29 @@ for (k in 1:length(pred_list)) {
     hist_low_prey[] <- lapply(hist_low_prey, as.numeric)
     
     site_covs <- as.data.frame(site_info_low[,c("Humans_Per_Camera_Per_Day", 
-                                            "Disturbance", 
-                                            "Array_Year", 
-                                            "Year",
-                                            "Predator_Occupancy")]) 
+                                                "Disturbance", 
+                                                "Array_Year", 
+                                                "Year",
+                                                "Predator_Occupancy")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
     
+    # make a new dataframe out of predator occupancy with same dimensions as other observation covariates
+    pred_occupancy <- data.frame(replicate(length(DOY_scaled[1,]), site_info_low$Predator_Occupancy, simplify = FALSE))
+    
     obs_covs <- list(DOY_scaled = DOY_scaled,
-                     days_scaled = days_scaled) 
+                     days_scaled = days_scaled,
+                     pred_occupancy = pred_occupancy) 
     
     # create object with all our data and covariates
     umf <- unmarkedFrameOccu(y = hist_low_prey, # Encounter history, must be a data frame or matrix
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    prey_model_low <- occu(~ days_scaled ~ Predator_Occupancy + (1 | Array_Year), data = umf) 
-    # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
-    
+    prey_model_low <- occu(~ days_scaled + pred_occupancy ~ Predator_Occupancy + (1 | Array_Year), data = umf) 
+  
     summary_prey_low <- summary(prey_model_low)
     
     # predator occupancy high ####
@@ -717,9 +724,9 @@ for (k in 1:length(pred_list)) {
     hist_high_pred[] <- lapply(hist_high_pred, as.numeric)
     
     site_covs <- as.data.frame(site_info_high[,c("Humans_Per_Camera_Per_Day", 
-                                            "Disturbance", 
-                                            "Array_Year", 
-                                            "Year")]) 
+                                                 "Disturbance", 
+                                                 "Array_Year", 
+                                                 "Year")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
@@ -916,25 +923,29 @@ for (k in 1:length(pred_list)) {
     hist_high_prey[] <- lapply(hist_high_prey, as.numeric)
     
     site_covs <- as.data.frame(site_info_high[,c("Humans_Per_Camera_Per_Day", 
-                                            "Disturbance", 
-                                            "Array_Year", 
-                                            "Year",
-                                            "Predator_Occupancy")]) 
+                                                 "Disturbance", 
+                                                 "Array_Year", 
+                                                 "Year",
+                                                 "Predator_Occupancy")]) 
     site_covs <- site_covs %>%
       rename(
         Humans = "Humans_Per_Camera_Per_Day",
         Disturbance = "Disturbance")
     
+    # make a new dataframe out of predator occupancy with same dimensions as other observation covariates
+    pred_occupancy <- data.frame(replicate(length(DOY_scaled[1,]), site_info_high$Predator_Occupancy, simplify = FALSE))
+
     obs_covs <- list(DOY_scaled = DOY_scaled,
-                     days_scaled = days_scaled) 
+                     days_scaled = days_scaled,
+                     pred_occupancy = pred_occupancy) 
     
     # create object with all our data and covariates
     umf <- unmarkedFrameOccu(y = hist_high_prey, # Encounter history, must be a data frame or matrix
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    prey_model_high <- occu(~ days_scaled ~ Predator_Occupancy + (1 | Array_Year), data = umf)
-    
+    prey_model_high <- occu(~ days_scaled + pred_occupancy ~ Predator_Occupancy + (1 | Array_Year), data = umf)
+
     summary_prey_high <- summary(prey_model_high)
     
     # set row number for adding results to results dataframe
@@ -955,26 +966,49 @@ for (k in 1:length(pred_list)) {
     p_value_effect_pred_on_prey_low <- summary_prey_low$state$`P(>|z|)`[2]
     effect_pred_on_prey_high <- summary_prey_high$state$Estimate[2]
     p_value_effect_pred_on_prey_high <- summary_prey_high$state$`P(>|z|)`[2]
+  
     
     # fill in results dataframe
-    results[m, 1] <- pred_name
-    results[m, 2] <- prey_name
-    results[m, 3] <- effect_pred_on_prey_low
-    results[m, 4] <- p_value_effect_pred_on_prey_low
-    results[m, 5] <- effect_pred_on_prey_high
-    results[m, 6] <- p_value_effect_pred_on_prey_high
-    results[m, 7] <- lower_CI_low
-    results[m, 8] <- upper_CI_low
-    results[m, 9] <- lower_CI_high
-    results[m, 10] <- upper_CI_high
-
-
+    results_occ[m, 1] <- pred_name
+    results_occ[m, 2] <- prey_name
+    results_occ[m, 3] <- effect_pred_on_prey_low
+    results_occ[m, 4] <- p_value_effect_pred_on_prey_low
+    results_occ[m, 5] <- effect_pred_on_prey_high
+    results_occ[m, 6] <- p_value_effect_pred_on_prey_high
+    results_occ[m, 7] <- lower_CI_low
+    results_occ[m, 8] <- upper_CI_low
+    results_occ[m, 9] <- lower_CI_high
+    results_occ[m, 10] <- upper_CI_high
+    
+    # now detection
+    # calculate CI
+    lower_CI_low <- summary_prey_low$det$Estimate[2] - summary_prey_low$det$SE[2]
+    upper_CI_low <- summary_prey_low$det$Estimate[2] + summary_prey_low$det$SE[2]
+    lower_CI_high<- summary_prey_high$det$Estimate[2] - summary_prey_high$det$SE[2]
+    upper_CI_high<- summary_prey_high$det$Estimate[2] + summary_prey_high$det$SE[2]
+    # pull out values
+    effect_pred_on_prey_low <- summary_prey_low$det$Estimate[2]
+    p_value_effect_pred_on_prey_low <- summary_prey_low$det$`P(>|z|)`[2]
+    effect_pred_on_prey_high <- summary_prey_high$det$Estimate[2]
+    p_value_effect_pred_on_prey_high <- summary_prey_high$det$`P(>|z|)`[2]
+    
+    # fill in results dataframe
+    results_det[m, 1] <- pred_name
+    results_det[m, 2] <- prey_name
+    results_det[m, 3] <- effect_pred_on_prey_low
+    results_det[m, 4] <- p_value_effect_pred_on_prey_low
+    results_det[m, 5] <- effect_pred_on_prey_high
+    results_det[m, 6] <- p_value_effect_pred_on_prey_high
+    results_det[m, 7] <- lower_CI_low
+    results_det[m, 8] <- upper_CI_low
+    results_det[m, 9] <- lower_CI_high
+    results_det[m, 10] <- upper_CI_high
+    
   }
 }
 
-results$Difference <- results$overlap_high - results$overlap_low
-
-results$Prey_Type <- c("herbivore",
+results_occ$Difference <- results_occ$overlap_high - results_occ$overlap_low
+results_occ$Prey_Type <- c("herbivore",
                        "herbivore",
                        "herbivore",
                        "herbivore",
@@ -992,18 +1026,44 @@ results$Prey_Type <- c("herbivore",
                        "mesocarnivore",
                        "mesocarnivore",
                        "mesocarnivore")
-
-results$Significant <- ifelse(results$upper_CI_low >= results$lower_CI_high & 
-                                results$lower_CI_low <= results$upper_CI_high, 
+results_occ$Significant <- ifelse(results_occ$upper_CI_low >= results_occ$lower_CI_high & 
+                                    results_occ$lower_CI_low <= results_occ$upper_CI_high, 
                               "No", "Yes")
-
-results <- results %>%
+results_occ <- results_occ %>%
   mutate(Trend = if_else(Difference < 0, "decreasing", 
                          if_else(Difference > 0, "increasing", "no change")))
-
-results$Trend <- if_else(results$Significant == "No",
-                         paste("slightly", results$Trend), paste(results$Trend))
-
+results_occ$Trend <- if_else(results_occ$Significant == "No",
+                         paste("slightly", results_occ$Trend), paste(results_occ$Trend))
 # write results as csv
-# write_csv(results, "results/pred_prey_occupancy_results.csv")
+write_csv(results_occ, "results/pred_prey_occupancy_results.csv")
+
+results_det$Difference <- results_det$overlap_high - results_det$overlap_low
+results_det$Prey_Type <- c("herbivore",
+                           "herbivore",
+                           "herbivore",
+                           "herbivore",
+                           "mesocarnivore",
+                           "mesocarnivore",
+                           "mesocarnivore",
+                           "mesocarnivore",
+                           "mesocarnivore",
+                           "herbivore",
+                           "herbivore",
+                           "herbivore",
+                           "herbivore",
+                           "mesocarnivore",
+                           "mesocarnivore",
+                           "mesocarnivore",
+                           "mesocarnivore",
+                           "mesocarnivore")
+results_det$Significant <- ifelse(results_det$upper_CI_low >= results_det$lower_CI_high & 
+                                    results_det$lower_CI_low <= results_det$upper_CI_high, 
+                                  "No", "Yes")
+results_det <- results_det %>%
+  mutate(Trend = if_else(Difference < 0, "decreasing", 
+                         if_else(Difference > 0, "increasing", "no change")))
+results_det$Trend <- if_else(results_det$Significant == "No",
+                             paste("slightly", results_det$Trend), paste(results_det$Trend))
+# write results as csv
+write_csv(results_det, "results/pred_prey_detection_results.csv")
 
