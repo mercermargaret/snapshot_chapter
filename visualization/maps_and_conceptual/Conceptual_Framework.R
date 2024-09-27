@@ -285,4 +285,3 @@ grid.draw(t5)
 grid.draw(t6)
 grid.draw(t7)
 grid.draw(t8)
-

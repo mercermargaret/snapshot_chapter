@@ -565,7 +565,7 @@ for (k in 1:length(pred_list)) {
                              siteCovs = site_covs, # Site covariates, must be a data frame
                              obsCovs = obs_covs) # Observer covariates, must be list of data frames or matrices
     
-    prey_model_low <- occu(~ days_scaled ~ Predator_Occupancy + 1 + (1 | Array_Year), data = umf) 
+    prey_model_low <- occu(~ days_scaled ~ Predator_Occupancy + (1 | Array_Year), data = umf) 
     # what do here? which value do we pull out, if we're accounting for days scaled? How do we deal with random effects?
     
     summary_prey_low <- summary(prey_model_low)
@@ -1012,5 +1012,5 @@ results$Trend <- if_else(results$Significant == "No",
                          paste("slightly", results$Trend), paste(results$Trend))
 
 # write results as csv
-write_csv(results, "results/pred_prey_occupancy_results.csv")
+# write_csv(results, "results/pred_prey_occupancy_results.csv")
 
