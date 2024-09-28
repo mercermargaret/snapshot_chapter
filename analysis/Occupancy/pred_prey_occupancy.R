@@ -945,10 +945,10 @@ for (k in 1:length(pred_list)) {
     }
     
     # calculate CI
-    lower_CI_low <- summary_prey_low$state$Estimate[2] - summary_prey_low$state$SE[2]
-    upper_CI_low <- summary_prey_low$state$Estimate[2] + summary_prey_low$state$SE[2]
-    lower_CI_high<- summary_prey_high$state$Estimate[2] - summary_prey_high$state$SE[2]
-    upper_CI_high<- summary_prey_high$state$Estimate[2] + summary_prey_high$state$SE[2]
+    lower_CI_low <- summary_prey_low$state$Estimate[2] - (summary_prey_low$state$SE[2] * 1.96)
+    upper_CI_low <- summary_prey_low$state$Estimate[2] + (summary_prey_low$state$SE[2] * 1.96)
+    lower_CI_high<- summary_prey_high$state$Estimate[2] - (summary_prey_high$state$SE[2] * 1.96)
+    upper_CI_high<- summary_prey_high$state$Estimate[2] + (summary_prey_high$state$SE[2] * 1.96)
     
     # pull out values
     effect_pred_on_prey_low <- summary_prey_low$state$Estimate[2]

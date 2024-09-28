@@ -956,10 +956,10 @@ for (k in 1:length(pred_list)) {
     }
     
     # calculate CI
-    lower_CI_low <- summary_prey_low$state$Estimate[2] - summary_prey_low$state$SE[2]
-    upper_CI_low <- summary_prey_low$state$Estimate[2] + summary_prey_low$state$SE[2]
-    lower_CI_high<- summary_prey_high$state$Estimate[2] - summary_prey_high$state$SE[2]
-    upper_CI_high<- summary_prey_high$state$Estimate[2] + summary_prey_high$state$SE[2]
+    lower_CI_low <- summary_prey_low$state$Estimate[2] - (summary_prey_low$state$SE[2] * 1.96)
+    upper_CI_low <- summary_prey_low$state$Estimate[2] + (summary_prey_low$state$SE[2] * 1.96)
+    lower_CI_high<- summary_prey_high$state$Estimate[2] - (summary_prey_high$state$SE[2] * 1.96)
+    upper_CI_high<- summary_prey_high$state$Estimate[2] + (summary_prey_high$state$SE[2] * 1.96)
     
     # pull out values
     effect_pred_on_prey_low <- summary_prey_low$state$Estimate[2]
@@ -982,15 +982,15 @@ for (k in 1:length(pred_list)) {
     
     # now detection
     # calculate CI
-    lower_CI_low <- summary_prey_low$det$Estimate[2] - summary_prey_low$det$SE[2]
-    upper_CI_low <- summary_prey_low$det$Estimate[2] + summary_prey_low$det$SE[2]
-    lower_CI_high<- summary_prey_high$det$Estimate[2] - summary_prey_high$det$SE[2]
-    upper_CI_high<- summary_prey_high$det$Estimate[2] + summary_prey_high$det$SE[2]
+    lower_CI_low <- summary_prey_low$det$Estimate[3] - (summary_prey_low$det$SE[3] * 1.96)
+    upper_CI_low <- summary_prey_low$det$Estimate[3] + (summary_prey_low$det$SE[3] * 1.96)
+    lower_CI_high<- summary_prey_high$det$Estimate[3] - (summary_prey_high$det$SE[3] * 1.96)
+    upper_CI_high<- summary_prey_high$det$Estimate[3] + (summary_prey_high$det$SE[3] * 1.96)
     # pull out values
-    effect_pred_on_prey_low <- summary_prey_low$det$Estimate[2]
-    p_value_effect_pred_on_prey_low <- summary_prey_low$det$`P(>|z|)`[2]
-    effect_pred_on_prey_high <- summary_prey_high$det$Estimate[2]
-    p_value_effect_pred_on_prey_high <- summary_prey_high$det$`P(>|z|)`[2]
+    effect_pred_on_prey_low <- summary_prey_low$det$Estimate[3]
+    p_value_effect_pred_on_prey_low <- summary_prey_low$det$`P(>|z|)`[3]
+    effect_pred_on_prey_high <- summary_prey_high$det$Estimate[3]
+    p_value_effect_pred_on_prey_high <- summary_prey_high$det$`P(>|z|)`[3]
     
     # fill in results dataframe
     results_det[m, 1] <- pred_name
@@ -1035,7 +1035,7 @@ results_occ <- results_occ %>%
 results_occ$Trend <- if_else(results_occ$Significant == "No",
                          paste("slightly", results_occ$Trend), paste(results_occ$Trend))
 # write results as csv
-write_csv(results_occ, "results/pred_prey_occupancy_results.csv")
+write_csv(results_occ, "results/pred_prey_occupancy_with_detection_results.csv")
 
 results_det$Difference <- results_det$overlap_high - results_det$overlap_low
 results_det$Prey_Type <- c("herbivore",
