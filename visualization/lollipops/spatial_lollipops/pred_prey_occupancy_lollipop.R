@@ -12,7 +12,7 @@ library(scales)
 library(grid)
 library(png)
 
-data <- read_csv("results/pred_prey_detection_results.csv")
+data <- read_csv("results/pred_prey_occupancy_with_detection_results.csv")
 
 data$Pairing <- paste(data$Predator, data$Prey, sep = "/")
 data$Pairing <- factor(data$Pairing, levels = rev(unique(data$Pairing)))

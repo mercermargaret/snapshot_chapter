@@ -12,7 +12,7 @@ library(scales)
 library(grid)
 library(png)
 
-data <- read.csv("results/single_species_occupancy_results.csv")
+data <- read.csv("results/single_species_occupancy_results_3.csv")
 
 data$Species <- factor(data$Species, levels = rev(unique(data$Species)))
 
