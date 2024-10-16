@@ -1,0 +1,19 @@
+"","Predator","Prey","Overlap_Low","Overlap_High","Difference","p_value","n_Predator_Low","n_Predator_High","n_Prey_Low","n_Prey_High","Prey_Type","Trend"
+"1","Puma concolor","Odocoileus virginianus",0.496234359249035,0.778632007536673,0.282397648287638,9.78469769371957e-170,8,275,965,13112,"herbivore","increasing"
+"2","Puma concolor","Odocoileus hemionus",0.54411356574494,0.798005325407059,0.25389175966212,1.32385246249666e-125,8,342,900,13215,"herbivore","increasing"
+"3","Puma concolor","Cervus canadensis",0.389554053327297,0.80674118819819,0.417187134870893,8.69346537157401e-150,6,287,40,2298,"herbivore","increasing"
+"4","Puma concolor","Alces alces",NA,0.757413455533285,NA,NA,0,147,4,121,"herbivore",NA
+"5","Puma concolor","Canis latrans",0.705070793807554,0.901225749280985,0.19615495547343,4.42582564214743e-113,8,342,630,4807,"mesocarnivore","increasing"
+"6","Puma concolor","Lynx rufus",0.668608204031407,0.912739555129515,0.244131351098107,2.9781888549456e-122,8,342,110,710,"mesocarnivore","increasing"
+"7","Puma concolor","Procyon lotor",NA,0.663865630353792,NA,NA,2,208,63,662,"mesocarnivore",NA
+"8","Puma concolor","Vulpes vulpes",NA,0.899255686294984,NA,NA,5,278,0,3863,"mesocarnivore",NA
+"9","Puma concolor","Mephitis mephitis",0.813511845247496,0.705950160178065,-0.107561685069431,0.00440238402617735,8,342,89,1021,"mesocarnivore","decreasing"
+"10","Canis lupus","Odocoileus virginianus",0.762302356876066,0.824606690945986,0.0623043340699208,1.4538342341825e-41,17,191,944,17922,"herbivore","increasing"
+"11","Canis lupus","Odocoileus hemionus",NA,0.646543172202878,NA,NA,1,170,12,3081,"herbivore",NA
+"12","Canis lupus","Cervus canadensis",NA,0.788003415566261,NA,NA,0,81,17,1651,"herbivore",NA
+"13","Canis lupus","Alces alces",0.422997132049745,0.76273678238917,0.339739650339425,1.6165502766823e-130,18,279,6,269,"herbivore","increasing"
+"14","Canis lupus","Canis latrans",0.571588600931592,0.879505772563385,0.307917171631794,5.53926738609194e-135,18,280,39,1383,"mesocarnivore","increasing"
+"15","Canis lupus","Lynx rufus",NA,0.726146870267058,NA,NA,17,191,3,83,"mesocarnivore",NA
+"16","Canis lupus","Procyon lotor",0.621254393409246,0.476581420217591,-0.144672973191656,5.83106633988236e-14,17,131,19,305,"mesocarnivore","decreasing"
+"17","Canis lupus","Vulpes vulpes",0.720120955500405,0.733628786206551,0.0135078307061456,8.21632907835185e-23,18,278,53,837,"mesocarnivore","increasing"
+"18","Canis lupus","Mephitis mephitis",0.566570503696851,0.50459276906275,-0.0619777346341015,0.0263706851468629,17,191,19,284,"mesocarnivore","decreasing"
