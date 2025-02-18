@@ -12,7 +12,7 @@ library(scales)
 library(grid)
 library(png)
 
-data <- read_csv("results/pred_prey_overlap_results_3.csv")
+data <- read_csv("results/pred_prey_overlap_results.csv")
 
 data$Pairing <- paste(data$Predator, data$Prey, sep = "/")
 data$Pairing <- factor(data$Pairing, levels = rev(unique(data$Pairing)))
@@ -85,3 +85,4 @@ wolf <- readPNG("visualization/pngs/wolf.png") %>% rasterGrob(interpolate=TRUE)
 lol +
   annotation_custom(puma, xmin=11, xmax=17, ymin=0.05, ymax=.4) +
   annotation_custom(wolf, xmin=2, xmax=9, ymin=0.15, ymax=.5)
+

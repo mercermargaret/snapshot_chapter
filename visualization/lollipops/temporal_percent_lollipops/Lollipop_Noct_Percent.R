@@ -86,12 +86,12 @@ moon <- readPNG("visualization/pngs/moon.png") %>% rasterGrob(interpolate=TRUE)
 
 lol +
   annotation_custom(moon, 
-                    xmin=0.5, 
-                    xmax=5.5, 
+                    xmin=1, 
+                    xmax=4.5, 
                     ymin=0, 
                     ymax=0.5) +
   annotation_custom(sun, 
-                    xmin=1, 
-                    xmax=5.5, 
-                    ymin=-0.2, 
+                    xmin=0.5, 
+                    xmax=5.5,
+                    ymin=-0.25, 
                     ymax=0)

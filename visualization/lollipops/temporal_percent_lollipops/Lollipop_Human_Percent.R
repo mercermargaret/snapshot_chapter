@@ -73,5 +73,5 @@ lol +
                     xmin=1, 
                     xmax=6, 
                     ymin=.7, 
-                    ymax=.9)
+                    ymax=1)
 
