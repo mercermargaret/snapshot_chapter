@@ -8,7 +8,7 @@ library(sf)
 library(pscl)
 
 # import data ####
-data <- read_csv("../data_too_big/all_years.csv")
+data <- read_csv("../data_too_big/five_year_observation_data.csv")
 range <- st_read('data/subset_shape_files/Puma')
 
 # wrangle data ####
@@ -42,14 +42,14 @@ data$Species <- ifelse(data$Species_Name == "Puma concolor", 1, 0)
 Species_Per_Camera <- data %>% filter(Species == 1) %>%
   group_by(Site_Name) %>%
   summarise(Species_Per_Camera = n())
-data <- left_join(data, Species_Per_Camera, by = "Site_Name") %>%
+data <- left_join(data, Species_Per_Camera, by = "Site_Name")  %>%
   mutate(Species_Per_Camera = tidyr::replace_na(Species_Per_Camera, 0)) # replace nas with 0
-data$Species_Per_Camera_Per_Day <- data$Species_Per_Camera/data$Survey_Days
+data$Species_Per_Camera_Per_Day <- data$Species_Per_Camera/data$Survey_Nights
 data <- subset(data, select = c(-Species))
 
 # now get dataframe with one row per camera
 cameras <- data %>% distinct(Site_Name, .keep_all = TRUE)
-cameras <- dplyr::select(cameras, Array:Longitude, Time_Zone, Year, Humans_Per_Camera, Humans_Per_Camera_Per_Day, Species_Per_Camera, Species_Per_Camera_Per_Day)
+cameras <- dplyr::select(cameras, Array:Longitude, Time_Zone, Local_Date_Time, Humans_Per_Camera, Humans_Per_Camera_Per_Day, Species_Per_Camera, Species_Per_Camera_Per_Day)
 
 
 # analysis ####
@@ -86,7 +86,7 @@ cameras <- dplyr::select(cameras, Array:Longitude, Time_Zone, Year, Humans_Per_C
 
 
 # poisson with offset
-model <- glm(Species_Per_Camera ~ Humans_Per_Camera_Per_Day + offset(log(Survey_Days)), data = cameras, family = poisson)
+model <- glm(Species_Per_Camera ~ Humans_Per_Camera_Per_Day + offset(log(Survey_Nights)), data = cameras, family = poisson)
 summary(model)
 plot(model)
 
@@ -103,7 +103,7 @@ plot(model)
 
 
 # ZERO inflated poisson with offset
-zip_model <- zeroinfl(Species_Per_Camera ~ Humans_Per_Camera_Per_Day + offset(log(Survey_Days)) | Humans_Per_Camera_Per_Day, data = cameras)
+zip_model <- zeroinfl(Species_Per_Camera ~ Humans_Per_Camera_Per_Day + offset(log(Survey_Nights)) | Humans_Per_Camera_Per_Day, data = cameras)
 summary(zip_model)
 
 # puma:

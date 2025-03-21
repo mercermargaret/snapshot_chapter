@@ -39,7 +39,7 @@ points_sf <- st_as_sf(cameras, coords = c("Longitude", "Latitude"),
 usa <- ne_states(country = "United States of America", returnclass = "sf")
 
 # get county population info
-countyinfo <- read_tsv("../../../Downloads/2022_Gaz_counties_national.txt")
+countyinfo <- read_tsv("../data_too_big/2022_Gaz_counties_national.txt")
 countyinfo$area <- countyinfo$ALAND_SQMI + countyinfo$AWATER_SQMI
 countyinfo$fips <- countyinfo$GEOID
 countypop <- countypop
@@ -99,14 +99,16 @@ ylim <- c(bbox["ymin"] - buffer, bbox["ymax"] + buffer/3)
 ggplot() +
   geom_sf(data = new_counties, aes(fill = new_counties_colored$pop_bin), color = NA) +
   geom_sf(data = new_usa, fill = NA, color = "black") +
-  geom_sf(data = new_cameras, color = "red", size = 1) +
+  geom_sf(data = new_cameras, color = "red", size = 6, alpha = 0.5) +
   theme_void() +
-  ggtitle("SnapshotUSA Camera Trap Locations") +
+  # ggtitle("SnapshotUSA Camera Trap Locations") +
   scale_fill_manual(values = c("< 1" = "#D9D5DA", "1 - 20" = "#B4ABB5", "20 - 88" = "#8E8290",
            "88 - 500" = "#68586B", "500 - 2000" = "#432E46", "> 2000" = "#301934"),
-           name = "Humans per Square Mile", na.translate = FALSE) +
+           name = "Humans per 
+Square Mile", na.translate = FALSE) +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
-  theme(plot.title = element_text(size=22))
+  theme(legend.text = element_text(size = 20),
+        legend.title = element_text(size = 30))
 
 # just locations, no pop data
 ggplot() +

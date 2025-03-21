@@ -202,11 +202,11 @@ ggplot() +
   geom_sf(data = us_prey, size = 1.5, color = "#4D4D4D", fill = "#0075C4", alpha = 0.5) +
   geom_sf(data = new_pred, size = 1.5, color = "#4D4D4D", fill = "#CB429F", alpha = 0.5) +
   geom_sf(data = us_overlap, size = 1.5, color = "#4D4D4D", fill = "#690375", alpha = 0.5) +
-  geom_sf(data = new_usa, fill = NA, color = "#4D4D4D") +
-  geom_sf(data = new_outside, fill = "black", color = "black", size = 3, alpha = 0.4) +
-  geom_sf(data = spatial_inside, fill = "white", color = "black", size = 3, shape = 21, alpha = 0.75) +
-  ggtitle("Predator/Prey Overlap") +
-  theme_classic() +
+  geom_sf(data = new_usa, fill = NA, color = "black", lwd = 0.5) +
+  geom_sf(data = new_outside, fill = "black", color = "black", size = 6, alpha = 0.75) +
+  geom_sf(data = spatial_inside, fill = "white", color = "black", size = 6, shape = 21, alpha = 0.75) +
+  # ggtitle("Predator/Prey Overlap") +
+  theme_void() +
   coord_sf()
 # ^^ black outline of white dot
 

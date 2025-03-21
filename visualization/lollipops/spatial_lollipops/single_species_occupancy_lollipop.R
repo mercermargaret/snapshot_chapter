@@ -68,8 +68,8 @@ lol <- ggplot(data, aes(x = Species, y = Difference,
 lol
 
 
-# # add animations
-# hum <- readPNG("visualization/pngs/human.png") %>% rasterGrob(interpolate=TRUE)
-# 
-# lol +
-#   annotation_custom(hum, xmin=1, xmax=6, ymin=0.25, ymax=.75)
+# add animations
+hum <- readPNG("visualization/pngs/human.png") %>% rasterGrob(interpolate=TRUE)
+
+lol +
+  annotation_custom(hum, xmin=1, xmax=6, ymin=0.25, ymax=.75)

@@ -47,23 +47,25 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
             aes(xmin = as.numeric(Species) - 0.5, xmax = as.numeric(Species) + 0.5,
                 ymin = -Inf, ymax = Inf),
             fill = "#E5E5E5", color = NA) +
-  geom_segment(aes(xend = Species, yend = 0)) +
-  geom_point(shape = 21, size = 3) +
+  geom_segment(aes(xend = Species, yend = 0), lwd = 2) +
+  geom_point(shape = 21, size = 8) +
   scale_y_continuous(expand = c(0, 0), limits = c(-0.55, 1.1), labels = percent_format()) +
   coord_flip() +
   theme_classic () +
-  theme(axis.title.y = element_blank(),
+  theme(axis.title.x = element_text(angle = 0, vjust = 0.5),
+        axis.title.y = element_text(size = 20),
         panel.border = element_blank(),
         legend.position = "none",
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
-        text = element_text(family = "Helvetica", size = 15)) +
-  geom_hline(yintercept = 0, color = "darkgray") +
-  labs(x = NULL, y = "Percent Difference in Human Overlap", main = "Percent Difference in Overlap with Humans") +
+        text = element_text(family = "Helvetica", size = 30)) +
+  geom_hline(yintercept = 0, color = "darkgray", lwd = 1) +
+  labs(x = "         Mesocarnivore Prey                 Herbivore Prey          Predators",
+  y = "Percent Difference in Human Overlap", main = "Percent Difference in Overlap with Humans") +
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +
-  geom_text(aes(x = Species, y = -.53, label = Common_Name), hjust = 0, vjust = 0.5, color = "black")
+  geom_text(aes(x = Species, y = -.53, label = Common_Name), hjust = 0, vjust = 0.5, color = "black", size = 10)
 lol
 
 hum <- readPNG("visualization/pngs/human.png") %>% rasterGrob(interpolate=TRUE)
