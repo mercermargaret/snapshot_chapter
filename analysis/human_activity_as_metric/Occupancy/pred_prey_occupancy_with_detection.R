@@ -1,5 +1,5 @@
 # occupancy file to loop through pred AND prey, low AND high humans
-# oh boi lets try this out
+# WHILE taking detection into account
 # margaret mercer
 # august 16, 2024
 

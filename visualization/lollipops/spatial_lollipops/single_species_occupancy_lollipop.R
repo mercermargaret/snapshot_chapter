@@ -12,7 +12,19 @@ library(scales)
 library(grid)
 library(png)
 
-data <- read.csv("results/single_species_occupancy_results_3.csv")
+data <- read.csv("results/single_species_occupancy_results.csv")
+
+data$Common_Name <- c("Puma",
+                      "Gray Wolf",
+                      "White-tailed Deer",
+                      "Mule Deer",
+                      "Elk",
+                      "Moose",
+                      "Coyote",
+                      "Bobcat",
+                      "Raccoon",
+                      "Red Fox",
+                      "Striped Skunk")
 
 data$Species <- factor(data$Species, levels = rev(unique(data$Species)))
 
@@ -44,27 +56,38 @@ lol <- ggplot(data, aes(x = Species, y = Difference,
                color = ifelse(Trend == "increasing", "Increase",
                               ifelse(Trend == "slightly increasing", "Increase",
                                      ifelse(Trend == "slightly decreasing", "Decrease",
-                                            ifelse(Trend == "decreasing", "Decrease", "No Change")))))) +
-  geom_point(shape = 21, size = 3, 
+                                            ifelse(Trend == "decreasing", "Decrease", "No Change"))))),
+               lwd = 2) +
+  geom_point(shape = 21, size = 8, stroke = 2, 
              aes(color = ifelse(Trend == "increasing", "Increase",
                                                   ifelse(Trend == "slightly increasing", "Increase",
                                                          ifelse(Trend == "slightly decreasing", "Decrease",
                                                                 ifelse(Trend == "decreasing", "Decrease", "No Change")))))) +
-  scale_y_continuous(expand = c(0, 0), limits = c(min(data$Difference) - 1.2, max(data$Difference) + .3)) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(min(data$Difference) - 0.6, max(data$Difference) + .3)) +
   coord_flip() +
   theme_classic() +
-  theme(axis.title.y = element_blank(),
+  theme(axis.title.x = element_text(angle = 0, vjust = 0.5),
+        axis.title.y = element_text(size = 20),
         panel.border = element_blank(),
         legend.position = "none",
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
-        text = element_text(family = "Helvetica", size = 15)) +
-  geom_hline(yintercept = 0, color = "darkgray") +
-  labs(x = NULL, y = "Difference in Occupancy", title = "Difference in Occupancy Between Low and High Human Presence") +
+        text = element_text(family = "Helvetica", size = 30)) +
+  geom_hline(yintercept = 0, color = "darkgray", lwd = 1) +
+  labs(x = "         Mesocarnivore Prey                 Herbivore Prey          Predators",
+       y = "Difference in Occupancy", 
+       title = NULL) +
   scale_color_manual(values = my_colors) +  # Set custom colors
   scale_fill_manual(values = my_colors) +
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
-  geom_text(aes(x = Species, y = min(Difference) - 1.15, label = Species), hjust = 0, vjust = 0.5, color = "black")
+  geom_text(aes(x = Species, 
+                y = min(Difference) - 0.55, 
+                label = Common_Name), 
+            hjust = 0, 
+            vjust = 0.5, 
+            color = "black",
+            size = 10)
 lol
 
 
@@ -72,4 +95,4 @@ lol
 hum <- readPNG("visualization/pngs/human.png") %>% rasterGrob(interpolate=TRUE)
 
 lol +
-  annotation_custom(hum, xmin=1, xmax=6, ymin=0.25, ymax=.75)
+  annotation_custom(hum, xmin=2, xmax=9.5, ymin=1, ymax=1.75)
