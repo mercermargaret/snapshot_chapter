@@ -1,18 +1,11 @@
-# merging deployments and observations in 2019-2023 data
+# create wrangled observations document
 # margaret mercer
 # july 25, 2024
 
 library(tidyverse)
-library(sp)
-library(sf)
-library(terra)
-library(lubridate)
-library(forcats)
-library(suncalc)
 library(lutz)
-library(parallel)
-library(foreach)
-library(raster)
+library(lubridate)
+library(suncalc)
 
 # import and merge observation and deployment data ####
 
@@ -117,10 +110,6 @@ data_utc <- data
 
 # rename columns so suncalc can recognize them ####
 # FIX this so its reproducable
-colnames(all_2019)[4] <- "lat"
-colnames(all_2019)[5] <- "lon"
-colnames(all_2019)[11] <- "date"
-
 data <- data %>%
   rename(
     lat = Latitude,
@@ -173,20 +162,29 @@ data$Humans_Per_Camera_Per_Day <- data$Humans_Per_Camera/data$Survey_Nights
 data <- subset(data, select = c(-Human))
 
 
-# add column for human disturbance index
-full_raster <- rast("/Users/mmercer3/Downloads/ml-hfi_v1_2019.tif.crdownload")
-max(full_raster)
-# crop dataset from the whole world to just the US:
-e <- extent(-167, -66, 20, 72)
-raster <- terra::crop(full_raster, e)
-plot(raster) # to be sure it actually includes US like we want it to. 
-# Looks like Alaska is slightly cut off (at 70*) but our highest lat is only 59* so that's ok
-# associate lats and longs with dataframe:
-sf_points <- st_as_sf(data, coords = c("Longitude", "Latitude"), crs = 4326)
-values_at_points <- terra::extract(raster, sf_points)
-rastered <- cbind(data, Raster_Values = values_at_points)
-data <- dplyr::select(rastered, -Raster_Values.ID)
-data <- rename(data, Disturbance = `Raster_Values.ml-hfi_v1_2019.tif`)
+# library(sp)
+# library(sf)
+# library(terra)
+# library(forcats)
+# library(parallel)
+# library(foreach)
+# library(raster)
+
+# # not using this metric for now
+# # add column for human disturbance index
+# full_raster <- rast("/Users/mmercer3/Downloads/ml-hfi_v1_2019.tif.crdownload")
+# max(full_raster)
+# # crop dataset from the whole world to just the US:
+# e <- extent(-167, -66, 20, 72)
+# raster <- terra::crop(full_raster, e)
+# plot(raster) # to be sure it actually includes US like we want it to. 
+# # Looks like Alaska is slightly cut off (at 70*) but our highest lat is only 59* so that's ok
+# # associate lats and longs with dataframe:
+# sf_points <- st_as_sf(data, coords = c("Longitude", "Latitude"), crs = 4326)
+# values_at_points <- terra::extract(raster, sf_points)
+# rastered <- cbind(data, Raster_Values = values_at_points)
+# data <- dplyr::select(rastered, -Raster_Values.ID)
+# data <- rename(data, Disturbance = `Raster_Values.ml-hfi_v1_2019.tif`)
 
 # write csv
-write.csv(data, "../data_too_big/five_year_observation_data.csv")
+# write.csv(data, "../data_too_big/five_year_observation_data.csv", row.names = FALSE)

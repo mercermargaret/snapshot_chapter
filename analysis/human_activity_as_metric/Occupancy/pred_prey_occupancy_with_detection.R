@@ -1,18 +1,19 @@
 # occupancy file to loop through pred AND prey, low AND high humans
 # WHILE taking detection into account
 # margaret mercer
+
 # august 16, 2024
 
-# note: this file takes around 20 min to run
+# note: this file takes around 40 min to run
 
 # load packages
-library(lubridate)
+# library(lubridate)
 library(sf)
 library(tidyverse)
 library(unmarked)
-library(AICcmodavg)
-library(ggplot2)
-library(TMB)
+# library(AICcmodavg)
+# library(TMB)
+# library(ggplot2)
 
 # clear workspace
 rm(list=ls())
@@ -1035,7 +1036,7 @@ results_occ <- results_occ %>%
 results_occ$Trend <- if_else(results_occ$Significant == "No",
                          paste("slightly", results_occ$Trend), paste(results_occ$Trend))
 # write results as csv
-write_csv(results_occ, "results/pred_prey_occupancy_with_detection_results.csv")
+write.csv(results_occ, "results/pred_prey_occupancy_with_detection_results.csv", row.names = FALSE)
 
 results_det$Difference <- results_det$overlap_high - results_det$overlap_low
 results_det$Prey_Type <- c("herbivore",
@@ -1065,5 +1066,5 @@ results_det <- results_det %>%
 results_det$Trend <- if_else(results_det$Significant == "No",
                              paste("slightly", results_det$Trend), paste(results_det$Trend))
 # write results as csv
-write_csv(results_det, "results/pred_prey_detection_results.csv")
+write.csv(results_det, "results/pred_prey_detection_results.csv", row.names = FALSE)
 

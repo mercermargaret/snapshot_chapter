@@ -106,16 +106,15 @@ ggplot() +
            "88 - 500" = "#68586B", "500 - 2000" = "#432E46", "> 2000" = "#301934"),
            name = "Humans per 
 Square Mile", na.translate = FALSE) +
-  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
+  coord_sf(xlim = c((xlim["xmin"] - 500000), (xlim["xmax"])), ylim = ylim, expand = TRUE) +
   theme(legend.text = element_text(size = 20),
         legend.title = element_text(size = 30))
 
 # just locations, no pop data
 ggplot() +
   geom_sf(data = new_usa, fill = "white", color = "black") +
-  geom_sf(data = new_cameras, color = "red", size = 3, alpha = 0.5) +
+  geom_sf(data = new_cameras, color = "red", size = 6, alpha = 0.5) +
   theme_void() +
-  theme(legend.position = "none") +
-  ggtitle("SnapshotUSA Camera Trap Locations") +
-  theme(plot.title = element_text(size=22))
+  coord_sf(xlim = xlim, ylim = ylim, expand = TRUE) +
+  theme(legend.position = "none")
 

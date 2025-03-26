@@ -29,3 +29,4 @@ t.test(puma_spat, wolf_spat, paired = TRUE)
 
 mean(puma_spat)
 mean(wolf_spat)
+

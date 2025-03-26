@@ -1005,5 +1005,5 @@ results$Trend <- if_else(results$Significant == "No",
                          paste("slightly", results$Trend), paste(results$Trend))
 
 # write results as csv
-# write_csv(results, "results/pred_prey_occupancy_results.csv")
+# write_csv(results, "results/pred_prey_occupancy_results.csv", row.names = FALSE)
 

@@ -150,7 +150,7 @@ for (k in 1:length(pred_list)) {
       sf_use_s2(TRUE)
       range_overlap <- st_make_valid(range_overlap)
       inside_obs <- st_within(points_sf_obs, range_overlap, sparse = FALSE)
-      obs_within_range <- observations_all[which(inside_obs[,1]),]
+      observations <- observations_all[which(inside_obs[,1]),]
       
       # trim deployments too
       
@@ -161,7 +161,7 @@ for (k in 1:length(pred_list)) {
       st_is_valid(points_sf_deps, reason=TRUE)
       sf_use_s2(TRUE)
       inside_deps <- st_within(points_sf_deps, range_overlap, sparse = FALSE)
-      deps_within_range <- deployments_all[which(inside_deps[,1]),]
+      site_info <- deployments_all[which(inside_deps[,1]),]
       
       
     } else {

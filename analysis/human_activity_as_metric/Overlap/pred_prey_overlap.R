@@ -294,4 +294,4 @@ results <- results %>%
   mutate(Trend = if_else(Difference < 0, "decreasing", 
                          if_else(Difference > 0, "increasing", "no change")))
 
-write.csv(results, "results/pred_prey_overlap_results.csv")
+write.csv(results, "results/pred_prey_overlap_results.csv", row.names = FALSE)

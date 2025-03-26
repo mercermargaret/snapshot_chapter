@@ -210,3 +210,29 @@ ggplot() +
   coord_sf()
 # ^^ black outline of white dot
 
+us_prey$group <- "Prey Range"
+new_pred$group <- "Predator Range"
+us_overlap$group <- "Shared Range"
+new_outside$group <- "Cameras Outside Shared Range"
+spatial_inside$group <- "Cameras Inside Shared Range"
+
+ggplot() + 
+  geom_sf(data = new_usa, fill = NA, color = NA) + 
+  geom_sf(data = us_prey, aes(fill = group), size = 1.5, alpha = 0.5) + 
+  geom_sf(data = new_pred, aes(fill = group), size = 1.5, alpha = 0.5) + 
+  geom_sf(data = us_overlap, aes(fill = group), size = 1.5) + 
+  geom_sf(data = new_usa, fill = NA, lwd = 0.5) + 
+  geom_sf(data = new_outside, aes(fill = group), size = 6, alpha = 0.75) + 
+  geom_sf(data = spatial_inside, aes(fill = group), size = 6, shape = 21, alpha = 0.75) + 
+  scale_fill_manual(values = c("Prey Range" = "#0075C4", 
+                               "Predator Range" = "#CB429F", 
+                               "Shared Range" = "#690375", 
+                               "Cameras Outside Shared Range" = "black", 
+                               "Cameras Inside Shared Range" = "white")) + # Assign colors based on group labels
+  theme_void() + 
+  coord_sf() + 
+  theme(
+    legend.title = element_blank(),
+    legend.position = "right",
+    legend.text = element_text(size = 20)
+  )

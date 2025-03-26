@@ -8,7 +8,6 @@ rm(list=ls())
 
 
 library(tidyverse)
-library(lme4)
 
 # replace with your file path
 data <- read_csv("../data_too_big/five_year_observation_data.csv")
@@ -142,6 +141,6 @@ results <- results %>%
                          if_else(Noct_Diff > 0, "increasing", "no change")))
 
 
-write.csv(results, "results/nocturnality.csv")
+# write.csv(results, "results/nocturnality.csv", row.names = FALSE)
 
 

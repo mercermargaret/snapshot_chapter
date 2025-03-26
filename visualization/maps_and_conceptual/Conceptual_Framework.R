@@ -44,7 +44,7 @@ df <- df %>%
 
 # Create the plot using ggplot
 mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
-  geom_line(size = 1) +
+  geom_line(size = 3) +
   labs(title = "Mutual Attraction",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
@@ -60,7 +60,7 @@ mat <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
+        plot.title = element_text(size = 20, hjust = 0.5, face = "bold"))
 mat
 
 mat_s <- mat + 
@@ -127,7 +127,7 @@ df <- data.frame(
 
 # Create the plot using ggplot
 hs <- ggplot(df, aes(x = x, y = y, color = parabola)) +
-  geom_line(size = 1) +
+  geom_line(size = 3) +
   labs(title = "Human Shield",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
@@ -143,7 +143,7 @@ hs <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
+        plot.title = element_text(size = 20, hjust = 0.5, face = "bold"))
 hs
 
 hs_s <- hs + 
@@ -169,7 +169,7 @@ df <- data.frame(
 
 # Create the plot using ggplot
 mav <- ggplot(df, aes(x = x, y = y, color = parabola)) +
-  geom_line(size = 1) +
+  geom_line(size = 3) +
   labs(title = "Mutual Avoidance",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
@@ -185,7 +185,7 @@ mav <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
+        plot.title = element_text(size = 20, hjust = 0.5, face = "bold"))
 
 mav
 mav_s <- mav + 
@@ -210,7 +210,7 @@ df <- data.frame(
 
 # Create the plot using ggplot
 pa <- ggplot(df, aes(x = x, y = y, color = parabola)) +
-  geom_line(size = 1) +
+  geom_line(size = 3) +
   labs(title = "Predator Attraction",
        x = "x", y = "y") +
   scale_color_manual(values = c("#CB429F", "#0075C4", "darkgray")) +
@@ -226,7 +226,7 @@ pa <- ggplot(df, aes(x = x, y = y, color = parabola)) +
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.line = element_blank(),
-        plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
+        plot.title = element_text(size = 20, hjust = 0.5, face = "bold"))
 pa
 
 pa_s <- pa + 
@@ -249,13 +249,13 @@ g <- grid.arrange(pa_s, mat_s, mav_s, hs_s, ncol=2)
 # Overlap", x = 0.92, y = 0.3, gp = gpar(col = "darkred", fontsize = 8, fontface = "bold"))
 
 t5 <- textGrob("Predator 
-Attraction", x = 0.5, y = 0.95, gp = gpar(col = "black", fontsize = 12))
+Attraction", x = 0.5, y = 0.95, gp = gpar(col = "black", fontsize = 25))
 t6 <- textGrob("Prey 
-Attraction", x = 0.9, y = 0.5, gp = gpar(col = "black", fontsize = 12))
+Attraction", x = 0.9, y = 0.5, gp = gpar(col = "black", fontsize = 25))
 t7 <- textGrob("Predator 
-Avoidance", x = 0.5, y = 0.05, gp = gpar(col = "black", fontsize = 12))
+Avoidance", x = 0.5, y = 0.05, gp = gpar(col = "black", fontsize = 25))
 t8 <- textGrob("Prey 
-Avoidance", x = 0.1, y = 0.5, gp = gpar(col = "black", fontsize = 12))
+Avoidance", x = 0.1, y = 0.5, gp = gpar(col = "black", fontsize = 25))
 
 # Create a new page
 grid.newpage()

@@ -57,7 +57,7 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
   scale_y_continuous(expand = c(0, 0), 
                      limits = c((min((data$Percent_Change)) - 0.15), 
                                 (max((data$Percent_Change)) + 0.1)), 
-                     labels = percent_format()) +
+                     labels = percent_format()) + 
   coord_flip() +
   theme_classic () +
   theme(axis.title.x = element_text(angle = 0, vjust = 0.5),
@@ -68,7 +68,7 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
         axis.ticks = element_blank(),
         text = element_text(family = "Helvetica", size = 30)) +
   geom_hline(yintercept = 0, color = "darkgray", lwd = 1) +
-  labs(x = "         Mesocarnivore Prey                 Herbivore Prey          Predators",
+  labs(x = "     Mesocarnivore Prey             Ungulate Prey        Predators",
        y = "Percent Difference in Nocturnality", 
        main = "Percent Difference in Nocturnality") +
   scale_color_manual(values = my_colors) +  # Set custom colors

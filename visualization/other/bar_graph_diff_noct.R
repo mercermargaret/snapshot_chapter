@@ -4,6 +4,7 @@
 
 library(ggplot2)
 library(scales)
+library(tidyverse)
 
 # import data
 data <- read.csv("results/nocturnality.csv")

@@ -539,4 +539,4 @@ results$Type <- c("carnivore",
                   "mesocarnivore")
 
 # write results as csv
-write_csv(results, "results/single_species_occupancy_results.csv")
+write_csv(results, "results/single_species_occupancy_results.csv", row.names = FALSE)

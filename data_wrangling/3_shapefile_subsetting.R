@@ -3,9 +3,6 @@
 # April 25, 2024
 
 # PACKAGES ####
-library(tidyverse)
-library(overlap)
-library(raster)
 library(sf)
 library(terra)
 library(s2)
@@ -56,4 +53,4 @@ ggplot() +
   coord_sf()
 
 # write file
-st_write(range, "data/subset_shape_files/Vulpes_vulpes.shp")
+# st_write(range, "data/subset_shape_files/Vulpes_vulpes.shp")
