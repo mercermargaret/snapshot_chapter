@@ -68,46 +68,50 @@ high_prey <- time_radians[high_dist$Species_Name == 'Alces alces']
 # overlap examples ####
 # low
 
-# just pred
-overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", NA), linewidth = c(2, NA), olapcol = NA,
-            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
-legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
-# add line
-abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
-
-# both pred and prey
-overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
-abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
-
-# add overlap shading
-overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2),
-            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
-abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
-
-
-# high
-# just pred
-overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", NA), linewidth = c(2, NA), olapcol = NA,
-            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
-legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
-
-# add line
-abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
-
-# both pred and prey
-overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
-            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
-abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+# # just pred
+# overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", NA), linewidth = c(2, NA), olapcol = NA,
+#             rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
+# legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
+# # add line
+# abline(v=c(5.5, 18+47/60), lty=3)
+# legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
+# 
+# # both pred and prey
+# overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
+#             rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
+# abline(v=c(5.5, 18+47/60), lty=3)
+# legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 # add overlap shading
-overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2),
-            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
-abline(v=c(5.5, 18+47/60), lty=3)
+overlapPlot(low_pred, low_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(8, 8),
+            rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
+abline(v=c(5.5, 18+47/60), lty=3, lwd = 3)
 legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
+
+# # high
+# # just pred
+# overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", NA), linewidth = c(2, NA), olapcol = NA,
+#             rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
+# legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
+# 
+# # add line
+# abline(v=c(5.5, 18+47/60), lty=3)
+# legend("topleft", c("Puma"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), bg="white")
+# 
+# # both pred and prey
+# overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
+#             rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
+# abline(v=c(5.5, 18+47/60), lty=3)
+# legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+
+# add overlap shading
+overlapPlot(high_pred, high_prey, linet = c(1,5), linec = c("red", "blue"), linewidth = c(8, 8),
+            rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
+abline(v=c(5.5, 18+47/60), lty=3, lwd = 3)
+legend("topleft", c("Puma", "Moose"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+
+# example stuff for legend
+x <- c(2, 4)
+y <- c(3, 3)
+plot(x, y, type = "l", col = "#525252", lwd = 8, lty = 5)

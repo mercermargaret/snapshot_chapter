@@ -76,6 +76,8 @@ results <- data.frame(
   n_Predator_High = rep(NA, 18),
   n_Prey_Low = rep(NA, 18),
   n_Prey_High = rep(NA, 18),
+  Conf_Int_Low = rep(NA, 18),
+  Conf_Int_High = rep(NA, 18),
   stringsAsFactors = FALSE
 )
 
@@ -177,7 +179,7 @@ for (i in 1:length(pred_list)) {
     # select median of sites and assign to object
     sites <- pair %>% 
       group_by(Site_Name) %>% 
-      summarize(Humans_Per_Camera_Per_Day) %>% 
+      reframe(Humans_Per_Camera_Per_Day) %>% 
       unique()
   
     median <- median(sites$Humans_Per_Camera_Per_Day)
@@ -264,6 +266,8 @@ for (i in 1:length(pred_list)) {
     results[k, 9] <- length(high_pred)
     results[k, 10] <- length(low_prey)
     results[k, 11] <- length(high_prey)
+    results[k, 12] <- t_test$conf.int[1] 
+    results[k, 13] <- t_test$conf.int[2] 
     
   }
   
@@ -294,4 +298,4 @@ results <- results %>%
   mutate(Trend = if_else(Difference < 0, "decreasing", 
                          if_else(Difference > 0, "increasing", "no change")))
 
-write.csv(results, "results/pred_prey_overlap_results.csv", row.names = FALSE)
+# write.csv(results, "results/pred_prey_overlap_results.csv", row.names = FALSE)

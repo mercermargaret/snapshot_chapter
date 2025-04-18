@@ -48,36 +48,36 @@ ggplot(data, aes(x = Noct_Low, xend = Noct_High, y = Common_Name)) +
   #   # colour_xend = ifelse(data$Noct_Diff < 0, "red", "green"),  # Color based on Noct_Diff
   #   size = 3
   # ) +
-  geom_segment(aes(x = Noct_Low, y = Common_Name, xend = Noct_High, yend = Common_Name)) +
+  geom_segment(aes(x = Noct_Low, y = Common_Name, xend = Noct_High, yend = Common_Name), color = "white") +  # this plots blank segments, necessary to preserve correct species order
   geom_rect(data = data[data$Type == "herbivore", ],
             aes(ymin = as.numeric(Common_Name) - 0.5, ymax = as.numeric(Common_Name) + 0.5,
                 xmin = -Inf, xmax = Inf),
             fill = "#E5E5E5", color = NA) +
   geom_segment(
-    aes(x = Noct_Low, y = Common_Name, xend = Noct_High, yend = Common_Name),
+    aes(x = Noct_Low - 0.004, y = Common_Name, xend = Noct_High, yend = Common_Name),
     color = ifelse(data$Noct_Diff < 0, "#AE0000", "#057A00"),
-    # arrow = arrow(length = unit(0.5, "cm")),
+    arrow = arrow(length = unit(0.5, "cm")),
     lwd = 2
   ) +
-  scale_x_continuous(labels = percent_format()) + # this plots blank segments, necessary to preserve correct species order
+  scale_x_continuous(labels = percent_format(), limits = c(min(data$Noct_High), max(data$Noct_High) + .01)) +
   geom_point(aes(Noct_Low),
              color = ifelse(data$Noct_Diff < 0, "#AE0000", "#057A00"),
-             alpha = 0.5,
-             size = 6) +
-  geom_point(aes(Noct_High),
-             color = ifelse(data$Noct_Diff < 0, "#AE0000", "#057A00"),
-             size = 6) +
+             pch = ifelse(data$Significant == "no", 1, 16),
+             size = 5) +
+  # geom_point(aes(Noct_High),
+  #            color = ifelse(data$Noct_Diff < 0, "#AE0000", "#057A00"),
+  #            size = 6) +
   theme_minimal() +   
   labs(
-    x = "Frequency of Night Activity", 
+    x = "Frequency of Nocturnal Activity", 
     y = NULL
   ) +
   theme(
     # panel.grid.major.x = element_line(color = "grey", size = 0.5),  # Keep x grid lines
-    axis.title.x = element_text(size = 40),
-    axis.title.y = element_text(size = 40),
-    axis.text.x = element_text(size = 30),
-    axis.text.y = element_text(size = 30),
+    axis.title.x = element_text(size = 30),
+    axis.title.y = element_text(size = 30),
+    axis.text.x = element_text(size = 25),
+    axis.text.y = element_text(size = 30, color = "black"),
     panel.grid.major = element_blank(), # Remove major grid lines
     panel.grid.minor = element_blank(), # Remove minor grid lines
     axis.line = element_line(color = "black", linewidth = 0.5), # Keep x-axis line

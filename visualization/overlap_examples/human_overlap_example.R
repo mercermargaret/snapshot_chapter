@@ -16,7 +16,7 @@ data <- separate(data, Local_Date_Time, into = c("Local_Date", "Local_Time"), se
 
 # get median
 # subset to the two species
-species <- filter(data, Species_Name == 'Cervus canadensis') 
+species <- filter(data, Species_Name == 'Puma concolor') 
 
 # select median of sites and assign to object
 sites <- species %>% 
@@ -43,7 +43,7 @@ time_radians <- 2 * pi * ((hours + minutes / 60 + seconds / 3600) / 24)
 
 # plot pred and prey for low disturbance
 low_hum <- time_radians[low_dist$Species_Name == 'Homo sapiens']
-low_species <- time_radians[low_dist$Species_Name == 'Cervus canadensis']
+low_species <- time_radians[low_dist$Species_Name == 'Puma concolor']
 
 ## plot pred and prey overlap for HIGH disturbance
 
@@ -62,7 +62,7 @@ time_radians <- 2 * pi * ((hours + minutes / 60 + seconds / 3600) / 24)
 
 # plot pred and prey for high disturbance
 high_hum <- time_radians[high_dist$Species_Name == 'Homo sapiens']
-high_species <- time_radians[high_dist$Species_Name == 'Cervus canadensis']
+high_species <- time_radians[high_dist$Species_Name == 'Puma concolor']
 
 
 # overlap examples ####
@@ -83,13 +83,13 @@ legend("topleft", c("Human"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), b
 overlapPlot(low_hum, low_species, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
             rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+legend("topleft", c("Human", "Puma"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 # add overlap shading
-overlapPlot(low_hum, low_species, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2),
+overlapPlot(low_hum, low_species, linet = c(5,1), linec = c("#525252", "red"), linewidth = c(8, 8),
             rug=FALSE, main="Low Human Activity", ylab = NA, yaxt = "n")
-abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+abline(v=c(5.5, 18+47/60), lty=3, lwd = 3)
+# legend("topleft", c("Human", "Puma"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 
 # high
@@ -110,11 +110,11 @@ legend("topleft", c("Human"), lty = c(1,5), col=c("red", "NA"), lwd = c(2, 2), b
 overlapPlot(high_hum, high_species, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2), olapcol = NA,
             rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
 abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+legend("topleft", c("Human", "Puma"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
 # add overlap shading
-overlapPlot(high_hum, high_species, linet = c(1,5), linec = c("red", "blue"), linewidth = c(2, 2),
+overlapPlot(high_hum, high_species, linet = c(5,1), linec = c("#525252", "red"), linewidth = c(8, 8),
             rug=FALSE, main="High Human Activity", ylab = NA, yaxt = "n")
-abline(v=c(5.5, 18+47/60), lty=3)
-legend("topleft", c("Human", "Elk"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
+abline(v=c(5.5, 18+47/60), lty=3, lwd = 3)
+# legend("topleft", c("Human", "Puma"), lty = c(1,5), col=c("red", "blue"), lwd = c(2, 2), bg="white")
 
