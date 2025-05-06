@@ -1,0 +1,19 @@
+"Predator","Prey","Predator_n_Deps","Predator_n_Obs","Prey_n_Deps","Prey_n_Obs"
+"Puma concolor","Odocoileus virginianus",16,283,20,14077
+"Puma concolor","Odocoileus hemionus",25,350,50,14115
+"Puma concolor","Cervus canadensis",15,293,21,2338
+"Puma concolor","Alces alces",6,147,9,125
+"Puma concolor","Canis latrans",25,350,57,5437
+"Puma concolor","Lynx rufus",25,350,38,820
+"Puma concolor","Procyon lotor",22,210,30,725
+"Puma concolor","Vulpes vulpes",13,283,16,3863
+"Puma concolor","Mephitis mephitis",25,350,39,1110
+"Canis lupus","Odocoileus virginianus",13,208,16,18866
+"Canis lupus","Odocoileus hemionus",9,171,14,3093
+"Canis lupus","Cervus canadensis",8,81,13,1668
+"Canis lupus","Alces alces",13,297,11,275
+"Canis lupus","Canis latrans",14,298,21,1422
+"Canis lupus","Lynx rufus",13,208,9,86
+"Canis lupus","Procyon lotor",12,148,12,324
+"Canis lupus","Vulpes vulpes",13,296,16,890
+"Canis lupus","Mephitis mephitis",13,208,16,303
