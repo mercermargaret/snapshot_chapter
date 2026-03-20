@@ -76,7 +76,7 @@ lol <- ggplot(data, aes(x = Species, y = Difference,
         text = element_text(family = "Helvetica", size = 30)) +
   geom_hline(yintercept = 0, color = "darkgray", lwd = 1) +
   labs(x = "     Mesocarnivore Prey             Ungulate Prey        Predators",
-       y = "Difference in Occupancy", 
+       y = "Difference in Occupancy with Higher Human Activity", 
        title = NULL) +
   scale_color_manual(values = my_colors) +  # Set custom colors
   scale_fill_manual(values = my_colors) +

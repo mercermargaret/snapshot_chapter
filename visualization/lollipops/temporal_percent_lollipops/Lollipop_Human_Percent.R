@@ -61,7 +61,7 @@ lol <- ggplot(data, aes(x = Species, y = Percent_Change,
         text = element_text(family = "Helvetica", size = 30)) +
   geom_hline(yintercept = 0, color = "darkgray", lwd = 1) +
   labs(x = "         Mesocarnivore Prey                 Herbivore Prey          Predators",
-  y = "Percent Difference in Human Overlap", main = "Percent Difference in Overlap with Humans") +
+  y = "Percent Difference in Human Overlap with Higher Human Activity", main = "Percent Difference in Overlap with Humans") +
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title
   scale_fill_manual(values = my_colors) +

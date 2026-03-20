@@ -72,7 +72,7 @@ lol <- ggplot(data, aes(x = Pairing, y = Percent_Change,
         text = element_text(family = "Helvetica", size = 30)) +
   geom_hline(yintercept = 0, color = "darkgray", lwd = 1) +
   labs(x = "Mesocarnivore Prey     Ungulate Prey      Mesocarnivore Prey      Ungulate Prey", 
-       y = "Percent Difference in Temporal Overlap", 
+       y = "Percent Difference in Temporal Overlap with Higher Human Activity", 
        main = "Percent Difference in Temporal Overlap between Predators and Prey") +
   scale_color_manual(values = my_colors) +  # Set custom colors
   guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL)) + # Remove legend title

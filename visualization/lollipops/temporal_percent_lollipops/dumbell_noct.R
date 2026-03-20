@@ -5,7 +5,7 @@
 # install packages
 library(tidyverse)
 library(ggplot2)
-library(ggalt)
+# library(ggalt)
 library(scales)
 library(glue)
 
@@ -31,17 +31,17 @@ data$Common_Name <- factor(data$Common_Name, levels = rev(unique(data$Common_Nam
 # ... and a column for significance (sorry, Bob)
 data$Significant <- ifelse(data$`p.value` < 0.1, "yes", "no")
 
-# plot
-ggplot(data, aes(x = Noct_Low, xend = Noct_High, y = Common_Name)) +
-  geom_dumbbell(color = ifelse(data$Noct_Diff < 0, "red", "green"),
-                colour_x = "grey",
-                colour_xend = "black",
-                size = 3) +
-  theme_minimal() +
-  labs(title = "Dumbbell Plot Example", 
-       x = "Frequency of Night Activity", y = "Species")
+# # plot
+# ggplot(data, aes(x = Noct_Low, xend = Noct_High, y = Common_Name)) +
+#   geom_dumbbell(color = ifelse(data$Noct_Diff < 0, "red", "green"),
+#                 colour_x = "grey",
+#                 colour_xend = "black",
+#                 size = 3) +
+#   theme_minimal() +
+#   labs(title = "Dumbbell Plot Example", 
+#        x = "Frequency of Night Activity", y = "Species")
 
-ggplot(data, aes(x = Noct_Low, xend = Noct_High, y = Common_Name)) +   
+dumb <- ggplot(data, aes(x = Noct_Low, xend = Noct_High, y = Common_Name)) +   
   # geom_dumbbell(
   #   color = ifelse(data$Noct_Diff < 0, "red", "green"),
   #   # colour_x = ifelse(data$Noct_Diff < 0, "red", "green"),  # Lighter color
@@ -69,7 +69,7 @@ ggplot(data, aes(x = Noct_Low, xend = Noct_High, y = Common_Name)) +
   #            size = 6) +
   theme_minimal() +   
   labs(
-    x = "Frequency of Nocturnal Activity", 
+    x = "Change in Nocturnal Activity with Higher Human Activity", 
     y = NULL
   ) +
   theme(
@@ -84,3 +84,10 @@ ggplot(data, aes(x = Noct_Low, xend = Noct_High, y = Common_Name)) +
     panel.border = element_blank(),     # Remove panel borders
     axis.ticks = element_blank()        # Remove axis ticks
   )
+
+# add animations
+moon <- readPNG("visualization/pngs/moon.png") %>% rasterGrob(interpolate=TRUE)
+
+dumb +
+  annotation_custom(moon, xmin=0, xmax=1.75, ymin=6, ymax=10.5)
+ 
